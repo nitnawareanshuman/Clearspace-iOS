@@ -26,20 +26,27 @@ def configs(key, shared):
 
 app_product = obj('app-product', 'PBXFileReference', explicitFileType='wrapper.application', path='Clearspace.app', sourceTree='BUILT_PRODUCTS_DIR')
 test_product = obj('test-product', 'PBXFileReference', explicitFileType='wrapper.cfbundle', path='ClearspaceTests.xctest', sourceTree='BUILT_PRODUCTS_DIR')
-app_children, test_children, source_builds, test_builds, resources = [], [], [], [], []
-for folder, children, builds in [('Clearspace', app_children, source_builds), ('ClearspaceTests', test_children, test_builds)]:
-    for path in sorted((ROOT / folder).rglob('*.swift')):
+source_builds, test_builds, resources = [], [], []
+
+def folder_group(folder, builds):
+    children = []
+    for path in sorted((ROOT / folder).iterdir()):
         rel = str(path.relative_to(ROOT))
-        ref = obj(rel, 'PBXFileReference', lastKnownFileType='sourcecode.swift', path=rel, sourceTree='SOURCE_ROOT')
+        if path.is_dir() and path.suffix != '.xcassets':
+            children.append(folder_group(rel, builds))
+            continue
+        kinds = {'.swift': 'sourcecode.swift', '.xcassets': 'folder.assetcatalog',
+                 '.plist': 'text.plist.xml', '.xcprivacy': 'text.xml'}
+        if path.suffix not in kinds: continue
+        ref = obj(rel, 'PBXFileReference', name=path.name, lastKnownFileType=kinds[path.suffix],
+                  path=rel, sourceTree='SOURCE_ROOT')
         children.append(ref)
-        builds.append(obj('build-' + rel, 'PBXBuildFile', fileRef=ref))
-for rel, kind in [('Clearspace/Assets.xcassets', 'folder.assetcatalog'), ('Clearspace/PrivacyInfo.xcprivacy', 'text.xml')]:
-    ref = obj(rel, 'PBXFileReference', lastKnownFileType=kind, path=rel, sourceTree='SOURCE_ROOT')
-    app_children.append(ref)
-    resources.append(obj('build-' + rel, 'PBXBuildFile', fileRef=ref))
-app_children.append(obj('info', 'PBXFileReference', lastKnownFileType='text.plist.xml', path='Clearspace/Info.plist', sourceTree='SOURCE_ROOT'))
-app_group = obj('app-group', 'PBXGroup', name='Clearspace', children=app_children, sourceTree='<group>')
-tests_group = obj('tests-group', 'PBXGroup', name='ClearspaceTests', children=test_children, sourceTree='<group>')
+        if path.suffix == '.swift': builds.append(obj('build-' + rel, 'PBXBuildFile', fileRef=ref))
+        if path.suffix in ('.xcassets', '.xcprivacy'): resources.append(obj('build-' + rel, 'PBXBuildFile', fileRef=ref))
+    return obj('group-' + folder, 'PBXGroup', path=Path(folder).name, children=children, sourceTree='<group>')
+
+app_group = folder_group('Clearspace', source_builds)
+tests_group = folder_group('ClearspaceTests', test_builds)
 products = obj('products', 'PBXGroup', name='Products', children=[app_product, test_product], sourceTree='<group>')
 root_group = obj('root-group', 'PBXGroup', children=[app_group, tests_group, products], sourceTree='<group>')
 def phase(key, isa, files): return obj(key, isa, buildActionMask=2147483647, files=files, runOnlyForDeploymentPostprocessing=0)
@@ -47,11 +54,11 @@ app_phases = [phase('app-sources','PBXSourcesBuildPhase',source_builds), phase('
 test_phases = [phase('test-sources','PBXSourcesBuildPhase',test_builds), phase('test-frameworks','PBXFrameworksBuildPhase',[]), phase('test-resources','PBXResourcesBuildPhase',[])]
 common = dict(SWIFT_VERSION='5.0', IPHONEOS_DEPLOYMENT_TARGET='17.0', SDKROOT='iphoneos',
               TARGETED_DEVICE_FAMILY='1', CODE_SIGN_STYLE='Automatic', CURRENT_PROJECT_VERSION='1',
-              MARKETING_VERSION='0.1.0', SUPPORTED_PLATFORMS='iphoneos iphonesimulator',
+              MARKETING_VERSION='0.2.0', SUPPORTED_PLATFORMS='iphoneos iphonesimulator',
               SUPPORTS_MACCATALYST='NO', SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD='NO',
               CLANG_ENABLE_MODULES='YES')
 app_settings = dict(common, PRODUCT_BUNDLE_IDENTIFIER='com.anshumannitnaware.Clearspace', PRODUCT_NAME='$(TARGET_NAME)',
-                    GENERATE_INFOPLIST_FILE='NO', INFOPLIST_FILE='Clearspace/Info.plist',
+                    GENERATE_INFOPLIST_FILE='NO', INFOPLIST_FILE='Clearspace/Resources/Info.plist',
                     ASSETCATALOG_COMPILER_APPICON_NAME='AppIcon', ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME='AccentColor',
                     LD_RUNPATH_SEARCH_PATHS=['$(inherited)', '@executable_path/Frameworks'])
 app_target = obj('app-target', 'PBXNativeTarget', name='Clearspace', productName='Clearspace',

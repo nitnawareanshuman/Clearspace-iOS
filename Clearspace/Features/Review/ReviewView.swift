@@ -39,12 +39,14 @@ struct ReviewView: View {
                         ForEach(draft.items) { item in
                             Button { preview = item } label: {
                                 VStack(alignment: .leading, spacing: 8) {
-                                    PhotoThumbnail(item: item).frame(height: 160).clipShape(RoundedRectangle(cornerRadius: 14))
+                                    PhotoThumbnail(item: item).frame(height: 160)
+                                        .overlay { if item.video { Image(systemName: "play.circle.fill").font(.largeTitle).foregroundStyle(.white) } }
+                                        .clipShape(RoundedRectangle(cornerRadius: 14))
                                     Text(item.created?.formatted(date: .abbreviated, time: .shortened) ?? "Date unavailable")
                                         .font(.caption)
                                     Text(ByteSummary([item]).label).font(.caption).foregroundStyle(.secondary)
                                 }
-                            }.buttonStyle(.plain).accessibilityLabel("Preview selected photo")
+                            }.buttonStyle(.plain).accessibilityLabel(item.video ? "Play selected video" : "Preview selected photo")
                         }
                     }
                 }.padding(20)

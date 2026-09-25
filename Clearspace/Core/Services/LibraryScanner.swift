@@ -79,7 +79,7 @@ actor LibraryScanner {
             }
             if index % 5 == 0 || index == assets.count - 1 {
                 await progress("Scanning photos · \(index + 1) of \(assets.count)",
-                    0.7 * Double(index + 1) / Double(max(1, assets.count)))
+                    0.5 * Double(index + 1) / Double(max(1, assets.count)))
             }
         }
         try Task.checkCancellation()
@@ -95,7 +95,7 @@ actor LibraryScanner {
                 catch { unmeasured += 1 }
             } else { unmeasured += 1 }
             await progress("Measuring candidates · \(index + 1) of \(sizeIDs.count)",
-                0.7 + 0.3 * Double(index + 1) / Double(max(1, sizeIDs.count)))
+                0.5 + 0.2 * Double(index + 1) / Double(max(1, sizeIDs.count)))
         }
         try Task.checkCancellation()
         let groups = groupIndices.map { index -> PhotoGroup in
@@ -103,8 +103,24 @@ actor LibraryScanner {
             return PhotoGroup(id: buckets[index][0], items: photos,
                 keeperID: SelectionPolicy.keeper(in: photos), visuallyIdentical: allIdentical[index])
         }
+        let videoAssets = PHAsset.fetchAssets(with: .video, options: options)
+        var videos: [PhotoItem] = []
+        for index in 0..<videoAssets.count {
+            try Task.checkCancellation()
+            let asset = videoAssets.object(at: index)
+            var item = PhotoItem(id: asset.localIdentifier, created: asset.creationDate,
+                modified: asset.modificationDate, width: asset.pixelWidth, height: asset.pixelHeight,
+                favorite: asset.isFavorite, screenshot: false, video: true, duration: asset.duration)
+            do { item.bytes = try await PhotoRequests.bytes(for: asset) }
+            catch is CancellationError { throw CancellationError() }
+            catch { unmeasured += 1 }
+            videos.append(item)
+            await progress("Measuring videos · \(index + 1) of \(videoAssets.count)",
+                0.7 + 0.3 * Double(index + 1) / Double(max(1, videoAssets.count)))
+        }
+        try Task.checkCancellation()
         return ScanResult(groups: groups.reversed(),
-            screenshots: screenshotIDs.reversed().compactMap { items[$0] }, scanned: assets.count,
+            screenshots: screenshotIDs.reversed().compactMap { items[$0] }, videos: VideoPolicy.sorted(videos), scanned: assets.count + videoAssets.count,
             unavailable: unavailable, unmeasured: unmeasured, seconds: Date().timeIntervalSince(start))
     }
 

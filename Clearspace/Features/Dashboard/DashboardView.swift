@@ -3,18 +3,20 @@ import Photos
 
 struct DashboardView: View {
     @EnvironmentObject private var store: CleanerStore
+    @EnvironmentObject private var contacts: ContactsStore
     @Environment(\.openURL) private var openURL
     @State private var showLimitedPicker = false
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
-                    HStack(spacing: 12) {
-                        BrandMark()
-                        VStack(alignment: .leading, spacing: 3) {
-                            Text("Clearspace").font(.title2.bold())
+                    HStack {
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text("Clearspace").font(.system(.largeTitle, design: .rounded, weight: .bold))
                             Text("Room for what matters.").font(.subheadline).foregroundStyle(.secondary)
                         }
+                        Spacer()
+                        PipMascot(working: store.scanning).frame(width: 86, height: 92)
                     }
                     storageCard
                     permissionCard
@@ -34,28 +36,30 @@ struct DashboardView: View {
                                 category("Screenshots", subtitle: "\(result.screenshots.count) screenshots to review",
                                     icon: "viewfinder", summary: ByteSummary(result.screenshots).label, color: .indigo)
                             }.buttonStyle(.plain)
+                            NavigationLink { VideoCollectionView() } label: {
+                                category("Large videos", subtitle: "\(result.videos.count) videos · largest first",
+                                    icon: "play.rectangle.fill", summary: ByteSummary(result.videos).label, color: .purple)
+                            }.buttonStyle(.plain)
                             Surface {
                                 VStack(alignment: .leading, spacing: 8) {
                                     Label("About these estimates", systemImage: "info.circle").font(.subheadline.bold())
-                                    Text("Sizes count available photo resources, not guaranteed free device space. Similar-photo estimates exclude recommended keeps and favorites. Screenshot totals include all screenshots; choose what you no longer need.")
+                                    Text("Sizes count available photo and video resources, not guaranteed free device space. Similar-photo estimates exclude recommended keeps and favorites. Screenshot totals include all screenshots; choose what you no longer need.")
                                     if result.unavailable > 0 {
                                         Text("\(result.unavailable) photos could not be analyzed locally. Cloud-only items are not downloaded.")
                                     }
                                     if result.unmeasured > 0 {
-                                        Text("\(result.unmeasured) candidate sizes are unavailable and excluded from byte totals.")
+                                        Text("\(result.unmeasured) media sizes are unavailable and excluded from byte totals.")
                                     }
                                 }.font(.footnote).foregroundStyle(.secondary)
                             }
                         }
-                        Surface {
-                            VStack(alignment: .leading, spacing: 10) {
-                                Text("Coming in the next milestone").font(.subheadline.bold())
-                                Label("Large videos", systemImage: "video")
-                                Label("Duplicate contacts", systemImage: "person.2")
-                                Text("These categories are not scanned yet.").font(.caption).foregroundStyle(.secondary)
-                            }
-                        }
                     }
+                    NavigationLink { ContactsView() } label: {
+                        category("Duplicate contacts", subtitle: contacts.scanned ? "\(contacts.groups.count) groups to compare" : "Find repeated names, numbers and emails",
+                            icon: "person.crop.rectangle.stack", summary: contacts.scanned ? "Up to \(contacts.duplicateCount) extra cards" : "Scan separately", color: .orange)
+                    }.buttonStyle(.plain)
+                    Text("Contact sizes are unavailable. Review duplicates to tidy your address book.")
+                        .font(.caption).foregroundStyle(.secondary)
                     Label("Private by design. Processed on your iPhone.", systemImage: "lock.shield")
                         .font(.caption).foregroundStyle(.secondary).frame(maxWidth: .infinity)
                 }.padding(20)
@@ -77,11 +81,11 @@ struct DashboardView: View {
     private var storageCard: some View {
         Surface {
             VStack(alignment: .leading, spacing: 18) {
-                Text("A LITTLE BREATHING ROOM").font(.caption.weight(.semibold)).tracking(1.5).foregroundStyle(.teal)
+                Text("YOUR IPHONE").font(.caption.weight(.semibold)).tracking(1.5).foregroundStyle(.teal)
                 if let storage = store.storage {
                     Text(ByteCountFormatter.string(fromByteCount: storage.free, countStyle: .file))
                         .font(.system(size: 44, weight: .bold, design: .rounded)).minimumScaleFactor(0.6).lineLimit(1)
-                    Text("free on your iPhone").foregroundStyle(.secondary)
+                    Text("free for your next favorite moment").foregroundStyle(.secondary)
                     ProgressView(value: storage.fraction).tint(.teal)
                         .accessibilityLabel("Device storage used").accessibilityValue("\(Int(storage.fraction * 100)) percent")
                     Text("\(ByteCountFormatter.string(fromByteCount: storage.used, countStyle: .file)) used of \(ByteCountFormatter.string(fromByteCount: storage.total, countStyle: .file))")
@@ -99,7 +103,7 @@ struct DashboardView: View {
             Surface {
                 VStack(alignment: .leading, spacing: 14) {
                     Label("Your photos, your choice", systemImage: "photo.badge.checkmark").font(.headline)
-                    Text("Allow Photos access to find similar shots and screenshots. Everything is analyzed on this iPhone. You review each selection before iOS asks you to confirm deletion.")
+                    Text("Allow Photos access to find similar shots, screenshots and large videos. Everything is analyzed on this iPhone. You review each selection before iOS asks you to confirm deletion.")
                         .font(.subheadline).foregroundStyle(.secondary)
                     if store.authorization == .notDetermined {
                         Button("Choose Photos access") { Task { await store.requestAccess() } }
@@ -116,7 +120,7 @@ struct DashboardView: View {
             Surface {
                 VStack(alignment: .leading, spacing: 10) {
                     Label("Limited Photos access", systemImage: "photo.on.rectangle.angled").font(.headline)
-                    Text("Only the photos you allow will be scanned. Device storage still covers the whole iPhone.")
+                    Text("Only the photos and videos you allow will be scanned. Device storage still covers the whole iPhone.")
                         .font(.footnote).foregroundStyle(.secondary)
                     Button("Manage selected photos") { showLimitedPicker = true }.disabled(store.busy)
                 }
@@ -127,9 +131,10 @@ struct DashboardView: View {
         Surface {
             VStack(alignment: .leading, spacing: 12) {
                 HStack {
-                    Text(store.scanning ? "Finding room…" : "A fresh start").font(.title3.bold())
+                    Text(store.scanning ? "Pip is finding room…" : "Let’s make some room").font(.title3.bold())
                     Spacer()
-                    Image(systemName: "sparkle.magnifyingglass").foregroundStyle(.teal)
+                    if store.scanning { PipMascot(working: true).frame(width: 60, height: 64) }
+                    else { Image(systemName: "sparkle.magnifyingglass").foregroundStyle(.teal) }
                 }
                 Text(store.phase).font(.subheadline).foregroundStyle(.secondary)
                 if store.scanning {
@@ -137,11 +142,11 @@ struct DashboardView: View {
                     Button("Cancel scan", role: .cancel) { store.cancelScan() }
                 } else {
                     if let result = store.result {
-                        Text("\(result.scanned) photos checked in \(result.seconds, specifier: "%.1f") seconds")
+                        Text("\(result.scanned) media items checked in \(result.seconds, specifier: "%.1f") seconds")
                             .font(.caption).foregroundStyle(.secondary)
                     }
                     Button { store.startScan() } label: {
-                        Label(store.result == nil ? "Scan my photos" : "Scan again", systemImage: "arrow.clockwise")
+                        Label(store.result == nil ? "Scan photos & videos" : "Scan again", systemImage: "arrow.clockwise")
                             .frame(maxWidth: .infinity).padding(.vertical, 5)
                     }.buttonStyle(.borderedProminent).disabled(store.deleting)
                     Text("Keep Clearspace open while scanning. Hidden photos are excluded.").font(.caption).foregroundStyle(.secondary)
@@ -157,7 +162,7 @@ struct DashboardView: View {
                 VStack(alignment: .leading, spacing: 5) {
                     Text(title).font(.headline)
                     Text(subtitle).font(.caption).foregroundStyle(.secondary)
-                    Text(summary + " to review").font(.subheadline.bold()).foregroundStyle(color)
+                    Text(summary).font(.subheadline.bold()).foregroundStyle(color)
                 }
                 Spacer(minLength: 0)
                 Image(systemName: "chevron.right").font(.caption.bold()).foregroundStyle(.secondary)

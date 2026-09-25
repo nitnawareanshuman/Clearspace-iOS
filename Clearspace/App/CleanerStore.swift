@@ -101,7 +101,7 @@ final class CleanerStore: NSObject, ObservableObject, PHPhotoLibraryChangeObserv
         guard !busy, hasAccess else { throw CleanerError.noAccess }
         guard draft.epoch == epoch, !draft.items.isEmpty, let result else { throw CleanerError.staleReview }
         let ids = Set(draft.items.map(\.id))
-        let knownIDs = Set((result.groups.flatMap(\.items) + result.screenshots).map(\.id))
+        let knownIDs = Set((result.groups.flatMap(\.items) + result.screenshots + result.videos).map(\.id))
         guard ids.isSubset(of: knownIDs), SelectionPolicy.allows(ids, groups: result.groups) else {
             throw CleanerError.staleReview
         }

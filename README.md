@@ -1,63 +1,53 @@
 # Clearspace
 
-An iPhone storage cleaner built with SwiftUI, PhotoKit, and Vision. Everything is free and processed on the device. iOS 17+; iPhone only.
+A private, on-device iPhone storage cleaner built with SwiftUI, PhotoKit, Vision and Contacts. iOS 17+, iPhone only. No third-party dependencies. Nothing is deleted without review and explicit approval.
 
-**Milestone 1: source implementation of storage dashboard, similar photos, and screenshots, with Photos permissions and safe review/delete.** This is not yet a submission-ready release: Xcode compilation, simulator tests, and real-iPhone validation are still required. See [PROGRESS.md](PROGRESS.md) for the exact status.
+## Run on your Mac
 
-## Open on your Mac
+1. Open `Clearspace.xcodeproj` in **Xcode 16 or later**. The iOS 18 SDK is required to compile limited Contacts support; deployment remains iOS 17.
+2. Select Clearspace → Signing & Capabilities → your development team. Adjust the bundle identifier if necessary.
+3. Select an iPhone or simulator and Run. Tap **Make some room** on the welcome screen.
+4. Choose Photos access when scanning; Contacts access is requested separately inside Duplicate contacts.
+5. Run **Product → Test** (⌘U). Before submission, test on a real iPhone with disposable media and contacts.
 
-1. Download or clone this repository.
-2. Open `Clearspace.xcodeproj` in Xcode 15 or newer. No CocoaPods, packages, API keys, or project-generation tools are required.
-3. Select the **Clearspace** scheme and an iPhone simulator, then press **⌘R**.
-4. For a real iPhone: select the Clearspace target → Signing & Capabilities → choose your development team. Change the bundle identifier if Xcode requires a unique one. Connect and select your iPhone, enable Developer Mode if requested, and run.
-5. Press **⌘U** for the included safety-rule unit tests. See [docs/TESTING.md](docs/TESTING.md) for the manual device tests.
+## Features
 
-The checked-in Xcode project is ready to open; `scripts/generate_project.py` is only needed after adding new Swift files outside Xcode or to regenerate the project. It uses Python's standard library.
+- Used/free device storage and cleanup candidate resource totals.
+- Similar-photo groups, recommended keeps and safe multi-selection.
+- Screenshots with selection and preview.
+- Videos ordered by size, local playback, selection and review. All accessible videos are included; unknown sizes appear last.
+- Possible duplicate contacts based on shared full names, phones or emails. Compare individual cards and delete selected copies while keeping at least one per group.
+- Final review of selected media/contact cards, kept contacts and explicit destructive confirmation.
+- Independent Photos/Contacts permissions, including denied, restricted and limited states.
 
-## Try the core loop
+**Pip** is an original animated SwiftUI mascot on the welcome/splash screen, dashboard and loading states. It stays crisp at every size, requires no plugin or download, and respects Reduce Motion.
 
-1. On first launch, read the permission explanation and choose Photos access.
-2. Choose full access or limited access to a disposable test album. Scan while the app is in the foreground.
-3. Open **Similar photos**. Preview groups, see the recommended keep, then explicitly select suggestions or individual photos. At least one photo must remain in each group.
-4. Open **Screenshots**. Select individual screenshots or select all, and inspect previews.
-5. Tap **Review selection**. Check every item and size, then tap Delete and confirm. iOS asks for its own deletion approval. Cancelling either prompt preserves the library.
-6. After success, scan again to refresh categories. Items remain in Photos' Recently Deleted; the app does not claim that device storage has increased immediately.
+## Important behavior
 
-## What's included
+Sizes are logical media resource bytes, not guaranteed recovered device space. Photos uses Recently Deleted and iCloud Photos may synchronize deletion. Clearspace does not empty Recently Deleted.
 
-- Real device used/free storage; explicit failure state.
-- Locally available photo scan, progress, cancellation, and elapsed time.
-- Global matching of normalized previews and conservative nearby-shot similarity suggestions.
-- Favorite/resolution/recency based recommended keep; manual override while retaining one group member.
-- Screenshot discovery, bulk selection, and expanded previews.
-- On-device logical resource-byte counting, unknown-size reporting, and no fabricated storage numbers.
-- Permission rationale, denied/restricted states, limited-library management, and invalidation after Photos changes.
-- Final immutable review, stale-data validation, native deletion confirmation, and cancellation/error handling.
-- Original name, stacked-card app icon, teal UI, semantic colors, dark appearance support, and accessibility labels.
-- Xcode project, shared scheme, XCTest source, CI configuration, and progress documentation.
+Contacts implement the brief's **delete** alternative, not merging. Shared details are suggestions only; no cards are preselected. Deletion removes the entire selected card, including notes/fields not displayed, and does not copy details to kept contacts. The app provides the final confirmation because Contacts has no second system prompt. There is no app-level undo. Contact sizes are unavailable and never fabricated.
 
-Large videos, duplicate contacts, and Contacts permissions belong to the next milestone. The dashboard labels those categories as unimplemented. All bonuses, paywalls, accounts, cloud sync, and other-app cache cleaning are excluded.
+All content stays on-device. Cloud-only media is not downloaded and may lack a preview/size. Public resource streaming avoids private APIs but can be slow for large videos. Timeouts remain unknown sizes. Similarity is heuristic; inspect each suggestion.
 
-## Design decisions and limits
+## Structure
 
-Read [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) before changing scan or deletion code. Read [docs/DECISIONS.md](docs/DECISIONS.md) for evaluation tradeoffs and Apple API references.
-
-Similarity is a **review suggestion**, not proof of byte-identical files. The current threshold needs testing against real photos. Near-similarity comparisons are bounded to 24 recent anchors within 60 seconds; visually matching previews can match globally. Cloud-only resources are not downloaded and can be skipped or have unknown sizes. Resource sizes do not equal immediately reclaimable device storage.
-
-## Continue this project with ChatGPT
-
-Share the repository URL and say:
-
-> Read PROGRESS.md and docs/ARCHITECTURE.md. Implement the next pending milestone. Update the status and verification evidence, and keep deletion safeguards intact.
-
-Update `PROGRESS.md` after every milestone. Use the feature-task issue template for new work. Never mark an item device-verified without an actual iPhone test result.
-
-## GitHub setup if this download is not yet connected
-
-From this project folder, with GitHub CLI installed and signed in:
-
-```bash
-bash scripts/create_github_repo.sh
+```
+Clearspace/
+  App/                 App entry and observable stores
+  Core/Models/         Models and pure safety/matching rules
+  Core/Services/       PhotoKit, Vision and Contacts work
+  DesignSystem/        Shared cards, thumbnails and Pip mascot
+  Features/Launch/     Splash/welcome view
+  Features/Dashboard/ Storage and category overview
+  Features/Photos/    Similar photos and screenshots
+  Features/Videos/    Ordered videos and playback
+  Features/Contacts/  Permission, selection and contact review
+  Features/Review/    Final media deletion review
+  Resources/           Assets, Info.plist and privacy manifest
+ClearspaceTests/       Selection, contact matching and video sorting tests
 ```
 
-This creates **a private `Clearspace-iOS` repository in your authenticated account** and pushes the project. It never force-pushes or changes visibility. If that repository already exists, it stops so you can confirm the intended destination. Share the code with the evaluator when ready; private repositories require collaborator access.
+Xcode groups mirror these folders. After adding files, run `python3 scripts/generate_project.py`; no XcodeGen installation is needed. The shared scheme and existing GitHub Actions workflow build/test without signing.
+
+See [PROGRESS.md](PROGRESS.md), [testing](docs/TESTING.md) and [validation evidence](docs/VALIDATION.md). Simulator success does not replace the assignment's real-iPhone walkthrough.

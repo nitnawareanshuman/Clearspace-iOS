@@ -56,6 +56,14 @@ struct PhotoThumbnail: View {
 
 struct PhotoPreview: View {
     let item: PhotoItem
+    var body: some View {
+        if item.video { VideoPreview(item: item) }
+        else { StillPhotoPreview(item: item) }
+    }
+}
+
+struct StillPhotoPreview: View {
+    let item: PhotoItem
     @Environment(\.dismiss) private var dismiss
     var body: some View {
         NavigationStack {

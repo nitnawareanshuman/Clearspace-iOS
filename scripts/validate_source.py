@@ -37,7 +37,7 @@ for value in objects.values():
     for field in ('buildPhases','buildConfigurations','targets','children','dependencies'):
         for ref in value.get(field,[]): assert ref in objects, (field,ref)
 print(f'PASS: {len(objects)} Xcode objects and all Swift source references')
-for path in [root/'Clearspace/Info.plist', root/'Clearspace/PrivacyInfo.xcprivacy']:
+for path in [root/'Clearspace/Resources/Info.plist', root/'Clearspace/Resources/PrivacyInfo.xcprivacy']:
     plistlib.loads(path.read_bytes())
 for path in root.rglob('*.json'): json.loads(path.read_text())
 ET.parse(root/'Clearspace.xcodeproj/xcshareddata/xcschemes/Clearspace.xcscheme')
@@ -47,5 +47,8 @@ assert all_source.count('PHAssetChangeRequest.deleteAssets(') == 1
 assert 'isNetworkAccessAllowed = true' not in all_source
 assert 'URLSession' not in all_source
 assert 'value(forKey:' not in all_source
+assert all_source.count('request.delete(mutable)') == 1
+assert all_source.count('try database.execute(request)') == 1
+assert 'NSContactsUsageDescription' in (root/'Clearspace/Resources/Info.plist').read_text()
 print('PASS: single deletion site, no enabled downloads / URLSession / private file-size lookup')
 print('NOT RUN: Apple SDK type-check, Xcode build, XCTest, UI tests, real iPhone tests')
