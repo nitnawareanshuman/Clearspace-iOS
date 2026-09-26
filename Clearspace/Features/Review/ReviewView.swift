@@ -16,7 +16,7 @@ struct ReviewView: View {
                     Surface {
                         VStack(alignment: .leading, spacing: 12) {
                             Label("One last look", systemImage: "hand.raised.fill").font(.title2.bold())
-                            Text("\(draft.items.count) items · \(ByteSummary(draft.items).label)").font(.headline)
+                            Text("\(draft.items.count) items · estimated savings: \(ByteSummary(draft.items).label)").font(.headline)
                             Text("Only the items shown below will be requested for deletion. Cancel to change your selection.")
                             Text("Photos moves deleted items to Recently Deleted for up to 30 days. Space may not be freed immediately. With iCloud Photos enabled, deletion syncs to your other devices.")
                                 .font(.footnote).foregroundStyle(.secondary)
@@ -47,6 +47,21 @@ struct ReviewView: View {
                                     Text(ByteSummary([item]).label).font(.caption).foregroundStyle(.secondary)
                                 }
                             }.buttonStyle(.plain).accessibilityLabel(item.video ? "Play selected video" : "Preview selected photo")
+                        }
+                    }
+                    if !draft.kept.isEmpty {
+                        Text("WILL BE KEPT").font(.caption.bold()).foregroundStyle(.teal)
+                        LazyVGrid(columns: [GridItem(.adaptive(minimum: 140))], spacing: 14) {
+                            ForEach(draft.kept) { item in
+                                Button { preview = item } label: {
+                                    PhotoThumbnail(item: item).frame(height: 160)
+                                        .clipShape(RoundedRectangle(cornerRadius: 14))
+                                        .overlay(alignment: .bottom) {
+                                            Label("Keep", systemImage: "checkmark.shield.fill")
+                                                .padding(6).background(.regularMaterial, in: Capsule()).padding(6)
+                                        }
+                                }.buttonStyle(.plain).accessibilityLabel("Preview photo that will be kept")
+                            }
                         }
                     }
                 }.padding(20)

@@ -34,6 +34,10 @@ final class ContactsStore: ObservableObject {
     func refreshAccess() {
         let current = CNContactStore.authorizationStatus(for: .contacts)
         if current != authorization { authorization = current; invalidate() }
+        else if limited && !busy && scanned {
+            // Returning from Settings can change allowed IDs without changing the status.
+            invalidate()
+        }
     }
     func requestAccess() async {
         do {

@@ -11,6 +11,7 @@ struct PhotoItem: Identifiable {
     var video = false
     var duration: TimeInterval = 0
     var bytes: Int64?
+    var canDelete = true
     var pixels: Int64 { Int64(width) * Int64(height) }
 }
 
@@ -19,15 +20,16 @@ struct PhotoGroup: Identifiable {
     var items: [PhotoItem]
     let keeperID: String
     let visuallyIdentical: Bool
-    var suggested: [PhotoItem] { items.filter { $0.id != keeperID && !$0.favorite } }
+    var suggested: [PhotoItem] { items.filter { $0.id != keeperID && !$0.favorite && $0.canDelete } }
 }
 
 struct ByteSummary {
     let known: Int64
     let unknown: Int
     init(_ items: [PhotoItem]) {
-        known = items.compactMap(\.bytes).reduce(0, +)
-        unknown = items.filter { $0.bytes == nil }.count
+        let unique = SelectionPolicy.unique(items)
+        known = unique.compactMap(\.bytes).reduce(0, +)
+        unknown = unique.filter { $0.bytes == nil }.count
     }
     var label: String {
         if unknown > 0 && known == 0 { return "Size unavailable" }
@@ -45,6 +47,11 @@ struct ScanResult {
     var unmeasured = 0
     var seconds: Double = 0
     var suggestions: [PhotoItem] { groups.flatMap(\.suggested) }
+    var screenshotCandidates: [PhotoItem] { SelectionPolicy.safeSelection(screenshots, groups: groups) }
+    var videoCandidates: [PhotoItem] { videos.filter(\.canDelete) }
+    var cleanupCandidates: [PhotoItem] {
+        SelectionPolicy.safeSelection(suggestions + screenshotCandidates + videoCandidates, groups: groups)
+    }
 }
 
 struct StorageSnapshot {
@@ -66,6 +73,7 @@ struct ReviewDraft: Identifiable {
     let id = UUID()
     let epoch: Int
     let items: [PhotoItem]
+    let kept: [PhotoItem]
 }
 
 enum CleanerError: LocalizedError {
@@ -83,6 +91,23 @@ enum CleanerError: LocalizedError {
 
 /// Pure rules shared by the scanner and tests. A suggestion is never a deletion decision.
 enum SelectionPolicy {
+    /// Bulk actions obey the same keep-one rule as individual taps, even across categories.
+    static func safeSelection(_ items: [PhotoItem], groups: [PhotoGroup]) -> [PhotoItem] {
+        let candidates = unique(items).filter(\.canDelete)
+        var ids = Set(candidates.map(\.id))
+        for group in groups where !group.items.isEmpty && group.items.allSatisfy({ ids.contains($0.id) }) {
+            ids.remove(group.keeperID)
+        }
+        return candidates.filter { ids.contains($0.id) }
+    }
+
+    static func unchanged(_ snapshot: PhotoItem, current: PhotoItem) -> Bool {
+        snapshot.id == current.id && snapshot.modified == current.modified
+            && snapshot.favorite == current.favorite && snapshot.width == current.width
+            && snapshot.height == current.height && snapshot.video == current.video
+            && snapshot.screenshot == current.screenshot && snapshot.duration == current.duration
+    }
+
     static func keeper(in items: [PhotoItem]) -> String {
         items.sorted {
             if $0.favorite != $1.favorite { return $0.favorite }
