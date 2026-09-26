@@ -1,67 +1,56 @@
-# Validation on your Mac and iPhone
+# Acceptance tests
 
-## First build
+Use disposable media/contacts. Record device, OS, library size, timing and failures. Unchecked steps are not claimed as passed.
 
-Open `Clearspace.xcodeproj`, select the Clearspace scheme and an installed iPhone simulator, then use Product → Build (⌘B) and Product → Test (⌘U). For command-line builds:
+## Build
 
-```bash
-xcodebuild -project Clearspace.xcodeproj -scheme Clearspace -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build
-xcrun simctl list devices available
-# Replace the destination below with one actually installed on your Mac.
-xcodebuild -project Clearspace.xcodeproj -scheme Clearspace -destination 'platform=iOS Simulator,id=YOUR_SIMULATOR_UDID' CODE_SIGNING_ALLOWED=NO test
-```
+- [ ] Xcode 16+ simulator build and all 16 XCTest tests pass.
+- [ ] Navigator folders match disk and have no red references.
+- [ ] Regenerating the project produces no diff.
 
-A GitHub Actions workflow runs the simulator build and rule tests on a macOS runner. It cannot replace physical-device tests.
+## Permissions/lifecycle
 
-## Safe fixture set
+- [ ] No permission prompt until its button is tapped.
+- [ ] Photos full/limited/denied/restricted; manage selection; revoke or change access in Settings and return.
+- [ ] Contacts full/denied/restricted; iOS 18+ limited access and changing shared contacts in Settings; iOS 17 still works.
+- [ ] Either category works when the other permission is denied.
+- [ ] Cancel or background a scan, then restart; no stale progress/results.
 
-Use only disposable, non-private photos. Before deleting anything, confirm you have a copy outside the test library.
+## Photos/screenshots
 
-- 3 duplicated copies of one photo.
-- 3 near-identical photos taken within a minute, including one favorite.
-- 2 visually different photos taken close together (negative pair).
-- 2 same-scene photos with materially different people/expressions (false-positive check).
-- A higher-resolution and a lower-resolution variant.
-- 5 screenshots, including one favorite.
-- A Live Photo and an edited photo.
-- At least one cloud-only original where available.
+- [ ] Identical pair, near-identical burst and unrelated photos group sensibly; favorites are recommended keeps.
+- [ ] Select suggestions excludes favorites. Cannot select every photo in a group, but can change the keeper.
+- [ ] Screenshots support Select all/Clear and full preview.
+- [ ] Hidden media excluded; unavailable cloud-only media disclosed.
 
-You can drag non-private images into Simulator Photos to exercise the UI. Screenshot detection requires assets with the screenshot subtype; import provenance may not preserve it. Verify screenshots on a physical iPhone. Do not use a fake screenshot flag in release code.
+## Videos
 
-## Required manual checks
+- [ ] Local videos of different sizes/durations ordered largest first; unknown last.
+- [ ] Preview plays, pauses, scrubs and stops on dismissal, including from final review.
+- [ ] Cloud-only playback gives an error without downloading.
+- [ ] Select non-favorites excludes favorites; manual favorite selection is disclosed in review.
+- [ ] Large/edited videos do not freeze UI or inflate memory; timed-out sizes are unknown. Measure scan duration.
 
-| Case | Expected result |
-|---|---|
-| Fresh install | In-app reason appears before system Photos prompt |
-| Deny access | Useful explanation and Settings action; storage dashboard still works |
-| Restricted access | Restriction message, no repeated request loop |
-| Limited access | Only allowed photos; visible limited banner and manage control |
-| Modify limited selection | Previous scan/review invalidated; next scan reflects access |
-| Empty library / no matches | Clear empty state, no deletion action |
-| Matching/near photos | Groups contain plausible candidates; inspect false positives and misses |
-| Favorite with lower resolution | Favorite recommended over larger non-favorite |
-| Select suggestions | Keeper and all favorites remain unselected |
-| Manually choose another keeper | Allowed if at least one group member stays unselected |
-| Select last unselected group member | Prevented with explanation |
-| Screenshots select all / clear | Counts correct; final review exactly matches selection |
-| Favorite selected manually | Review warns that favorites are included |
-| Cloud-only / load timeout | Unknown size or unavailable preview; scan stays responsive; no downloads |
-| Cancel scan / background app | Scan ends safely; no incomplete success result |
-| Edit/delete photo externally during scan or review | Stale result/review rejected; rescan required |
-| Cancel app confirmation | No Photos transaction and no deletion |
-| Cancel native Photos dialog | Error/cancellation shown, no false success, items remain |
-| Approve deletion on disposable fixtures | Only reviewed IDs removed; keeper survives; categories invalidated |
-| Recently Deleted | App explains delayed space reclamation; no inflated "freed" claim |
-| iCloud Photos enabled | Confirm warning is visible before approving deletion |
-| Light/dark, landscape, small iPhone, largest text | No clipped primary actions; views scroll |
-| VoiceOver | Selection state, favorite status, preview action, buttons understandable |
+## Contacts
 
-## Performance and accuracy record
+- [ ] Shared full names, formatted phone numbers and case-varied emails group; blank cards, short extensions and first-name-only matches do not.
+- [ ] Overlapping matches, linked cards and different providers display individual records correctly.
+- [ ] No auto-selection; prevent selecting every record in a group. Review shows removed and kept cards.
+- [ ] Phones/emails/company/job/address/URL/birthday readable; warning explains whole-card deletion including hidden fields.
+- [ ] Cancel both stages: no changes. Confirm disposable copies: kept contacts unchanged.
+- [ ] Test read-only accounts and revoked access: report errors, rescan, no false success.
+- [ ] Edit/delete contact externally during review: stale review blocked.
 
-Run on 1k then 10k+ accessible photos if available. Record device, iOS, total items, locally analyzed items, unavailable count, candidate count, scan duration, sizing duration if profiled, and peak memory using Xcode Instruments. A result is not a performance pass without measurements.
+## Deletion
 
-For accuracy, hand-label at least 30 candidate pairs/groups and negative pairs. Report false positives and misses. Adjust the revision-2 threshold only with evidence; keep the three-signal gate and final review. Recheck edge cases after changing it.
+- [ ] Media review shows exact items, known/unknown totals and favorites warning.
+- [ ] Cancel app or iOS Photos confirmation: nothing deleted.
+- [ ] Confirm both: selected media enters Recently Deleted; kept media remains; rescan works.
+- [ ] External photo changes invalidate review. Actual storage measured separately; no immediate-recovery promise.
 
-## Submission gate
+## UI/device submission
 
-Do not call the build shippable until the Xcode build, XCTest, and real-device core loop pass. Complete videos and duplicate contacts before claiming the full brief. Record a 2–3 minute walkthrough on a real iPhone using non-private photos. Update `PROGRESS.md` and write the final <150-word note based on actual results.
+- [ ] Pip visible in welcome/dashboard/scans/playback loading; Reduce Motion stops floating.
+- [ ] Light/dark, largest Dynamic Type, VoiceOver, compact iPhone, landscape and long names usable.
+- [ ] Empty, denied, unavailable, stale and error states have a next action.
+- [ ] Complete on a real iPhone and record a 2–3 minute walkthrough without private content.

@@ -8,6 +8,8 @@ struct PhotoItem: Identifiable {
     let height: Int
     let favorite: Bool
     let screenshot: Bool
+    var video = false
+    var duration: TimeInterval = 0
     var bytes: Int64?
     var pixels: Int64 { Int64(width) * Int64(height) }
 }
@@ -37,6 +39,7 @@ struct ByteSummary {
 struct ScanResult {
     var groups: [PhotoGroup] = []
     var screenshots: [PhotoItem] = []
+    var videos: [PhotoItem] = []
     var scanned = 0
     var unavailable = 0
     var unmeasured = 0
@@ -97,5 +100,15 @@ enum SelectionPolicy {
     }
     static func isNear(aspectA: Double, aspectB: Double, hashA: UInt64, hashB: UInt64, distance: Float) -> Bool {
         abs(aspectA - aspectB) < 0.025 && (hashA ^ hashB).nonzeroBitCount <= 6 && distance <= 0.18
+    }
+}
+
+/// Known sizes sort descending; cloud-only or unreadable sizes stay visible at the end.
+enum VideoPolicy {
+    static func sorted(_ items: [PhotoItem]) -> [PhotoItem] {
+        items.sorted {
+            if $0.bytes != $1.bytes { return ($0.bytes ?? -1) > ($1.bytes ?? -1) }
+            return $0.id < $1.id
+        }
     }
 }

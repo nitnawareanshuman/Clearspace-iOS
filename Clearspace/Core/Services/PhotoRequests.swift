@@ -1,5 +1,6 @@
 import Photos
 import UIKit
+import AVFoundation
 
 /// PhotoKit may callback more than once, or after cancellation. Resolve exactly once.
 private final class RequestGate<Value>: @unchecked Sendable {
@@ -65,6 +66,25 @@ enum PhotoRequests {
                         else { gate.finish(.failure((info?[PHImageErrorKey] as? Error) ?? CleanerError.unavailable)) }
                     }
                 gate.configure { PHImageManager.default().cancelImageRequest(request) }
+            }
+        }, onCancel: { gate.finish(.failure(CancellationError())) })
+    }
+
+    static func playerItem(for asset: PHAsset) async throws -> AVPlayerItem {
+        let gate = RequestGate<AVPlayerItem>()
+        return try await withTaskCancellationHandler(operation: {
+            try Task.checkCancellation()
+            return try await withCheckedThrowingContinuation { continuation in
+                gate.attach(continuation)
+                let options = PHVideoRequestOptions()
+                options.isNetworkAccessAllowed = false
+                options.deliveryMode = .highQualityFormat
+                let manager = PHImageManager.default()
+                let request = manager.requestPlayerItem(forVideo: asset, options: options) { item, info in
+                    if let item { gate.finish(.success(item)) }
+                    else { gate.finish(.failure((info?[PHImageErrorKey] as? Error) ?? CleanerError.unavailable)) }
+                }
+                gate.configure { manager.cancelImageRequest(request) }
             }
         }, onCancel: { gate.finish(.failure(CancellationError())) })
     }

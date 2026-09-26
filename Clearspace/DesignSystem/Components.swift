@@ -11,15 +11,6 @@ struct Surface<Content: View>: View {
     }
 }
 
-struct BrandMark: View {
-    var body: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 15).fill(.teal.gradient)
-            Image(systemName: "square.stack.3d.up.fill").font(.title2).foregroundStyle(.white)
-        }.frame(width: 52, height: 52).accessibilityHidden(true)
-    }
-}
-
 struct PhotoThumbnail: View {
     let item: PhotoItem
     var large = false
@@ -55,6 +46,14 @@ struct PhotoThumbnail: View {
 }
 
 struct PhotoPreview: View {
+    let item: PhotoItem
+    var body: some View {
+        if item.video { VideoPreview(item: item) }
+        else { StillPhotoPreview(item: item) }
+    }
+}
+
+struct StillPhotoPreview: View {
     let item: PhotoItem
     @Environment(\.dismiss) private var dismiss
     var body: some View {
