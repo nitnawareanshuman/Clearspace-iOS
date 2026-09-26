@@ -10,10 +10,27 @@ actor LibraryScanner {
         let id: String
         let date: Date?
         let aspect: Double
+        let screenshot: Bool
         let digest: String
         let hash: UInt64
         let print: VNFeaturePrintObservation
     }
+    private struct CachedSize {
+        let snapshot: PhotoItem
+        let bytes: Int64
+    }
+    private var sizes: [String: CachedSize] = [:]
+
+    private func measure(_ asset: PHAsset) async throws -> Int64 {
+        let snapshot = PhotoItem(asset: asset)
+        if snapshot.modified != nil, let cached = sizes[snapshot.id],
+           SelectionPolicy.unchanged(cached.snapshot, current: snapshot) { return cached.bytes }
+        let bytes = try await PhotoRequests.bytes(for: asset)
+        try Task.checkCancellation()
+        sizes[snapshot.id] = CachedSize(snapshot: snapshot, bytes: bytes)
+        return bytes
+    }
+
     func scan(progress: @escaping @Sendable (String, Double) async -> Void) async throws -> ScanResult {
         let start = Date()
         let options = PHFetchOptions()
@@ -32,51 +49,47 @@ actor LibraryScanner {
         for index in 0..<assets.count {
             try Task.checkCancellation()
             let asset = assets.object(at: index)
-            let item = PhotoItem(id: asset.localIdentifier, created: asset.creationDate,
-                modified: asset.modificationDate, width: asset.pixelWidth, height: asset.pixelHeight,
-                favorite: asset.isFavorite, screenshot: asset.mediaSubtypes.contains(.photoScreenshot))
+            let item = PhotoItem(asset: asset)
             items[item.id] = item
             if item.screenshot { screenshotIDs.append(item.id) }
-            else {
-                do {
-                    let image = try await PhotoRequests.image(for: asset)
-                    let descriptor = try autoreleasepool { try describe(image, item: item) }
-                    // Identical normalized previews can match anywhere in the library.
-                    var matchID = digestToID[descriptor.digest]
-                    var identical = matchID != nil
-                    if matchID == nil, let date = descriptor.date {
-                        // Compare with group anchors, never a chain of progressively different shots.
-                        for candidate in anchors.reversed().prefix(24) {
-                            guard let otherDate = candidate.date,
-                                  abs(date.timeIntervalSince(otherDate)) <= 60,
-                                  abs(candidate.aspect - descriptor.aspect) < 0.025,
-                                  (candidate.hash ^ descriptor.hash).nonzeroBitCount <= 6 else { continue }
-                            var distance: Float = 1
-                            try descriptor.print.computeDistance(&distance, to: candidate.print)
-                            if SelectionPolicy.isNear(aspectA: descriptor.aspect, aspectB: candidate.aspect,
-                                hashA: descriptor.hash, hashB: candidate.hash, distance: distance) {
-                                matchID = candidate.id
-                                identical = false
-                                break
-                            }
+            do {
+                let image = try await PhotoRequests.image(for: asset)
+                let descriptor = try autoreleasepool { try describe(image, item: item) }
+                // Identical normalized previews can match anywhere in the library.
+                var matchID = digestToID[descriptor.digest]
+                var identical = matchID != nil
+                if matchID == nil, !item.screenshot, let date = descriptor.date {
+                    // Compare with group anchors, never a chain of progressively different shots.
+                    for candidate in anchors.reversed().prefix(24) {
+                        guard !candidate.screenshot, let otherDate = candidate.date,
+                              abs(date.timeIntervalSince(otherDate)) <= 60,
+                              abs(candidate.aspect - descriptor.aspect) < 0.025,
+                              (candidate.hash ^ descriptor.hash).nonzeroBitCount <= 6 else { continue }
+                        var distance: Float = 1
+                        try descriptor.print.computeDistance(&distance, to: candidate.print)
+                        if SelectionPolicy.isNear(aspectA: descriptor.aspect, aspectB: candidate.aspect,
+                            hashA: descriptor.hash, hashB: candidate.hash, distance: distance) {
+                            matchID = candidate.id
+                            identical = false
+                            break
                         }
                     }
-                    if let matchID, let bucket = bucketForID[matchID] {
-                        buckets[bucket].append(item.id)
-                        bucketForID[item.id] = bucket
-                        allIdentical[bucket] = allIdentical[bucket] && identical
-                    } else {
-                        bucketForID[item.id] = buckets.count
-                        buckets.append([item.id])
-                        allIdentical.append(true)
-                        anchors.append(descriptor)
-                        if anchors.count > 24 { anchors.removeFirst() }
-                    }
-                    // Retain only an ID per digest; feature prints stay in the bounded 24-anchor window.
-                    if digestToID[descriptor.digest] == nil { digestToID[descriptor.digest] = descriptor.id }
-                } catch is CancellationError { throw CancellationError() }
-                catch { unavailable += 1 }
-            }
+                }
+                if let matchID, let bucket = bucketForID[matchID] {
+                    buckets[bucket].append(item.id)
+                    bucketForID[item.id] = bucket
+                    allIdentical[bucket] = allIdentical[bucket] && identical
+                } else {
+                    bucketForID[item.id] = buckets.count
+                    buckets.append([item.id])
+                    allIdentical.append(true)
+                    anchors.append(descriptor)
+                    if anchors.count > 24 { anchors.removeFirst() }
+                }
+                // Retain only an ID per digest; feature prints stay in the bounded 24-anchor window.
+                if digestToID[descriptor.digest] == nil { digestToID[descriptor.digest] = descriptor.id }
+            } catch is CancellationError { throw CancellationError() }
+            catch { unavailable += 1 }
             if index % 5 == 0 || index == assets.count - 1 {
                 await progress("Scanning photos · \(index + 1) of \(assets.count)",
                     0.5 * Double(index + 1) / Double(max(1, assets.count)))
@@ -90,7 +103,7 @@ actor LibraryScanner {
         for (index, id) in sizeIDs.enumerated() {
             try Task.checkCancellation()
             if let asset = PHAsset.fetchAssets(withLocalIdentifiers: [id], options: nil).firstObject {
-                do { items[id]?.bytes = try await PhotoRequests.bytes(for: asset) }
+                do { items[id]?.bytes = try await measure(asset) }
                 catch is CancellationError { throw CancellationError() }
                 catch { unmeasured += 1 }
             } else { unmeasured += 1 }
@@ -108,10 +121,8 @@ actor LibraryScanner {
         for index in 0..<videoAssets.count {
             try Task.checkCancellation()
             let asset = videoAssets.object(at: index)
-            var item = PhotoItem(id: asset.localIdentifier, created: asset.creationDate,
-                modified: asset.modificationDate, width: asset.pixelWidth, height: asset.pixelHeight,
-                favorite: asset.isFavorite, screenshot: false, video: true, duration: asset.duration)
-            do { item.bytes = try await PhotoRequests.bytes(for: asset) }
+            var item = PhotoItem(asset: asset)
+            do { item.bytes = try await measure(asset) }
             catch is CancellationError { throw CancellationError() }
             catch { unmeasured += 1 }
             videos.append(item)
@@ -119,6 +130,8 @@ actor LibraryScanner {
                 0.7 + 0.3 * Double(index + 1) / Double(max(1, videoAssets.count)))
         }
         try Task.checkCancellation()
+        let accessible = Set(items.keys).union(videos.map(\.id))
+        sizes = sizes.filter { accessible.contains($0.key) }
         return ScanResult(groups: groups.reversed(),
             screenshots: screenshotIDs.reversed().compactMap { items[$0] }, videos: VideoPolicy.sorted(videos), scanned: assets.count + videoAssets.count,
             unavailable: unavailable, unmeasured: unmeasured, seconds: Date().timeIntervalSince(start))
@@ -143,7 +156,7 @@ actor LibraryScanner {
         guard rendered else { throw CleanerError.unavailable }
         // Include aspect ratio: stretching unlike aspect ratios must not create exact-preview groups.
         let digest = SHA256.hash(data: Data(pixels)).map { String(format: "%02x", $0) }.joined()
-            + ":\(item.width)x\(item.height)"
+            + ":\(item.width)x\(item.height):\(item.screenshot)"
         var gray = [UInt8](repeating: 0, count: 9 * 8)
         let grayRendered = gray.withUnsafeMutableBytes { bytes -> Bool in
             guard let context = CGContext(data: bytes.baseAddress, width: 9, height: 8,
@@ -160,6 +173,16 @@ actor LibraryScanner {
             }
         } }
         return Descriptor(id: item.id, date: item.created,
-            aspect: Double(item.width) / Double(max(1, item.height)), digest: digest, hash: hash, print: print)
+            aspect: Double(item.width) / Double(max(1, item.height)), screenshot: item.screenshot, digest: digest, hash: hash, print: print)
+    }
+}
+
+
+extension PhotoItem {
+    init(asset: PHAsset) {
+        self.init(id: asset.localIdentifier, created: asset.creationDate,
+            modified: asset.modificationDate, width: asset.pixelWidth, height: asset.pixelHeight,
+            favorite: asset.isFavorite, screenshot: asset.mediaSubtypes.contains(.photoScreenshot),
+            video: asset.mediaType == .video, duration: asset.duration, canDelete: asset.canPerform(.delete))
     }
 }

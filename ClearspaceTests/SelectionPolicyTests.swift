@@ -47,4 +47,55 @@ final class SelectionPolicyTests: XCTestCase {
         XCTAssertEqual(StorageSnapshot(total: 100, free: 120).used, 0)
         XCTAssertEqual(StorageSnapshot(total: 0, free: 0).fraction, 0)
     }
+    func testBulkSelectionKeepsOneCopyAndExcludesReadOnlyMedia() {
+        var readOnly = item("read-only")
+        readOnly.canDelete = false
+        let a = item("a"), b = item("b")
+        let group = PhotoGroup(id: "g", items: [a, b], keeperID: "a", visuallyIdentical: true)
+        XCTAssertEqual(SelectionPolicy.safeSelection([a, b, readOnly], groups: [group]).map(\.id), ["b"])
+        XCTAssertEqual(SelectionPolicy.safeSelection([a], groups: [group]).map(\.id), ["a"])
+    }
+    func testSavingsDoNotDoubleCountScreenshotsInSimilarGroups() {
+        let a = item("a", bytes: 100), b = item("b", bytes: 200), cloud = item("cloud", bytes: nil)
+        let group = PhotoGroup(id: "g", items: [a, b], keeperID: "a", visuallyIdentical: true)
+        let result = ScanResult(groups: [group], screenshots: [a, b, cloud])
+        XCTAssertEqual(result.screenshotCandidates.map(\.id), ["b", "cloud"])
+        XCTAssertEqual(ByteSummary(result.cleanupCandidates).known, 200)
+        XCTAssertEqual(ByteSummary(result.cleanupCandidates).unknown, 1)
+        XCTAssertEqual(ByteSummary([b, b, cloud, cloud]).known, 200)
+        XCTAssertEqual(ByteSummary([b, b, cloud, cloud]).unknown, 1)
+    }
+    func testChangedFavoriteInvalidatesReviewEvenWithoutModificationDate() {
+        XCTAssertFalse(SelectionPolicy.unchanged(item("a"), current: item("a", favorite: true)))
+        XCTAssertFalse(SelectionPolicy.unchanged(item("a"), current: item("a", width: 200)))
+        XCTAssertFalse(SelectionPolicy.unchanged(item("a"), current: item("b")))
+        XCTAssertTrue(SelectionPolicy.unchanged(item("a", bytes: nil), current: item("a", bytes: 100)))
+    }
+    func testReadOnlyDuplicatesNeverBecomeSuggestions() {
+        var readOnly = item("b")
+        readOnly.canDelete = false
+        let group = PhotoGroup(id: "g", items: [item("a"), readOnly], keeperID: "a", visuallyIdentical: true)
+        XCTAssertTrue(group.suggested.isEmpty)
+    }
+    func testPhotoRequestCompletesOnlyOnce() async throws {
+        let gate = RequestGate<Int>()
+        let value: Int = try await withCheckedThrowingContinuation { continuation in
+            gate.attach(continuation)
+            gate.finish(.success(42))
+            gate.finish(.success(99))
+            gate.finish(.failure(CancellationError()))
+        }
+        XCTAssertEqual(value, 42)
+    }
+    func testPhotoRequestCancellationBeforeContinuationIsAttached() async {
+        let gate = RequestGate<Int>()
+        gate.finish(.failure(CancellationError()))
+        var cancelled = false
+        gate.configure { cancelled = true }
+        XCTAssertTrue(cancelled)
+        do {
+            let _: Int = try await withCheckedThrowingContinuation { gate.attach($0) }
+            XCTFail("Cancelled request should throw")
+        } catch { XCTAssertTrue(error is CancellationError) }
+    }
 }

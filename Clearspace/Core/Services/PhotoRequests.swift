@@ -3,7 +3,7 @@ import UIKit
 import AVFoundation
 
 /// PhotoKit may callback more than once, or after cancellation. Resolve exactly once.
-private final class RequestGate<Value>: @unchecked Sendable {
+final class RequestGate<Value>: @unchecked Sendable {
     private let lock = NSLock()
     private var continuation: CheckedContinuation<Value, Error>?
     private var result: Result<Value, Error>?
@@ -14,14 +14,14 @@ private final class RequestGate<Value>: @unchecked Sendable {
         if let result { lock.unlock(); continuation.resume(with: result) }
         else { self.continuation = continuation; lock.unlock() }
     }
-    func configure(cancel: @escaping () -> Void) {
+    func configure(timeout seconds: TimeInterval = 12, cancel: @escaping () -> Void) {
         let timeout = DispatchWorkItem { [weak self] in self?.finish(.failure(CleanerError.timedOut)) }
         lock.lock()
         if result != nil { lock.unlock(); cancel(); return }
         cancellation = cancel
         timer = timeout
         lock.unlock()
-        DispatchQueue.global().asyncAfter(deadline: .now() + 12, execute: timeout)
+        DispatchQueue.global().asyncAfter(deadline: .now() + seconds, execute: timeout)
     }
     func finish(_ result: Result<Value, Error>) {
         lock.lock()
@@ -110,7 +110,7 @@ enum PhotoRequests {
                             if let error { gate.finish(.failure(error)) }
                             else { gate.finish(.success(counter.total())) }
                         })
-                    gate.configure { manager.cancelDataRequest(request) }
+                    gate.configure(timeout: 120) { manager.cancelDataRequest(request) }
                 }
             }, onCancel: { gate.finish(.failure(CancellationError())) })
             total += amount
@@ -118,3 +118,4 @@ enum PhotoRequests {
         return total
     }
 }
+

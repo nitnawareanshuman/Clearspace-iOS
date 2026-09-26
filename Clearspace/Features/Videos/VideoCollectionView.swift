@@ -19,7 +19,7 @@ struct VideoCollectionView: View {
                         Text("All accessible videos, largest first. Unknown sizes appear last. Play a video before choosing to remove it.")
                             .font(.subheadline).foregroundStyle(.secondary)
                         HStack {
-                            Button("Select non-favorites") { selected = Set(videos.filter { !$0.favorite }.map(\.id)) }
+                            Button("Select non-favorites") { selected = Set(videos.filter { !$0.favorite && $0.canDelete }.map(\.id)) }
                             Spacer()
                             Button("Clear") { selected.removeAll() }.disabled(selected.isEmpty)
                         }.font(.subheadline)
@@ -44,6 +44,7 @@ struct VideoCollectionView: View {
                                     Text("\(Int(item.duration) / 60)m \(Int(item.duration) % 60)s · \(item.created?.formatted(date: .abbreviated, time: .omitted) ?? "Unknown date")")
                                         .font(.caption).foregroundStyle(.secondary)
                                     if item.favorite { Label("Favorite", systemImage: "heart.fill").font(.caption).foregroundStyle(.pink) }
+                                    if !item.canDelete { Text("Read-only · cannot delete here").font(.caption).foregroundStyle(.secondary) }
                                 }
                                 Spacer()
                                 Button {
@@ -53,6 +54,7 @@ struct VideoCollectionView: View {
                                         .font(.title).frame(width: 48, height: 48)
                                 }.accessibilityLabel("Select video, \(ByteSummary([item]).label)")
                                     .accessibilityValue(selected.contains(item.id) ? "Selected" : "Not selected")
+                                    .disabled(!item.canDelete)
                             }
                         }
                     }

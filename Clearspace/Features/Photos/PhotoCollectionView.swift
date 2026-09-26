@@ -36,11 +36,15 @@ struct PhotoCollectionView: View {
                             HStack {
                                 Button(kind == .similar ? "Select suggestions" : "Select all") {
                                     if kind == .similar { selected = Set(store.result?.suggestions.map(\.id) ?? []) }
-                                    else { selected = Set(items.map(\.id)) }
+                                    else { selected = Set(store.result?.screenshotCandidates.map(\.id) ?? []) }
                                 }
                                 Spacer()
                                 Button("Clear") { selected.removeAll() }.disabled(selected.isEmpty)
                             }.font(.subheadline.weight(.semibold))
+                            if kind == .screenshots {
+                                Text("Select all leaves one recommended keep in each matching group and skips read-only items.")
+                                    .font(.caption).foregroundStyle(.secondary)
+                            }
                         }
                     }
                     if kind == .similar {

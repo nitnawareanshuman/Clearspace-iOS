@@ -90,7 +90,7 @@ struct PhotoTile: View {
                     }
                     .clipShape(RoundedRectangle(cornerRadius: 16))
                     .overlay(RoundedRectangle(cornerRadius: 16).stroke(selected ? Color.teal : .clear, lineWidth: 3))
-            }.buttonStyle(.plain)
+            }.buttonStyle(.plain).disabled(!item.canDelete)
                 .accessibilityLabel("\(item.screenshot ? "Screenshot" : "Photo"), \(item.created?.formatted(date: .abbreviated, time: .shortened) ?? "unknown date")\(item.favorite ? ", favorite" : "")\(keeper ? ", recommended keep" : "")")
                 .accessibilityValue(selected ? "Selected for review" : "Not selected")
                 .accessibilityHint("Double tap to change selection")
@@ -101,6 +101,7 @@ struct PhotoTile: View {
                 Button(action: preview) { Image(systemName: "arrow.up.left.and.arrow.down.right")
                     .frame(minWidth: 44, minHeight: 44) }.accessibilityLabel("Preview photo")
             }
+            if !item.canDelete { Text("Read-only · cannot delete here").font(.caption).foregroundStyle(.secondary) }
         }
     }
 }

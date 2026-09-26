@@ -23,27 +23,35 @@ struct DashboardView: View {
                     if store.hasAccess {
                         scanCard
                         if let result = store.result {
+                            Surface {
+                                VStack(alignment: .leading, spacing: 8) {
+                                    Label("Potential cleanup", systemImage: "sparkles").font(.headline)
+                                    Text(ByteSummary(result.cleanupCandidates).label).font(.title.bold())
+                                    Text("Estimated media savings after review. Overlapping categories are counted once; recommended keeps are excluded.")
+                                        .font(.caption).foregroundStyle(.secondary)
+                                }
+                            }
                             Text("YOUR LIBRARY").font(.caption.weight(.semibold)).tracking(2).foregroundStyle(.secondary)
                             NavigationLink {
                                 PhotoCollectionView(kind: .similar)
                             } label: {
                                 category("Similar photos", subtitle: "\(result.groups.count) groups · keep your favorites",
-                                    icon: "square.on.square", summary: ByteSummary(result.suggestions).label, color: .teal)
+                                    icon: "square.on.square", summary: savings(result.suggestions), color: .teal)
                             }.buttonStyle(.plain)
                             NavigationLink {
                                 PhotoCollectionView(kind: .screenshots)
                             } label: {
                                 category("Screenshots", subtitle: "\(result.screenshots.count) screenshots to review",
-                                    icon: "viewfinder", summary: ByteSummary(result.screenshots).label, color: .indigo)
+                                    icon: "viewfinder", summary: savings(result.screenshotCandidates), color: .indigo)
                             }.buttonStyle(.plain)
                             NavigationLink { VideoCollectionView() } label: {
                                 category("Large videos", subtitle: "\(result.videos.count) videos · largest first",
-                                    icon: "play.rectangle.fill", summary: ByteSummary(result.videos).label, color: .purple)
+                                    icon: "play.rectangle.fill", summary: savings(result.videoCandidates), color: .purple)
                             }.buttonStyle(.plain)
                             Surface {
                                 VStack(alignment: .leading, spacing: 8) {
                                     Label("About these estimates", systemImage: "info.circle").font(.subheadline.bold())
-                                    Text("Sizes count available photo and video resources, not guaranteed free device space. Similar-photo estimates exclude recommended keeps and favorites. Screenshot totals include all screenshots; choose what you no longer need.")
+                                    Text("Sizes count available photo and video resources, not guaranteed free device space. Similar-photo estimates exclude recommended keeps and favorites. Screenshot estimates keep one copy of each matching group. Video estimates include all deletable videos. Read-only media is excluded. Categories can overlap, so do not add their totals.")
                                     if result.unavailable > 0 {
                                         Text("\(result.unavailable) photos could not be analyzed locally. Cloud-only items are not downloaded.")
                                     }
@@ -65,7 +73,7 @@ struct DashboardView: View {
                 }.padding(20)
             }.background(Color(uiColor: .systemGroupedBackground))
                 .navigationBarTitleDisplayMode(.inline)
-                .sheet(isPresented: $showLimitedPicker, onDismiss: { store.refreshAccess() }) {
+                .sheet(isPresented: $showLimitedPicker, onDismiss: { store.refreshLimitedSelection() }) {
                     NavigationStack {
                         LimitedLibraryPicker().navigationTitle("Photos access")
                             .toolbar { ToolbarItem(placement: .confirmationAction) {
@@ -77,6 +85,11 @@ struct DashboardView: View {
                     Button("OK", role: .cancel) { store.message = nil }
                 } message: { Text(store.message ?? "") }
         }
+    }
+    private func savings(_ items: [PhotoItem]) -> String {
+        let summary = ByteSummary(items)
+        if summary.unknown > 0 { return "Potential savings: \(summary.label)" }
+        return "Up to \(summary.label) to free"
     }
     private var storageCard: some View {
         Surface {

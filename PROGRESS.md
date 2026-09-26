@@ -2,6 +2,9 @@
 
 All seven core features have implementations. Device acceptance testing remains required.
 
+The 26 September must-have audit and focused bug fixes are documented in
+[docs/CORE_AUDIT.md](docs/CORE_AUDIT.md), including remaining limitations and the real-iPhone checklist.
+
 | Core feature | Implemented behavior |
 | --- | --- |
 | Dashboard | Used/free storage; candidate media bytes; contact counts with no invented size estimate |

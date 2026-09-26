@@ -16,15 +16,26 @@ final class CleanerStore: NSObject, ObservableObject, PHPhotoLibraryChangeObserv
     private let scanner = LibraryScanner()
     private var scanTask: Task<Void, Never>?
     private var libraryChangedDuringDelete = false
+    private var observing = false
     var hasAccess: Bool { authorization == .authorized || authorization == .limited }
     var busy: Bool { scanning || deleting }
 
     override init() {
         super.init()
-        PHPhotoLibrary.shared().register(self)
+        updateObservation()
         refreshStorage()
     }
-    deinit { PHPhotoLibrary.shared().unregisterChangeObserver(self) }
+    deinit { if observing { PHPhotoLibrary.shared().unregisterChangeObserver(self) } }
+
+    private func updateObservation() {
+        if hasAccess && !observing {
+            PHPhotoLibrary.shared().register(self)
+            observing = true
+        } else if !hasAccess && observing {
+            PHPhotoLibrary.shared().unregisterChangeObserver(self)
+            observing = false
+        }
+    }
 
     func refreshStorage() {
         do { storage = try StorageSnapshot.read(); storageError = nil }
@@ -36,13 +47,21 @@ final class CleanerStore: NSObject, ObservableObject, PHPhotoLibraryChangeObserv
             authorization = status
             invalidate("Photos access changed. Scan the available library again.")
         }
+        updateObservation()
         refreshStorage()
     }
     func requestAccess() async {
-        authorization = await PHPhotoLibrary.requestAuthorization(for: .readWrite)
+        _ = await PHPhotoLibrary.requestAuthorization(for: .readWrite)
+        refreshAccess()
         if hasAccess { startScan() }
     }
+    func refreshLimitedSelection() {
+        refreshAccess()
+        // The allowed identifiers can change while authorization remains .limited.
+        invalidate("Photos selection updated. Scan again to refresh the available library.")
+    }
     func startScan() {
+        refreshAccess()
         guard hasAccess, !busy else { return }
         epoch += 1
         let generation = epoch
@@ -95,25 +114,39 @@ final class CleanerStore: NSObject, ObservableObject, PHPhotoLibraryChangeObserv
         }
     }
     func makeDraft(_ items: [PhotoItem]) -> ReviewDraft {
-        ReviewDraft(epoch: epoch, items: SelectionPolicy.unique(items))
+        let selected = SelectionPolicy.unique(items)
+        let ids = Set(selected.map(\.id))
+        let affected = result?.groups.filter { $0.items.contains { ids.contains($0.id) } } ?? []
+        return ReviewDraft(epoch: epoch, items: selected,
+            kept: SelectionPolicy.unique(affected.flatMap(\.items).filter { !ids.contains($0.id) }))
     }
     func delete(_ draft: ReviewDraft) async throws {
+        refreshAccess()
         guard !busy, hasAccess else { throw CleanerError.noAccess }
         guard draft.epoch == epoch, !draft.items.isEmpty, let result else { throw CleanerError.staleReview }
         let ids = Set(draft.items.map(\.id))
+        guard Set(makeDraft(draft.items).kept.map(\.id)) == Set(draft.kept.map(\.id)) else {
+            throw CleanerError.staleReview
+        }
         let knownIDs = Set((result.groups.flatMap(\.items) + result.screenshots + result.videos).map(\.id))
         guard ids.isSubset(of: knownIDs), SelectionPolicy.allows(ids, groups: result.groups) else {
             throw CleanerError.staleReview
         }
-        let fetched = PHAsset.fetchAssets(withLocalIdentifiers: Array(ids), options: nil)
-        guard fetched.count == ids.count else { throw CleanerError.staleReview }
-        let snapshots = Dictionary(uniqueKeysWithValues: draft.items.map { ($0.id, $0) })
+        // Re-fetch survivors too: a delayed change notification must not let the last copy go.
+        let expected = SelectionPolicy.unique(draft.items + draft.kept)
+        let fetched = PHAsset.fetchAssets(withLocalIdentifiers: expected.map(\.id), options: nil)
+        guard fetched.count == expected.count else { throw CleanerError.staleReview }
+        let snapshots = Dictionary(uniqueKeysWithValues: expected.map { ($0.id, $0) })
         var assets: [PHAsset] = []
         for index in 0..<fetched.count {
             let asset = fetched.object(at: index)
-            guard asset.canPerform(.delete), let item = snapshots[asset.localIdentifier],
-                  asset.modificationDate == item.modified else { throw CleanerError.staleReview }
-            assets.append(asset)
+            let current = PhotoItem(asset: asset)
+            guard let item = snapshots[asset.localIdentifier],
+                  SelectionPolicy.unchanged(item, current: current) else { throw CleanerError.staleReview }
+            if ids.contains(asset.localIdentifier) {
+                guard current.canDelete else { throw CleanerError.staleReview }
+                assets.append(asset)
+            }
         }
         deleting = true
         libraryChangedDuringDelete = false
