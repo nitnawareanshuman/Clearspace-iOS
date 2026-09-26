@@ -4,10 +4,15 @@ import SwiftUI
 struct PipMascot: View {
     var working = false
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var floating = false
+    @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
-        GeometryReader { proxy in
+        TimelineView(.animation(minimumInterval: 1.0 / 30.0,
+                                paused: !working || reduceMotion || scenePhase != .active)) { timeline in
+            // A bounded drawing transform cannot animate the surrounding layout or navigation.
+            let wave = working && !reduceMotion && scenePhase == .active
+                ? sin(timeline.date.timeIntervalSinceReferenceDate * .pi * 2 / 1.8) : 0
+            GeometryReader { proxy in
             let side = min(proxy.size.width, proxy.size.height)
             ZStack {
                 Ellipse().fill(.teal.opacity(0.14))
@@ -38,14 +43,15 @@ struct PipMascot: View {
                     Ellipse().fill(Color(red: 0.78, green: 0.92, blue: 0.36))
                         .frame(width: side * 0.14, height: side * 0.25).rotationEffect(.degrees(35))
                         .offset(x: side * 0.06, y: -side * 0.38)
-                }.rotationEffect(.degrees(working && floating ? 5 : -3))
-                    .offset(y: !reduceMotion && floating ? -side * 0.035 : side * 0.015)
+                }.rotationEffect(.degrees(wave * 2))
+                    .offset(y: -abs(wave) * side * 0.02)
                 Image(systemName: "sparkle").font(.system(size: side * 0.14, weight: .medium))
                     .foregroundStyle(.teal).offset(x: side * 0.40, y: -side * 0.30)
             }.frame(width: proxy.size.width, height: proxy.size.height)
-        }.accessibilityHidden(true)
-            .onAppear { if !reduceMotion { floating = true } }
-            .animation(reduceMotion ? nil : .easeInOut(duration: working ? 0.9 : 2).repeatForever(autoreverses: true), value: floating)
+            }
+        }
+        .clipped()
+        .accessibilityHidden(true)
     }
 }
 
@@ -68,3 +74,4 @@ struct LoadingCompanion: View {
         }.frame(maxWidth: .infinity).padding()
     }
 }
+

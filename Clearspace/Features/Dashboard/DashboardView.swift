@@ -16,7 +16,7 @@ struct DashboardView: View {
                             Text("Room for what matters.").font(.subheadline).foregroundStyle(.secondary)
                         }
                         Spacer()
-                        PipMascot(working: store.scanning).frame(width: 86, height: 92)
+                        PipMascot().frame(width: 86, height: 92)
                     }
                     storageCard
                     permissionCard
@@ -195,4 +195,5 @@ struct DashboardView: View {
         }
     }
 }
+
 

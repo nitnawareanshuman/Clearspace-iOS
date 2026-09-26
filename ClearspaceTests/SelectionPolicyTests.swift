@@ -8,6 +8,43 @@ final class SelectionPolicyTests: XCTestCase {
         PhotoItem(id: id, created: date, modified: nil, width: width, height: 100,
                   favorite: favorite, screenshot: false, bytes: bytes)
     }
+    func testConfirmedDeletionUpdatesOverlappingCategoriesOnce() {
+        let a = item("a", bytes: 100), b = item("b", bytes: 200), c = item("c", bytes: 300)
+        let group = PhotoGroup(id: "g", items: [a, b, c], keeperID: "a", visuallyIdentical: true)
+        let original = ScanResult(groups: [group], screenshots: [a, b], videos: [c], scanned: 3)
+        let updated = original.removing(["b"])
+        XCTAssertEqual(updated.scanned, 2)
+        XCTAssertEqual(updated.groups.first?.items.map(\.id), ["a", "c"])
+        XCTAssertEqual(updated.screenshots.map(\.id), ["a"])
+        XCTAssertEqual(updated.videos.map(\.id), ["c"])
+        XCTAssertEqual(ByteSummary(updated.cleanupCandidates).known, 300)
+        XCTAssertEqual(original.scanned, 3)
+    }
+    func testDeletingKeeperChoosesSurvivingKeeper() {
+        let group = PhotoGroup(id: "g", items: [item("a"), item("b"), item("c")],
+                               keeperID: "a", visuallyIdentical: false)
+        let updated = ScanResult(groups: [group], scanned: 3).removing(["a"])
+        XCTAssertEqual(updated.groups.first?.keeperID, "b")
+        XCTAssertEqual(updated.suggestions.map(\.id), ["c"])
+        XCTAssertFalse(SelectionPolicy.allows(["b", "c"], groups: updated.groups))
+    }
+    func testDeletingLastExtraRemovesGroupButPreservesScreenshotSurvivor() {
+        let a = item("a"), b = item("b")
+        let group = PhotoGroup(id: "g", items: [a, b], keeperID: "a", visuallyIdentical: true)
+        let updated = ScanResult(groups: [group], screenshots: [a, b], scanned: 2).removing(["b"])
+        XCTAssertTrue(updated.groups.isEmpty)
+        XCTAssertEqual(updated.screenshots.map(\.id), ["a"])
+        XCTAssertEqual(updated.scanned, 1)
+    }
+    func testRemovingVideoUpdatesUnknownSizeCountAndAllowsEmptyResult() {
+        let result = ScanResult(videos: [item("video", bytes: nil)], scanned: 1, unmeasured: 1)
+        let updated = result.removing(["video"])
+        XCTAssertTrue(updated.videos.isEmpty)
+        XCTAssertEqual(updated.scanned, 0)
+        XCTAssertEqual(updated.unmeasured, 0)
+        XCTAssertTrue(updated.cleanupCandidates.isEmpty)
+        XCTAssertEqual(updated.removing(["video"]).scanned, 0)
+    }
     func testFavoriteIsKeptAheadOfHigherResolution() {
         XCTAssertEqual(SelectionPolicy.keeper(in: [item("large", width: 1000), item("favorite", favorite: true)]), "favorite")
     }
@@ -142,3 +179,4 @@ final class PhotoAnalysisRegressionTests: XCTestCase {
         XCTAssertTrue(ScanResult(similarityUnavailable: 1).analysisIncomplete)
     }
 }
+

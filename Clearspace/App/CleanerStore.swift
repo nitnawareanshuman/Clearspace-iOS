@@ -16,6 +16,8 @@ final class CleanerStore: NSObject, ObservableObject, PHPhotoLibraryChangeObserv
     private let scanner = LibraryScanner()
     private var scanTask: Task<Void, Never>?
     private var libraryChangedDuringDelete = false
+    private var observedAssets: PHFetchResult<PHAsset>?
+    private var expectedDeletedIDs = Set<String>()
     private var observing = false
     var hasAccess: Bool { authorization == .authorized || authorization == .limited }
     var busy: Bool { scanning || deleting }
@@ -29,11 +31,14 @@ final class CleanerStore: NSObject, ObservableObject, PHPhotoLibraryChangeObserv
 
     private func updateObservation() {
         if hasAccess && !observing {
+            observedAssets = PHAsset.fetchAssets(with: nil)
             PHPhotoLibrary.shared().register(self)
             observing = true
         } else if !hasAccess && observing {
             PHPhotoLibrary.shared().unregisterChangeObserver(self)
             observing = false
+            observedAssets = nil
+            expectedDeletedIDs.removeAll()
         }
     }
 
@@ -64,6 +69,8 @@ final class CleanerStore: NSObject, ObservableObject, PHPhotoLibraryChangeObserv
         refreshAccess()
         guard hasAccess, !busy else { return }
         epoch += 1
+        observedAssets = PHAsset.fetchAssets(with: nil)
+        expectedDeletedIDs.removeAll()
         let generation = epoch
         result = nil
         scanning = true
@@ -109,6 +116,16 @@ final class CleanerStore: NSObject, ObservableObject, PHPhotoLibraryChangeObserv
     nonisolated func photoLibraryDidChange(_ changeInstance: PHChange) {
         Task { @MainActor [weak self] in
             guard let self else { return }
+            // Ignore notifications unrelated to the fetched assets (for example album changes).
+            guard let observedAssets,
+                  let changes = changeInstance.changeDetails(for: observedAssets) else { return }
+            self.observedAssets = changes.fetchResultAfterChanges
+            let removed = Set(changes.removedObjects.map(\.localIdentifier))
+            let onlyExpectedDeletion = changes.hasIncrementalChanges
+                && changes.insertedObjects.isEmpty && changes.changedObjects.isEmpty
+                && removed.isSubset(of: expectedDeletedIDs)
+            expectedDeletedIDs.subtract(removed)
+            guard !onlyExpectedDeletion else { return }
             if deleting { libraryChangedDuringDelete = true }
             else { invalidate("Your photo library changed. Scan again for up-to-date results.") }
         }
@@ -150,20 +167,30 @@ final class CleanerStore: NSObject, ObservableObject, PHPhotoLibraryChangeObserv
         }
         deleting = true
         libraryChangedDuringDelete = false
+        expectedDeletedIDs.formUnion(ids)
         do {
             // The only mutation site. Called exclusively from the destructive review confirmation.
             try await PHPhotoLibrary.shared().performChanges {
                 PHAssetChangeRequest.deleteAssets(assets as NSArray)
             }
             deleting = false
-            invalidate("Deletion approved. Scan again to refresh categories.")
+            if libraryChangedDuringDelete || !hasAccess || self.result == nil {
+                invalidate("Your photo library changed during deletion. Scan again for up-to-date results.")
+            } else {
+                // Preserve the scan and invalidate old review selections, not the whole result.
+                self.result = result.removing(ids)
+                epoch += 1
+                phase = "Library updated after deletion"
+            }
             refreshStorage()
             message = "Removed \(ids.count) items from your library. Photos keeps them in Recently Deleted for up to 30 days. Device space may not increase immediately. If iCloud Photos is enabled, deletion also syncs to your other devices."
         } catch {
+            expectedDeletedIDs.subtract(ids)
             deleting = false
             if libraryChangedDuringDelete { invalidate("Your photo library changed. Please scan again.") }
             throw error
         }
     }
 }
+
 

@@ -48,6 +48,25 @@ struct ScanResult {
     var unmeasured = 0
     var analysisIncomplete: Bool { unavailable > 0 || similarityUnavailable > 0 }
     var seconds: Double = 0
+    /// Reconcile only a confirmed deletion; all remaining byte estimates stay valid.
+    func removing(_ ids: Set<String>) -> ScanResult {
+        var updated = self
+        let removedItems = SelectionPolicy.unique(groups.flatMap(\.items) + screenshots + videos)
+            .filter { ids.contains($0.id) }
+        updated.groups = groups.compactMap { group in
+            let remaining = group.items.filter { !ids.contains($0.id) }
+            guard remaining.count > 1 else { return nil }
+            return PhotoGroup(id: group.id, items: remaining,
+                keeperID: remaining.contains { $0.id == group.keeperID }
+                    ? group.keeperID : SelectionPolicy.keeper(in: remaining),
+                visuallyIdentical: group.visuallyIdentical)
+        }
+        updated.screenshots.removeAll { ids.contains($0.id) }
+        updated.videos.removeAll { ids.contains($0.id) }
+        updated.scanned = max(0, scanned - removedItems.count)
+        updated.unmeasured = max(0, unmeasured - removedItems.filter { $0.bytes == nil }.count)
+        return updated
+    }
     var suggestions: [PhotoItem] { groups.flatMap(\.suggested) }
     var screenshotCandidates: [PhotoItem] { SelectionPolicy.safeSelection(screenshots, groups: groups) }
     var videoCandidates: [PhotoItem] { videos.filter(\.canDelete) }
@@ -139,4 +158,5 @@ enum VideoPolicy {
         }
     }
 }
+
 
