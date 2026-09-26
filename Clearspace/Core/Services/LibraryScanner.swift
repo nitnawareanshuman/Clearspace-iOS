@@ -3,22 +3,24 @@ import Photos
 import UIKit
 import Vision
 import CryptoKit
+import OSLog
 
 /// Actor isolation keeps image analysis and resource reads off the UI actor.
 actor LibraryScanner {
-    private struct Descriptor {
+    struct Descriptor {
         let id: String
         let date: Date?
         let aspect: Double
         let screenshot: Bool
         let digest: String
         let hash: UInt64
-        let print: VNFeaturePrintObservation
+        let print: VNFeaturePrintObservation?
     }
     private struct CachedSize {
         let snapshot: PhotoItem
         let bytes: Int64
     }
+    private static let logger = Logger(subsystem: "Clearspace", category: "PhotoAnalysis")
     private var sizes: [String: CachedSize] = [:]
 
     private func measure(_ asset: PHAsset) async throws -> Int64 {
@@ -45,6 +47,7 @@ actor LibraryScanner {
         var allIdentical: [Bool] = []
         var screenshotIDs: [String] = []
         var unavailable = 0
+        var similarityUnavailable = 0
 
         for index in 0..<assets.count {
             try Task.checkCancellation()
@@ -54,7 +57,8 @@ actor LibraryScanner {
             if item.screenshot { screenshotIDs.append(item.id) }
             do {
                 let image = try await PhotoRequests.image(for: asset)
-                let descriptor = try autoreleasepool { try describe(image, item: item) }
+                let descriptor = try autoreleasepool { try Self.describe(image, item: item) }
+                if descriptor.print == nil { similarityUnavailable += 1 }
                 // Identical normalized previews can match anywhere in the library.
                 var matchID = digestToID[descriptor.digest]
                 var identical = matchID != nil
@@ -65,8 +69,15 @@ actor LibraryScanner {
                               abs(date.timeIntervalSince(otherDate)) <= 60,
                               abs(candidate.aspect - descriptor.aspect) < 0.025,
                               (candidate.hash ^ descriptor.hash).nonzeroBitCount <= 6 else { continue }
+                        guard let feature = descriptor.print, let other = candidate.print else { continue }
                         var distance: Float = 1
-                        try descriptor.print.computeDistance(&distance, to: candidate.print)
+                        do { try feature.computeDistance(&distance, to: other) }
+                        catch {
+                            Self.logger.error("Feature comparison failed: \(error.localizedDescription, privacy: .public)")
+                            // Keep the image available for exact matching and later comparisons.
+                            similarityUnavailable += 1
+                            continue
+                        }
                         if SelectionPolicy.isNear(aspectA: descriptor.aspect, aspectB: candidate.aspect,
                             hashA: descriptor.hash, hashB: candidate.hash, distance: distance) {
                             matchID = candidate.id
@@ -134,16 +145,13 @@ actor LibraryScanner {
         sizes = sizes.filter { accessible.contains($0.key) }
         return ScanResult(groups: groups.reversed(),
             screenshots: screenshotIDs.reversed().compactMap { items[$0] }, videos: VideoPolicy.sorted(videos), scanned: assets.count + videoAssets.count,
-            unavailable: unavailable, unmeasured: unmeasured, seconds: Date().timeIntervalSince(start))
+            unavailable: unavailable, similarityUnavailable: similarityUnavailable, unmeasured: unmeasured, seconds: Date().timeIntervalSince(start))
     }
 
-    private func describe(_ image: UIImage, item: PhotoItem) throws -> Descriptor {
+    // Vision is optional: a failed feature print must never discard a valid pixel fingerprint.
+    static func describe(_ image: UIImage, item: PhotoItem,
+                         featurePrint: (CGImage) throws -> VNFeaturePrintObservation = LibraryScanner.featurePrint) throws -> Descriptor {
         guard let cg = image.cgImage else { throw CleanerError.unavailable }
-        let request = VNGenerateImageFeaturePrintRequest()
-        // Pin the revision: distance scales must not change with the OS default.
-        request.revision = VNGenerateImageFeaturePrintRequestRevision2
-        try VNImageRequestHandler(cgImage: cg, options: [:]).perform([request])
-        guard let print = request.results?.first else { throw CleanerError.unavailable }
         let side = 128
         var pixels = [UInt8](repeating: 0, count: side * side * 4)
         let rendered = pixels.withUnsafeMutableBytes { bytes -> Bool in
@@ -172,9 +180,29 @@ actor LibraryScanner {
                 hash |= UInt64(1) << (row * 8 + column)
             }
         } }
+        let observation: VNFeaturePrintObservation?
+        do { observation = try featurePrint(cg) }
+        catch {
+            logger.error("Feature print failed; exact matching remains available: \(error.localizedDescription, privacy: .public)")
+            observation = nil
+        }
         return Descriptor(id: item.id, date: item.created,
-            aspect: Double(item.width) / Double(max(1, item.height)), screenshot: item.screenshot, digest: digest, hash: hash, print: print)
+            aspect: Double(item.width) / Double(max(1, item.height)), screenshot: item.screenshot, digest: digest, hash: hash, print: observation)
     }
+
+    static func featurePrint(_ image: CGImage) throws -> VNFeaturePrintObservation {
+        let request = VNGenerateImageFeaturePrintRequest()
+        // Keep revision 2's calibrated distance scale on both simulator and device.
+        request.revision = VNGenerateImageFeaturePrintRequestRevision2
+        #if targetEnvironment(simulator)
+        // The simulator does not provide the same Vision accelerator path as an iPhone.
+        request.usesCPUOnly = true
+        #endif
+        try VNImageRequestHandler(cgImage: image, options: [:]).perform([request])
+        guard let observation = request.results?.first else { throw CleanerError.unavailable }
+        return observation
+    }
+
 }
 
 
@@ -186,3 +214,4 @@ extension PhotoItem {
             video: asset.mediaType == .video, duration: asset.duration, canDelete: asset.canPerform(.delete))
     }
 }
+

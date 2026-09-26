@@ -44,7 +44,9 @@ struct ScanResult {
     var videos: [PhotoItem] = []
     var scanned = 0
     var unavailable = 0
+    var similarityUnavailable = 0
     var unmeasured = 0
+    var analysisIncomplete: Bool { unavailable > 0 || similarityUnavailable > 0 }
     var seconds: Double = 0
     var suggestions: [PhotoItem] { groups.flatMap(\.suggested) }
     var screenshotCandidates: [PhotoItem] { SelectionPolicy.safeSelection(screenshots, groups: groups) }
@@ -137,3 +139,4 @@ enum VideoPolicy {
         }
     }
 }
+

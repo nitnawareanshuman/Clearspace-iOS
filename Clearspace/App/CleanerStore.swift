@@ -79,7 +79,7 @@ final class CleanerStore: NSObject, ObservableObject, PHPhotoLibraryChangeObserv
                 try Task.checkCancellation()
                 guard epoch == generation else { return }
                 result = scanned
-                phase = "Scan complete"
+                phase = scanned.analysisIncomplete ? "Scan finished with limitations" : "Scan complete"
                 progress = 1
             } catch is CancellationError {
                 if epoch == generation { phase = "Scan cancelled" }
@@ -166,3 +166,4 @@ final class CleanerStore: NSObject, ObservableObject, PHPhotoLibraryChangeObserv
         }
     }
 }
+
