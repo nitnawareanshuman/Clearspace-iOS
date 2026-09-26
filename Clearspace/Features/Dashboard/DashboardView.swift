@@ -94,7 +94,11 @@ struct DashboardView: View {
     private var storageCard: some View {
         Surface {
             VStack(alignment: .leading, spacing: 18) {
+                #if targetEnvironment(simulator)
+                Text("SIMULATOR · MAC STORAGE").font(.caption.weight(.semibold)).tracking(1.5).foregroundStyle(.teal)
+                #else
                 Text("YOUR IPHONE").font(.caption.weight(.semibold)).tracking(1.5).foregroundStyle(.teal)
+                #endif
                 if let storage = store.storage {
                     Text(ByteCountFormatter.string(fromByteCount: storage.free, countStyle: .file))
                         .font(.system(size: 44, weight: .bold, design: .rounded)).minimumScaleFactor(0.6).lineLimit(1)
@@ -157,6 +161,14 @@ struct DashboardView: View {
                     if let result = store.result {
                         Text("\(result.scanned) media items checked in \(result.seconds, specifier: "%.1f") seconds")
                             .font(.caption).foregroundStyle(.secondary)
+                        if result.unavailable > 0 {
+                            Label("\(result.unavailable) photos could not be loaded or analyzed. Results may be incomplete.", systemImage: "exclamationmark.triangle")
+                                .font(.caption).foregroundStyle(.orange)
+                        }
+                        if result.similarityUnavailable > 0 {
+                            Label("Some similar-photo analysis failed. Exact-image matching remains available; near matches may be missing.", systemImage: "exclamationmark.triangle")
+                                .font(.caption).foregroundStyle(.orange)
+                        }
                     }
                     Button { store.startScan() } label: {
                         Label(store.result == nil ? "Scan photos & videos" : "Scan again", systemImage: "arrow.clockwise")
@@ -183,3 +195,4 @@ struct DashboardView: View {
         }
     }
 }
+

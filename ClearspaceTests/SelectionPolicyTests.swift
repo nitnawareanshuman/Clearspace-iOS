@@ -1,4 +1,5 @@
 import XCTest
+import UIKit
 @testable import Clearspace
 
 final class SelectionPolicyTests: XCTestCase {
@@ -97,5 +98,47 @@ final class SelectionPolicyTests: XCTestCase {
             let _: Int = try await withCheckedThrowingContinuation { gate.attach($0) }
             XCTFail("Cancelled request should throw")
         } catch { XCTAssertTrue(error is CancellationError) }
+    }
+}
+
+
+
+final class PhotoAnalysisRegressionTests: XCTestCase {
+    private func image(_ color: UIColor) -> UIImage {
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = 1
+        format.opaque = true
+        return UIGraphicsImageRenderer(size: CGSize(width: 80, height: 80), format: format).image { context in
+            color.setFill()
+            context.fill(CGRect(x: 0, y: 0, width: 80, height: 80))
+            UIColor.black.setFill()
+            context.fill(CGRect(x: 8, y: 12, width: 20, height: 32))
+        }
+    }
+    private func item(_ id: String) -> PhotoItem {
+        PhotoItem(id: id, created: nil, modified: nil, width: 80, height: 80,
+                  favorite: false, screenshot: false)
+    }
+    func testIdenticalImagesKeepMatchingWhenVisionThrows() throws {
+        let photo = image(.red)
+        let a = try LibraryScanner.describe(photo, item: item("a")) { _ in throw CleanerError.unavailable }
+        let b = try LibraryScanner.describe(photo, item: item("b")) { _ in throw CleanerError.unavailable }
+        XCTAssertNil(a.print)
+        XCTAssertNil(b.print)
+        XCTAssertEqual(a.digest, b.digest)
+        XCTAssertEqual(a.hash, b.hash)
+    }
+    func testVisionFailureDoesNotMakeDifferentImagesIdentical() throws {
+        let a = try LibraryScanner.describe(image(.red), item: item("a")) { _ in throw CleanerError.unavailable }
+        let b = try LibraryScanner.describe(image(.blue), item: item("b")) { _ in throw CleanerError.unavailable }
+        XCTAssertNotEqual(a.digest, b.digest)
+    }
+    func testUnreadableImageStillFailsInsteadOfGettingAnEmptyFingerprint() {
+        XCTAssertThrowsError(try LibraryScanner.describe(UIImage(), item: item("a")))
+    }
+    func testPartialAnalysisCannotBeReportedAsComplete() {
+        XCTAssertFalse(ScanResult().analysisIncomplete)
+        XCTAssertTrue(ScanResult(unavailable: 1).analysisIncomplete)
+        XCTAssertTrue(ScanResult(similarityUnavailable: 1).analysisIncomplete)
     }
 }
