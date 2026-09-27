@@ -79,6 +79,7 @@ final class ContactsStore: ObservableObject {
         deleting = true
         do {
             try await service.delete(draft)
+            CleanupHistory.shared.record(contacts: draft.records.count)
             deleting = false; invalidate()
             message = "Deleted \(draft.records.count) contacts. Scan again to refresh your results."
         } catch {
@@ -88,3 +89,4 @@ final class ContactsStore: ObservableObject {
         }
     }
 }
+

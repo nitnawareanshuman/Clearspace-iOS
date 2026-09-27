@@ -77,6 +77,21 @@ struct DashboardView: View {
                     }.buttonStyle(.plain)
                     Text("Contact sizes are unavailable. Review duplicates to tidy your address book.")
                         .font(.caption).foregroundStyle(.secondary)
+                    NavigationLink { CalendarCleanupView() } label: {
+                        category("Calendar cleanup", subtitle: "Review old events before removing them",
+                            icon: "calendar.badge.minus", summary: "Tidy your calendar", color: .pink)
+                    }.buttonStyle(.plain)
+                    NavigationLink { SpaceFreedView() } label: {
+                        category("Space freed", subtitle: "Your completed cleanup activity",
+                            icon: "sparkles", summary: "View summary", color: .teal)
+                    }.buttonStyle(.plain)
+                    Surface {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Label("Storage on your Home Screen", systemImage: "square.grid.2x2").font(.headline)
+                            Text("Touch and hold your Home Screen, choose Edit → Add Widget, then search for Clearspace. Choose the small or medium storage widget.")
+                                .font(.footnote).foregroundStyle(.secondary)
+                        }
+                    }
                     Label("Private by design. Processed on your iPhone.", systemImage: "lock.shield")
                         .font(.caption).foregroundStyle(.secondary).frame(maxWidth: .infinity)
                 }.padding(20)
@@ -212,6 +227,7 @@ struct DashboardView: View {
         }
     }
 }
+
 
 
 

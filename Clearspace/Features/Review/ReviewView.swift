@@ -99,7 +99,9 @@ struct ReviewView: View {
                 .sheet(item: $preview) { PhotoPreview(item: $0) }
                 .sheet(isPresented: Binding(get: { completionMessage != nil }, set: { if !$0 { completionMessage = nil } }),
                        onDismiss: { dismiss() }) {
-                    MascotMessageView(message: completionMessage ?? "") { completionMessage = nil }
+                    NavigationStack {
+                        SpaceFreedView(receipt: store.lastReceipt, done: { completionMessage = nil })
+                    }
                 }
                 .overlay {
                     if store.deleting {
@@ -114,3 +116,4 @@ struct ReviewView: View {
         }
     }
 }
+

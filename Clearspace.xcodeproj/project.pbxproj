@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -13,19 +13,26 @@
 		4B931E5DE50D65AF005BAEDC /* ContactModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85A365BD3165443B28372D17 /* ContactModels.swift */; };
 		5BEBA2DA30693A1A00503B83 /* Components.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEBA2D830693A1A00503B83 /* Components.swift */; };
 		5BEBA2DB30693A1A00503B83 /* PipMascot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEBA2D930693A1A00503B83 /* PipMascot.swift */; };
-		5BEBA2E130693A7200503B83 /* ReviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEBA2E030693A7200503B83 /* ReviewView.swift */; };
 		5BEBA2E330693A8D00503B83 /* VideoCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEBA2E230693A8D00503B83 /* VideoCollectionView.swift */; };
 		5BEBA2E530693AEA00503B83 /* SelectionPolicyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEBA2E430693AEA00503B83 /* SelectionPolicyTests.swift */; };
-		5BEBA2E73069409000503B83 /* CleanerStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEBA2E63069409000503B83 /* CleanerStore.swift */; };
-		5BEBA2E93069412200503B83 /* ClearspaceApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEBA2E83069412200503B83 /* ClearspaceApp.swift */; };
 		5BEBA2EB3069415500503B83 /* LibraryModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEBA2EA3069415500503B83 /* LibraryModels.swift */; };
 		5BEBA2EE3069416C00503B83 /* BlurAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEBA2EC3069416C00503B83 /* BlurAnalyzer.swift */; };
 		5BEBA2EF3069416C00503B83 /* LibraryScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEBA2ED3069416C00503B83 /* LibraryScanner.swift */; };
-		5BEBA2F13069418700503B83 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEBA2F03069418700503B83 /* DashboardView.swift */; };
 		5BEBA2F33069419F00503B83 /* PhotoCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEBA2F23069419F00503B83 /* PhotoCollectionView.swift */; };
 		5BEBA2F5306941C400503B83 /* BlurAnalyzerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEBA2F4306941C400503B83 /* BlurAnalyzerTests.swift */; };
-		5DC93BFCFFC0605B3C84C75E /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 133FB301B9774E380D6B6B05 /* PrivacyInfo.xcprivacy */; };
-		77BE6FD07C5BB3F595711260 /* ContactsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D8FFA7E311EF892C8965DD /* ContactsStore.swift */; };
+		5BEBA2F9306987CE00503B83 /* ContactsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEBA2F8306987CE00503B83 /* ContactsStore.swift */; };
+		5BEBA2FA306987CE00503B83 /* CalendarStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEBA2F6306987CE00503B83 /* CalendarStore.swift */; };
+		5BEBA2FB306987CE00503B83 /* CleanerStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEBA2F7306987CE00503B83 /* CleanerStore.swift */; };
+		5BEBA2FD3069883C00503B83 /* ClearspaceApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEBA2FC3069883C00503B83 /* ClearspaceApp.swift */; };
+		5BEBA3003069886800503B83 /* CleanupHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEBA2FF3069886800503B83 /* CleanupHistory.swift */; };
+		5BEBA3013069886800503B83 /* CalendarModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEBA2FE3069886800503B83 /* CalendarModels.swift */; };
+		5BEBA3033069887C00503B83 /* CalendarService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEBA3023069887C00503B83 /* CalendarService.swift */; };
+		5BEBA30C306988E700503B83 /* DashboardView 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEBA30B306988E700503B83 /* DashboardView 2.swift */; };
+		5BEBA30E306988F600503B83 /* ReviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEBA30D306988F600503B83 /* ReviewView.swift */; };
+		5BEBA3113069890B00503B83 /* SpaceFreedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEBA30F3069890B00503B83 /* SpaceFreedView.swift */; };
+		5BEBA3153069892F00503B83 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 5BEBA3133069892F00503B83 /* PrivacyInfo.xcprivacy */; };
+		5BEBA3183069895A00503B83 /* CalendarPolicyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEBA3163069895A00503B83 /* CalendarPolicyTests.swift */; };
+		5BEBA3193069895A00503B83 /* CleanupHistoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEBA3173069895A00503B83 /* CleanupHistoryTests.swift */; };
 		A06181465B43A8B131D9B250 /* VideoPolicyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF7B4CD618248962A0D99DED /* VideoPolicyTests.swift */; };
 		BC0AF0A6A56C5FF93FE4E28C /* ContactsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 350150681614E04592871831 /* ContactsView.swift */; };
 		CD2F5ADA1599990235AE8462 /* ContactPolicyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C25181E5F542211F4B144A99 /* ContactPolicyTests.swift */; };
@@ -43,33 +50,47 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		133FB301B9774E380D6B6B05 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = Clearspace/Resources/PrivacyInfo.xcprivacy; sourceTree = SOURCE_ROOT; };
 		350150681614E04592871831 /* ContactsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ContactsView.swift; path = Clearspace/Features/Contacts/ContactsView.swift; sourceTree = SOURCE_ROOT; };
 		470C0C4811DB0BFBBE9B724C /* ContactService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ContactService.swift; path = Clearspace/Core/Services/ContactService.swift; sourceTree = SOURCE_ROOT; };
 		4E783A9E10D2A8ABA38CD11C /* Clearspace.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; path = Clearspace.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5963187F09BEB002465773B9 /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SplashView.swift; path = Clearspace/Features/Launch/SplashView.swift; sourceTree = SOURCE_ROOT; };
 		5BEBA2D830693A1A00503B83 /* Components.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components.swift; sourceTree = "<group>"; };
 		5BEBA2D930693A1A00503B83 /* PipMascot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PipMascot.swift; sourceTree = "<group>"; };
-		5BEBA2E030693A7200503B83 /* ReviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewView.swift; sourceTree = "<group>"; };
 		5BEBA2E230693A8D00503B83 /* VideoCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCollectionView.swift; sourceTree = "<group>"; };
 		5BEBA2E430693AEA00503B83 /* SelectionPolicyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionPolicyTests.swift; sourceTree = "<group>"; };
-		5BEBA2E63069409000503B83 /* CleanerStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CleanerStore.swift; sourceTree = "<group>"; };
-		5BEBA2E83069412200503B83 /* ClearspaceApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClearspaceApp.swift; sourceTree = "<group>"; };
 		5BEBA2EA3069415500503B83 /* LibraryModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryModels.swift; sourceTree = "<group>"; };
 		5BEBA2EC3069416C00503B83 /* BlurAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlurAnalyzer.swift; sourceTree = "<group>"; };
 		5BEBA2ED3069416C00503B83 /* LibraryScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryScanner.swift; sourceTree = "<group>"; };
-		5BEBA2F03069418700503B83 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
 		5BEBA2F23069419F00503B83 /* PhotoCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCollectionView.swift; sourceTree = "<group>"; };
 		5BEBA2F4306941C400503B83 /* BlurAnalyzerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlurAnalyzerTests.swift; sourceTree = "<group>"; };
+		5BEBA2F6306987CE00503B83 /* CalendarStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarStore.swift; sourceTree = "<group>"; };
+		5BEBA2F7306987CE00503B83 /* CleanerStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CleanerStore.swift; sourceTree = "<group>"; };
+		5BEBA2F8306987CE00503B83 /* ContactsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsStore.swift; sourceTree = "<group>"; };
+		5BEBA2FC3069883C00503B83 /* ClearspaceApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClearspaceApp.swift; sourceTree = "<group>"; };
+		5BEBA2FE3069886800503B83 /* CalendarModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarModels.swift; sourceTree = "<group>"; };
+		5BEBA2FF3069886800503B83 /* CleanupHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CleanupHistory.swift; sourceTree = "<group>"; };
+		5BEBA3023069887C00503B83 /* CalendarService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarService.swift; sourceTree = "<group>"; };
+		5BEBA30B306988E700503B83 /* DashboardView 2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DashboardView 2.swift"; sourceTree = "<group>"; };
+		5BEBA30D306988F600503B83 /* ReviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewView.swift; sourceTree = "<group>"; };
+		5BEBA30F3069890B00503B83 /* SpaceFreedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpaceFreedView.swift; sourceTree = "<group>"; };
+		5BEBA3123069892F00503B83 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		5BEBA3133069892F00503B83 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		5BEBA3163069895A00503B83 /* CalendarPolicyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarPolicyTests.swift; sourceTree = "<group>"; };
+		5BEBA3173069895A00503B83 /* CleanupHistoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CleanupHistoryTests.swift; sourceTree = "<group>"; };
+		5BEBA31A3069896D00503B83 /* ClearspaceWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClearspaceWidget.swift; sourceTree = "<group>"; };
+		5BEBA31B3069896D00503B83 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		5BEBA31C3069896D00503B83 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		6C7CCDEB3609F1FAA874E941 /* ClearspaceTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; path = ClearspaceTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		73F1AAA7D8C67CBA112B5DEA /* PhotoRequests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = PhotoRequests.swift; path = Clearspace/Core/Services/PhotoRequests.swift; sourceTree = SOURCE_ROOT; };
 		85A365BD3165443B28372D17 /* ContactModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ContactModels.swift; path = Clearspace/Core/Models/ContactModels.swift; sourceTree = SOURCE_ROOT; };
 		AE691EFE359BB024898D45AC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = Clearspace/Resources/Assets.xcassets; sourceTree = SOURCE_ROOT; };
-		B697C04F8A16FB579C1C4582 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = Clearspace/Resources/Info.plist; sourceTree = SOURCE_ROOT; };
 		C25181E5F542211F4B144A99 /* ContactPolicyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ContactPolicyTests.swift; path = ClearspaceTests/ContactPolicyTests.swift; sourceTree = SOURCE_ROOT; };
-		D4D8FFA7E311EF892C8965DD /* ContactsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ContactsStore.swift; path = Clearspace/App/ContactsStore.swift; sourceTree = SOURCE_ROOT; };
 		EF7B4CD618248962A0D99DED /* VideoPolicyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = VideoPolicyTests.swift; path = ClearspaceTests/VideoPolicyTests.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		5BEBA309306988BF00503B83 /* Calendar */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Calendar; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		BD92572B49AC16A86614498D /* Frameworks */ = {
@@ -92,12 +113,14 @@
 		01F484C0BBBBA66C5239EA11 /* Features */ = {
 			isa = PBXGroup;
 			children = (
+				5BEBA3103069890B00503B83 /* Summary */,
 				776862CA04A375B931E194B1 /* Contacts */,
 				498798892C27BFAB180DCB8F /* Dashboard */,
 				1911357E6633CD4CBEBCF58F /* Launch */,
 				C8D79125C8C86F9534220EF4 /* Photos */,
 				5A57CB6985231D65DAAF0278 /* Review */,
 				7B432ECED652046646E5CD1A /* Videos */,
+				5BEBA309306988BF00503B83 /* Calendar */,
 			);
 			path = Features;
 			sourceTree = "<group>";
@@ -114,9 +137,10 @@
 		117CE0FB18E304DE29FDDD09 /* App */ = {
 			isa = PBXGroup;
 			children = (
-				5BEBA2E63069409000503B83 /* CleanerStore.swift */,
-				5BEBA2E83069412200503B83 /* ClearspaceApp.swift */,
-				D4D8FFA7E311EF892C8965DD /* ContactsStore.swift */,
+				5BEBA2F6306987CE00503B83 /* CalendarStore.swift */,
+				5BEBA2F7306987CE00503B83 /* CleanerStore.swift */,
+				5BEBA2FC3069883C00503B83 /* ClearspaceApp.swift */,
+				5BEBA2F8306987CE00503B83 /* ContactsStore.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -141,6 +165,7 @@
 		42944EBC669F21BC22392EB5 = {
 			isa = PBXGroup;
 			children = (
+				5BEBA31D3069896D00503B83 /* ClearspaceWidget */,
 				DBCD85B84757BC69D7C42038 /* Clearspace */,
 				EE08D1CD2211176435580A40 /* ClearspaceTests */,
 				FBDC4F23F93125BBEEAE800C /* Products */,
@@ -150,7 +175,7 @@
 		498798892C27BFAB180DCB8F /* Dashboard */ = {
 			isa = PBXGroup;
 			children = (
-				5BEBA2F03069418700503B83 /* DashboardView.swift */,
+				5BEBA30B306988E700503B83 /* DashboardView 2.swift */,
 			);
 			path = Dashboard;
 			sourceTree = "<group>";
@@ -158,9 +183,27 @@
 		5A57CB6985231D65DAAF0278 /* Review */ = {
 			isa = PBXGroup;
 			children = (
-				5BEBA2E030693A7200503B83 /* ReviewView.swift */,
+				5BEBA30D306988F600503B83 /* ReviewView.swift */,
 			);
 			path = Review;
+			sourceTree = "<group>";
+		};
+		5BEBA3103069890B00503B83 /* Summary */ = {
+			isa = PBXGroup;
+			children = (
+				5BEBA30F3069890B00503B83 /* SpaceFreedView.swift */,
+			);
+			path = Summary;
+			sourceTree = "<group>";
+		};
+		5BEBA31D3069896D00503B83 /* ClearspaceWidget */ = {
+			isa = PBXGroup;
+			children = (
+				5BEBA31A3069896D00503B83 /* ClearspaceWidget.swift */,
+				5BEBA31B3069896D00503B83 /* Info.plist */,
+				5BEBA31C3069896D00503B83 /* PrivacyInfo.xcprivacy */,
+			);
+			path = ClearspaceWidget;
 			sourceTree = "<group>";
 		};
 		776862CA04A375B931E194B1 /* Contacts */ = {
@@ -183,6 +226,8 @@
 			isa = PBXGroup;
 			children = (
 				85A365BD3165443B28372D17 /* ContactModels.swift */,
+				5BEBA2FE3069886800503B83 /* CalendarModels.swift */,
+				5BEBA2FF3069886800503B83 /* CleanupHistory.swift */,
 				5BEBA2EA3069415500503B83 /* LibraryModels.swift */,
 			);
 			path = Models;
@@ -192,8 +237,8 @@
 			isa = PBXGroup;
 			children = (
 				AE691EFE359BB024898D45AC /* Assets.xcassets */,
-				B697C04F8A16FB579C1C4582 /* Info.plist */,
-				133FB301B9774E380D6B6B05 /* PrivacyInfo.xcprivacy */,
+				5BEBA3123069892F00503B83 /* Info.plist */,
+				5BEBA3133069892F00503B83 /* PrivacyInfo.xcprivacy */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -210,6 +255,7 @@
 			isa = PBXGroup;
 			children = (
 				470C0C4811DB0BFBBE9B724C /* ContactService.swift */,
+				5BEBA3023069887C00503B83 /* CalendarService.swift */,
 				5BEBA2EC3069416C00503B83 /* BlurAnalyzer.swift */,
 				5BEBA2ED3069416C00503B83 /* LibraryScanner.swift */,
 				73F1AAA7D8C67CBA112B5DEA /* PhotoRequests.swift */,
@@ -232,6 +278,8 @@
 		EE08D1CD2211176435580A40 /* ClearspaceTests */ = {
 			isa = PBXGroup;
 			children = (
+				5BEBA3163069895A00503B83 /* CalendarPolicyTests.swift */,
+				5BEBA3173069895A00503B83 /* CleanupHistoryTests.swift */,
 				5BEBA2F4306941C400503B83 /* BlurAnalyzerTests.swift */,
 				C25181E5F542211F4B144A99 /* ContactPolicyTests.swift */,
 				5BEBA2E430693AEA00503B83 /* SelectionPolicyTests.swift */,
@@ -282,6 +330,9 @@
 			);
 			dependencies = (
 			);
+			fileSystemSynchronizedGroups = (
+				5BEBA309306988BF00503B83 /* Calendar */,
+			);
 			name = Clearspace;
 			productName = Clearspace;
 			productReference = 4E783A9E10D2A8ABA38CD11C /* Clearspace.app */;
@@ -293,7 +344,8 @@
 		98F54143AB4E86B28C3AFEE0 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1600;
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 2700;
 				TargetAttributes = {
 					C062A5A4A7F4F37DD90F54CB = {
 						CreatedOnToolsVersion = 16.0;
@@ -329,7 +381,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				25E9BEAB0FDBADE361797536 /* Assets.xcassets in Resources */,
-				5DC93BFCFFC0605B3C84C75E /* PrivacyInfo.xcprivacy in Resources */,
+				5BEBA3153069892F00503B83 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -351,6 +403,8 @@
 				CD2F5ADA1599990235AE8462 /* ContactPolicyTests.swift in Sources */,
 				5BEBA2E530693AEA00503B83 /* SelectionPolicyTests.swift in Sources */,
 				A06181465B43A8B131D9B250 /* VideoPolicyTests.swift in Sources */,
+				5BEBA3183069895A00503B83 /* CalendarPolicyTests.swift in Sources */,
+				5BEBA3193069895A00503B83 /* CleanupHistoryTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -358,22 +412,27 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5BEBA2E130693A7200503B83 /* ReviewView.swift in Sources */,
+				5BEBA2F9306987CE00503B83 /* ContactsStore.swift in Sources */,
+				5BEBA2FD3069883C00503B83 /* ClearspaceApp.swift in Sources */,
+				5BEBA30E306988F600503B83 /* ReviewView.swift in Sources */,
+				5BEBA2FA306987CE00503B83 /* CalendarStore.swift in Sources */,
+				5BEBA2FB306987CE00503B83 /* CleanerStore.swift in Sources */,
+				5BEBA30C306988E700503B83 /* DashboardView 2.swift in Sources */,
 				5BEBA2F33069419F00503B83 /* PhotoCollectionView.swift in Sources */,
-				77BE6FD07C5BB3F595711260 /* ContactsStore.swift in Sources */,
-				5BEBA2E73069409000503B83 /* CleanerStore.swift in Sources */,
-				5BEBA2E93069412200503B83 /* ClearspaceApp.swift in Sources */,
 				5BEBA2EE3069416C00503B83 /* BlurAnalyzer.swift in Sources */,
 				5BEBA2EF3069416C00503B83 /* LibraryScanner.swift in Sources */,
+				5BEBA3003069886800503B83 /* CleanupHistory.swift in Sources */,
+				5BEBA3013069886800503B83 /* CalendarModels.swift in Sources */,
 				4B931E5DE50D65AF005BAEDC /* ContactModels.swift in Sources */,
 				D2D40B8B045D0BC68682A7BB /* ContactService.swift in Sources */,
 				29038600B7A12A9B4F1E080E /* PhotoRequests.swift in Sources */,
 				BC0AF0A6A56C5FF93FE4E28C /* ContactsView.swift in Sources */,
 				5BEBA2DA30693A1A00503B83 /* Components.swift in Sources */,
 				5BEBA2DB30693A1A00503B83 /* PipMascot.swift in Sources */,
-				5BEBA2F13069418700503B83 /* DashboardView.swift in Sources */,
 				5BEBA2EB3069415500503B83 /* LibraryModels.swift in Sources */,
+				5BEBA3113069890B00503B83 /* SpaceFreedView.swift in Sources */,
 				261B48C2F8650696FA83BE01 /* SplashView.swift in Sources */,
+				5BEBA3033069887C00503B83 /* CalendarService.swift in Sources */,
 				5BEBA2E330693A8D00503B83 /* VideoCollectionView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -394,6 +453,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
@@ -425,6 +485,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -455,6 +516,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -482,10 +544,39 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -495,9 +586,38 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 			};
 			name = Release;
@@ -508,6 +628,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
