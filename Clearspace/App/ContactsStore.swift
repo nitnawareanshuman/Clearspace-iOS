@@ -25,7 +25,10 @@ final class ContactsStore: ObservableObject {
         observer = NotificationCenter.default.addObserver(forName: .CNContactStoreDidChange, object: nil, queue: .main) { [weak self] _ in
             Task { @MainActor [weak self] in
                 guard let self else { return }
+                guard !deleting else { return }
+                let shouldRefresh = scanned || scanning
                 invalidate()
+                if shouldRefresh { startScan() }
             }
         }
     }
@@ -72,6 +75,25 @@ final class ContactsStore: ObservableObject {
         let affected = groups.filter { $0.records.contains { ids.contains($0.id) } }.flatMap(\.records)
         return ContactDraft(epoch: epoch, records: affected.filter { ids.contains($0.id) }, kept: affected.filter { !ids.contains($0.id) })
     }
+    func makeMergeDraft(_ group: ContactGroup) -> ContactMergeDraft? {
+        guard !busy, hasAccess, let current = groups.first(where: { $0.id == group.id }),
+              let keeper = current.records.first else { return nil }
+        return ContactMergeDraft(epoch: epoch, records: current.records, keeperID: keeper.id)
+    }
+    func merge(_ draft: ContactMergeDraft) async throws {
+        guard !busy, hasAccess, draft.epoch == epoch,
+              groups.contains(where: { Set($0.records.map(\.id)) == Set(draft.records.map(\.id)) }) else {
+            throw ContactError.stale
+        }
+        deleting = true
+        do {
+            try await service.merge(draft)
+            deleting = false; invalidate(); startScan()
+        } catch {
+            deleting = false; invalidate(); startScan()
+            throw error
+        }
+    }
     func delete(_ draft: ContactDraft) async throws {
         guard !busy, hasAccess, draft.epoch == epoch,
               let current = makeDraft(Set(draft.records.map(\.id))),
@@ -79,8 +101,7 @@ final class ContactsStore: ObservableObject {
         deleting = true
         do {
             try await service.delete(draft)
-            deleting = false; invalidate()
-            message = "Deleted \(draft.records.count) contacts. Scan again to refresh your results."
+            deleting = false; invalidate(); startScan()
         } catch {
             deleting = false; invalidate()
             // Re-scan even on error: a provider might reject a write or change access.
@@ -88,3 +109,4 @@ final class ContactsStore: ObservableObject {
         }
     }
 }
+
