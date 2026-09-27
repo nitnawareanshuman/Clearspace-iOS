@@ -54,3 +54,15 @@ Use disposable media/contacts. Record device, OS, library size, timing and failu
 - [ ] Light/dark, largest Dynamic Type, VoiceOver, compact iPhone, landscape and long names usable.
 - [ ] Empty, denied, unavailable, stale and error states have a next action.
 - [ ] Complete on a real iPhone and record a 2–3 minute walkthrough without private content.
+
+
+## Deletion continuity and mascot regression
+
+- Scan, delete one similar photo, and approve the iOS prompt. The remaining group stays visible, selection clears, and dashboard counts/estimates update without another scan.
+- Delete the recommended keeper while leaving other copies. A surviving photo becomes the keeper; deleting the last copy remains blocked.
+- Delete the last extra photo in a group. Show the empty category state, not Scan needed. Check screenshots and videos similarly, including an empty category.
+- Cancel the app confirmation and, separately, the iOS prompt. Photos, estimates and results must remain unchanged.
+- Repeat deletions to exercise Photos callbacks arriving before/after completion. Own removals must not invalidate the scan. An unrelated insertion, edit or deletion must still invalidate it, including during the confirmation prompt.
+- Scan, cancel, scan again; navigate away/back and scroll. The header mascot stays still. Only the scan-card mascot moves subtly inside its frame while scanning. Verify Reduce Motion and background/foreground transitions.
+
+Local validation for this fix: Swift syntax parser, Xcode references, project resources, deletion-site checks and diff whitespace passed. Added four reconciliation XCTest cases. Apple SDK build, XCTest execution, and visual/device verification require Xcode or CI and were not run in the Linux workspace.
