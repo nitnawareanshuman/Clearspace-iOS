@@ -5,6 +5,7 @@ struct ReviewView: View {
     @EnvironmentObject private var store: CleanerStore
     @Environment(\.dismiss) private var dismiss
     @State private var confirm = false
+    @State private var completed = false
     @State private var error: String?
     @State private var preview: PhotoItem?
     private var stale: Bool { draft.epoch != store.epoch || !store.hasAccess }
@@ -82,7 +83,7 @@ struct ReviewView: View {
                 .confirmationDialog("Delete \(draft.items.count) reviewed items?", isPresented: $confirm, titleVisibility: .visible) {
                     Button("Delete reviewed items", role: .destructive) {
                         Task {
-                            do { try await store.delete(draft); dismiss() }
+                            do { try await store.delete(draft); completed = true }
                             catch { self.error = error.localizedDescription }
                         }
                     }
@@ -92,7 +93,18 @@ struct ReviewView: View {
                     Button("OK", role: .cancel) { error = nil }
                 } message: { Text(error ?? "") }
                 .sheet(item: $preview) { PhotoPreview(item: $0) }
-                .interactiveDismissDisabled(store.deleting)
+                .interactiveDismissDisabled(store.deleting || completed)
+                .overlay {
+                    if store.deleting || completed {
+                        CleanupFeedback(completed: completed,
+                            title: completed ? "A little less clutter!" : "Pip is clearing things up…",
+                            detail: completed
+                                ? "Removed \(draft.items.count) items. They remain in Recently Deleted until Photos removes them permanently. Continue to review what’s left."
+                                : "Waiting for Photos to finish your approved cleanup.",
+                            done: { dismiss() })
+                    }
+                }
         }
     }
 }
+
