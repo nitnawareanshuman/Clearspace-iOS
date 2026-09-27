@@ -121,9 +121,19 @@ final class CleanerStore: NSObject, ObservableObject, PHPhotoLibraryChangeObserv
                   let changes = changeInstance.changeDetails(for: observedAssets) else { return }
             self.observedAssets = changes.fetchResultAfterChanges
             let removed = Set(changes.removedObjects.map(\.localIdentifier))
-            let onlyExpectedDeletion = changes.hasIncrementalChanges
+            var onlyExpectedDeletion = changes.hasIncrementalChanges
                 && changes.insertedObjects.isEmpty && changes.changedObjects.isEmpty
                 && removed.isSubset(of: expectedDeletedIDs)
+            // Photos can send a nonincremental notification for our own deletion.
+            // Verify the before/after snapshots instead of discarding valid results.
+            if !onlyExpectedDeletion && (deleting || !expectedDeletedIDs.isEmpty || !changes.hasIncrementalChanges) {
+                let before = (0..<observedAssets.count).map { PhotoItem(asset: observedAssets.object(at: $0)) }
+                let after = (0..<changes.fetchResultAfterChanges.count).map {
+                    PhotoItem(asset: changes.fetchResultAfterChanges.object(at: $0))
+                }
+                onlyExpectedDeletion = LibraryChangePolicy.isExpectedDeletion(
+                    before: before, after: after, expectedIDs: expectedDeletedIDs)
+            }
             expectedDeletedIDs.subtract(removed)
             guard !onlyExpectedDeletion else { return }
             if deleting { libraryChangedDuringDelete = true }
@@ -173,7 +183,6 @@ final class CleanerStore: NSObject, ObservableObject, PHPhotoLibraryChangeObserv
             try await PHPhotoLibrary.shared().performChanges {
                 PHAssetChangeRequest.deleteAssets(assets as NSArray)
             }
-            deleting = false
             if libraryChangedDuringDelete || !hasAccess || self.result == nil {
                 invalidate("Your photo library changed during deletion. Scan again for up-to-date results.")
             } else {
@@ -182,8 +191,12 @@ final class CleanerStore: NSObject, ObservableObject, PHPhotoLibraryChangeObserv
                 epoch += 1
                 phase = "Library updated after deletion"
             }
+            // Rebase observation before leaving the mutation. Delayed notifications
+            // are compared with the post-delete library, not an obsolete fetch.
+            observedAssets = hasAccess ? PHAsset.fetchAssets(with: nil) : nil
+            expectedDeletedIDs.removeAll()
+            deleting = false
             refreshStorage()
-            message = "Removed \(ids.count) items from your library. Photos keeps them in Recently Deleted for up to 30 days. Device space may not increase immediately. If iCloud Photos is enabled, deletion also syncs to your other devices."
         } catch {
             expectedDeletedIDs.subtract(ids)
             deleting = false

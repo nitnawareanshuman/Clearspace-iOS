@@ -63,6 +63,24 @@ Use disposable media/contacts. Record device, OS, library size, timing and failu
 - Delete the last extra photo in a group. Show the empty category state, not Scan needed. Check screenshots and videos similarly, including an empty category.
 - Cancel the app confirmation and, separately, the iOS prompt. Photos, estimates and results must remain unchanged.
 - Repeat deletions to exercise Photos callbacks arriving before/after completion. Own removals must not invalidate the scan. An unrelated insertion, edit or deletion must still invalidate it, including during the confirmation prompt.
-- Scan, cancel, scan again; navigate away/back and scroll. The header mascot stays still. Only the scan-card mascot moves subtly inside its frame while scanning. Verify Reduce Motion and background/foreground transitions.
+- Scan, cancel, scan again; navigate away/back and scroll. The header and splash mascot gently breathe and blink. Working and cleanup movement remains inside its frame. Verify Reduce Motion and background/foreground transitions.
 
 Local validation for this fix: Swift syntax parser, Xcode references, project resources, deletion-site checks and diff whitespace passed. Added four reconciliation XCTest cases. Apple SDK build, XCTest execution, and visual/device verification require Xcode or CI and were not run in the Linux workspace.
+
+
+
+## Contact merge and cleanup feedback regression
+
+- In a disposable same-account contact group, keep a card with only a phone and merge a duplicate with the same phone plus an email. Preview must show both phone and email; saving must retain the keeper ID and remove only the source card.
+- Choose the other keeper; verify the preview changes and the notes acknowledgement resets.
+- Cancel merge review or final confirmation: no contact writes. Change a contact/access externally during review: write blocked.
+- Different organizations, birthdays or contact photos: merge blocked without silently dropping conflicting values. Contacts from different accounts: service rejects the merge before saving.
+- Notes and account-specific fields/group membership are not copied. Copy required notes to the keeper in Contacts, then rescan and review before merging.
+- After photo/video deletion, a completion companion appears only on success. Continue returns to remaining items in the same category. The last group/video yields an animated scan-again state with an in-place button.
+- Cancel the Photos system prompt or force a write error: no success popup; results remain unless an actual library/access change invalidates them.
+- Repeat with nonincremental and delayed Photos notifications; expected removals must not discard remaining results. External inserts, edits and unrelated removals must still invalidate stale analysis.
+- Check large Dynamic Type, VoiceOver, Reduce Motion, background/foreground, and repeated presentation of cleanup/review sheets.
+
+Added XCTest coverage for merge field preservation, conflict rejection, keeper choice,
+invalid inputs and Photos change classification. Local syntax/project/static checks pass;
+Apple SDK compilation, XCTest execution and animation verification require Xcode/CI.

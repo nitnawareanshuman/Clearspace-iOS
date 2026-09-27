@@ -26,9 +26,9 @@ struct VideoCollectionView: View {
                     }
                 }
                 if store.result == nil {
-                    ContentUnavailableView("Scan needed", systemImage: "arrow.clockwise", description: Text("Return home and scan your library again."))
+                    ScanAgainCompanion(title: "Ready for a fresh scan?", detail: "Scan your library to review your videos.")
                 } else if videos.isEmpty {
-                    ContentUnavailableView("No videos found", systemImage: "video", description: Text("Results cover the library you allow Clearspace to access."))
+                    ScanAgainCompanion(title: "No videos left to review", detail: "You’re all caught up here. Scan again whenever you add more videos.")
                 }
                 ForEach(videos) { item in
                     Surface {
@@ -106,3 +106,4 @@ struct VideoPreview: View {
         }
     }
 }
+

@@ -47,8 +47,9 @@ assert all_source.count('PHAssetChangeRequest.deleteAssets(') == 1
 assert 'isNetworkAccessAllowed = true' not in all_source
 assert 'URLSession' not in all_source
 assert 'value(forKey:' not in all_source
-assert all_source.count('request.delete(mutable)') == 1
+assert all_source.count('request.delete(') == 2  # reviewed deletion and reviewed merge
 assert all_source.count('try database.execute(request)') == 1
 assert 'NSContactsUsageDescription' in (root/'Clearspace/Resources/Info.plist').read_text()
-print('PASS: single deletion site, no enabled downloads / URLSession / private file-size lookup')
+print('PASS: one media deletion site, one Contacts commit site, no enabled downloads / URLSession / private file-size lookup')
 print('NOT RUN: Apple SDK type-check, Xcode build, XCTest, UI tests, real iPhone tests')
+
