@@ -30,6 +30,7 @@ struct PhotoCollectionView: View {
                 } else if swipeMode {
                     SwipeReviewView(
                         items: items,
+                        groups: store.result?.groups ?? [],
                         selected: $selected,
                         onExit: { swipeMode = false },
                         onReview: {
