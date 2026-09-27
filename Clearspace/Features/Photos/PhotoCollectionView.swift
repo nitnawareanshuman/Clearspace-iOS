@@ -20,11 +20,11 @@ struct PhotoCollectionView: View {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 20) {
                 if store.result == nil {
-                    ContentUnavailableView("Scan needed", systemImage: "arrow.clockwise",
-                        description: Text("Return to Clearspace and scan your current photo library."))
+                    ScanAgainCompanion(title: "Ready for a fresh scan?",
+                        detail: "Scan your current photo library to find things to review.")
                 } else if items.isEmpty {
-                    ContentUnavailableView(kind == .similar ? "No similar groups found" : "No screenshots found",
-                        systemImage: "checkmark.seal", description: Text("Results cover the photos available to Clearspace on this device."))
+                    ScanAgainCompanion(title: kind == .similar ? "No similar photos left to review" : "No screenshots left to review",
+                        detail: "You’re all caught up here. Scan again whenever you add more photos.")
                 } else {
                     Surface {
                         VStack(alignment: .leading, spacing: 12) {
@@ -96,3 +96,4 @@ struct PhotoCollectionView: View {
         } preview: { preview = item }
     }
 }
+
