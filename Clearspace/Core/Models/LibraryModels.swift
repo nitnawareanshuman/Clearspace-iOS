@@ -48,7 +48,9 @@ struct ScanResult {
     var unavailable = 0
     var similarityUnavailable = 0
     var unmeasured = 0
-    var analysisIncomplete: Bool { unavailable > 0 || similarityUnavailable > 0 }
+    var analysisIncomplete: Bool {
+        unavailable > 0 || similarityUnavailable > 0 || unmeasured > 0 || blurUnassessed > 0
+    }
     var seconds: Double = 0
     /// Reconcile only a confirmed deletion; all remaining byte estimates stay valid.
     func removing(_ ids: Set<String>) -> ScanResult {
@@ -85,7 +87,7 @@ struct StorageSnapshot {
     let total: Int64
     let free: Int64
     var used: Int64 { max(0, total - free) }
-    var fraction: Double { total > 0 ? Double(used) / Double(total) : 0 }
+    var fraction: Double { total > 0 ? min(1, max(0, Double(used) / Double(total))) : 0 }
     static func read() throws -> StorageSnapshot {
         let values = try URL(fileURLWithPath: NSHomeDirectory()).resourceValues(
             forKeys: [.volumeTotalCapacityKey, .volumeAvailableCapacityKey])
@@ -133,6 +135,7 @@ enum SelectionPolicy {
             && snapshot.favorite == current.favorite && snapshot.width == current.width
             && snapshot.height == current.height && snapshot.video == current.video
             && snapshot.screenshot == current.screenshot && snapshot.duration == current.duration
+            && snapshot.created == current.created && snapshot.canDelete == current.canDelete
     }
 
     static func keeper(in items: [PhotoItem]) -> String {
@@ -198,4 +201,3 @@ enum SwipePolicy {
         return next
     }
 }
-

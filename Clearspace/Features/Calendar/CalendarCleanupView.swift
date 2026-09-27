@@ -11,7 +11,7 @@ struct CalendarCleanupView: View {
     private var chosen: [CalendarItem] { store.items.filter { selected.contains($0.id) } }
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 18) {
+            LazyVStack(alignment: .leading, spacing: 18) {
                 Surface {
                     VStack(alignment: .leading, spacing: 10) {
                         Label("Make room in your calendar", systemImage: "calendar.badge.minus").font(.headline)

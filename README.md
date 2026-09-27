@@ -1,53 +1,56 @@
+<p align="center">
+  <img src="Clearspace/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon.png" width="112" alt="Pip, the Clearspace mascot">
+</p>
+
 # Clearspace
 
-A private, on-device iPhone storage cleaner built with SwiftUI, PhotoKit, Vision and Contacts. iOS 17+, iPhone only. No third-party dependencies. Nothing is deleted without review and explicit approval.
+A privacy-focused iPhone storage cleaner built with SwiftUI. Find clutter, review what to keep, and approve every deletion. Pip, the app's mascot, accompanies scanning and cleanup.
 
-## Run on your Mac
-
-1. Open `Clearspace.xcodeproj` in **Xcode 16 or later**. The iOS 18 SDK is required to compile limited Contacts support; deployment remains iOS 17.
-2. Select Clearspace → Signing & Capabilities → your development team. Adjust the bundle identifier if necessary.
-3. Select an iPhone or simulator and Run. Tap **Make some room** on the welcome screen.
-4. Choose Photos access when scanning; Contacts access is requested separately inside Duplicate contacts.
-5. Run **Product → Test** (⌘U). Before submission, test on a real iPhone with disposable media and contacts.
+Built by **Anshuman Nitnaware** for the AppFactory Storage Cleaner assignment. All features are free, with no login, subscriptions, or advertising.
 
 ## Features
 
-- Used/free device storage and cleanup candidate resource totals.
-- Similar-photo groups, recommended keeps and safe multi-selection.
-- Screenshots with selection and preview.
-- Videos ordered by size, local playback, selection and review. All accessible videos are included; unknown sizes appear last.
-- Possible duplicate contacts based on shared full names, phones or emails. Compare individual cards and delete selected copies while keeping at least one per group.
-- Final review of selected media/contact cards, kept contacts and explicit destructive confirmation.
-- Independent Photos/Contacts permissions, including denied, restricted and limited states.
+| Feature | What it does |
+| --- | --- |
+| Storage dashboard | Shows used/free device storage and estimated cleanup sizes without counting overlapping media twice. |
+| Similar photos | Groups matching previews and nearby similar shots; recommends a photo to keep. |
+| Screenshots and large videos | Supports multi-selection, photo/video previews, and videos sorted by known size. |
+| Duplicate contacts | Finds shared names, numbers, or emails; deletes reviewed cards while keeping at least one per group. |
+| Swipe review | Swipe to keep or queue a photo for deletion, with Undo and a final review. |
+| Blurry photos | Suggests potentially blurry images for manual inspection. |
+| Calendar cleanup | Reviews eligible old, writable, non-recurring events from the past year. |
+| Storage widget | Small and medium Home Screen widgets show device storage. |
+| Cleanup summary | Records completed cleanup counts and estimated media bytes locally. |
 
-**Pip** is an original animated SwiftUI mascot on the welcome/splash screen, dashboard and loading states. It stays crisp at every size, requires no plugin or download, and respects Reduce Motion.
+## Run locally
 
-## Important behavior
+1. Open `Clearspace.xcodeproj` in **Xcode 16 or newer**, using an SDK compatible with your chosen device.
+2. Select the **Clearspace** scheme and an **iPhone running iOS 17 or later**.
+3. For a real device, set your signing team on both **Clearspace** and **ClearspaceWidgetExtension**. If you change bundle identifiers, keep the extension identifier prefixed by the app identifier.
+4. Run the app and choose Photos, Contacts, or Calendar access when you use each feature. For simulator testing, drag disposable photos and videos into the simulator first.
 
-Sizes are logical media resource bytes, not guaranteed recovered device space. Photos uses Recently Deleted and iCloud Photos may synchronize deletion. Clearspace does not empty Recently Deleted.
+There are no third-party package dependencies or project-generation steps. To add the widget, run the app once, then open the Home Screen widget gallery and search for **Clearspace**.
 
-Contacts implement the brief's **delete** alternative, not merging. Shared details are suggestions only; no cards are preselected. Deletion removes the entire selected card, including notes/fields not displayed, and does not copy details to kept contacts. The app provides the final confirmation because Contacts has no second system prompt. There is no app-level undo. Contact sizes are unavailable and never fabricated.
+## Privacy and safe cleanup
 
-All content stays on-device. Cloud-only media is not downloaded and may lack a preview/size. Public resource streaming avoids private APIs but can be slow for large videos. Timeouts remain unknown sizes. Similarity is heuristic; inspect each suggestion.
+Analysis runs on the device; the app does not upload photos, contacts, or calendar contents. Cloud-only media is not downloaded. Photos and Contacts support limited access where available; Calendar cleanup requires full event access.
 
-## Structure
+Selections and swipes never delete anything. Final reviews show what will be removed; media deletion also goes through the system Photos confirmation. Photos may retain items in Recently Deleted, and changes can sync through your existing system accounts. Displayed bytes estimate library content, not immediate device space recovered.
 
-```
-Clearspace/
-  App/                 App entry and observable stores
-  Core/Models/         Models and pure safety/matching rules
-  Core/Services/       PhotoKit, Vision and Contacts work
-  DesignSystem/        Shared cards, thumbnails and Pip mascot
-  Features/Launch/     Splash/welcome view
-  Features/Dashboard/ Storage and category overview
-  Features/Photos/    Similar photos and screenshots
-  Features/Videos/    Ordered videos and playback
-  Features/Contacts/  Permission, selection and contact review
-  Features/Review/    Final media deletion review
-  Resources/           Assets, Info.plist and privacy manifest
-ClearspaceTests/       Selection, contact matching and video sorting tests
-```
+## Screenshots
 
-Xcode groups mirror these folders. After adding files, run `python3 scripts/generate_project.py`; no XcodeGen installation is needed. The shared scheme and existing GitHub Actions workflow build/test without signing.
+Fresh screenshots of the current build are pending. The planned gallery covers the dashboard, similar-photo review, deletion review, and cleanup summary. See the [screenshot guide](docs/SCREENSHOTS.md) for the requested views.
 
-See [PROGRESS.md](PROGRESS.md), [testing](docs/TESTING.md) and [validation evidence](docs/VALIDATION.md). Simulator success does not replace the assignment's real-iPhone walkthrough.
+## Scope and limitations
+
+Matching and blur detection provide suggestions, not guarantees. Hidden media is excluded; unavailable items and unknown sizes are disclosed. Contacts can be deleted but **are not merged**. Video compression and the private vault are not implemented. No TestFlight link is included.
+
+Source checks are separate from a successful Xcode build or real-iPhone test. Follow the [testing guide](docs/TESTING.md) before submitting a device recording.
+
+## Documentation
+
+- [Architecture and cleanup flow](docs/ARCHITECTURE.md)
+- [Design decisions and limitations](docs/DECISIONS.md)
+- [Assignment coverage](docs/FEATURES.md)
+- [Build and acceptance tests](docs/TESTING.md)
+- [Review and validation record](docs/VALIDATION.md)

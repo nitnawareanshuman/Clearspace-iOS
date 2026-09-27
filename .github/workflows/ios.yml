@@ -1,7 +1,7 @@
 name: iOS build and safety tests
 on:
   push:
-    branches: [main]
+    branches: [main, bonus]
   pull_request:
   workflow_dispatch:
 permissions:

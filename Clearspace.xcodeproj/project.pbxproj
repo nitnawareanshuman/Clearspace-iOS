@@ -27,7 +27,7 @@
 		5BEBA3003069886800503B83 /* CleanupHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEBA2FF3069886800503B83 /* CleanupHistory.swift */; };
 		5BEBA3013069886800503B83 /* CalendarModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEBA2FE3069886800503B83 /* CalendarModels.swift */; };
 		5BEBA3033069887C00503B83 /* CalendarService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEBA3023069887C00503B83 /* CalendarService.swift */; };
-		5BEBA30C306988E700503B83 /* DashboardView 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEBA30B306988E700503B83 /* DashboardView 2.swift */; };
+		5BEBA30C306988E700503B83 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEBA30B306988E700503B83 /* DashboardView.swift */; };
 		5BEBA30E306988F600503B83 /* ReviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEBA30D306988F600503B83 /* ReviewView.swift */; };
 		5BEBA3113069890B00503B83 /* SpaceFreedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEBA30F3069890B00503B83 /* SpaceFreedView.swift */; };
 		5BEBA3153069892F00503B83 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 5BEBA3133069892F00503B83 /* PrivacyInfo.xcprivacy */; };
@@ -94,7 +94,7 @@
 		5BEBA2FE3069886800503B83 /* CalendarModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarModels.swift; sourceTree = "<group>"; };
 		5BEBA2FF3069886800503B83 /* CleanupHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CleanupHistory.swift; sourceTree = "<group>"; };
 		5BEBA3023069887C00503B83 /* CalendarService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarService.swift; sourceTree = "<group>"; };
-		5BEBA30B306988E700503B83 /* DashboardView 2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DashboardView 2.swift"; sourceTree = "<group>"; };
+		5BEBA30B306988E700503B83 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DashboardView.swift"; sourceTree = "<group>"; };
 		5BEBA30D306988F600503B83 /* ReviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewView.swift; sourceTree = "<group>"; };
 		5BEBA30F3069890B00503B83 /* SpaceFreedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpaceFreedView.swift; sourceTree = "<group>"; };
 		5BEBA3123069892F00503B83 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -220,7 +220,7 @@
 		498798892C27BFAB180DCB8F /* Dashboard */ = {
 			isa = PBXGroup;
 			children = (
-				5BEBA30B306988E700503B83 /* DashboardView 2.swift */,
+				5BEBA30B306988E700503B83 /* DashboardView.swift */,
 			);
 			path = Dashboard;
 			sourceTree = "<group>";
@@ -505,7 +505,7 @@
 				5BEBA30E306988F600503B83 /* ReviewView.swift in Sources */,
 				5BEBA2FA306987CE00503B83 /* CalendarStore.swift in Sources */,
 				5BEBA2FB306987CE00503B83 /* CleanerStore.swift in Sources */,
-				5BEBA30C306988E700503B83 /* DashboardView 2.swift in Sources */,
+				5BEBA30C306988E700503B83 /* DashboardView.swift in Sources */,
 				5BEBA2F33069419F00503B83 /* PhotoCollectionView.swift in Sources */,
 				5BEBA2EE3069416C00503B83 /* BlurAnalyzer.swift in Sources */,
 				5BEBA2EF3069416C00503B83 /* LibraryScanner.swift in Sources */,
@@ -663,9 +663,10 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = ClearspaceWidget/Info.plist;
+				APPLICATION_EXTENSION_API_ONLY = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = ClearspaceWidget;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -680,11 +681,9 @@
 				SKIP_INSTALL = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -713,9 +712,10 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = ClearspaceWidget/Info.plist;
+				APPLICATION_EXTENSION_API_ONLY = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = ClearspaceWidget;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -729,11 +729,9 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
