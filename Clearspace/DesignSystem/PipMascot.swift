@@ -64,14 +64,88 @@ private struct PipSmile: Shape {
     }
 }
 
+struct MascotWaitingView: View {
+    let title: String
+    let detail: String
+    var progress: Double?
+    var cancelTitle: String?
+    var onCancel: (() -> Void)?
+
+    var body: some View {
+        VStack(spacing: 14) {
+            ZStack(alignment: .topTrailing) {
+                PipMascot(working: true)
+                    .frame(width: 118, height: 118)
+
+                Image(systemName: "clock.fill")
+                    .font(.system(size: 24, weight: .semibold))
+                    .foregroundStyle(.orange)
+                    .padding(9)
+                    .background(.background, in: Circle())
+                    .shadow(radius: 4, y: 2)
+                    .offset(x: 4, y: -2)
+                    .accessibilityHidden(true)
+            }
+
+            Text(title)
+                .font(.headline)
+                .multilineTextAlignment(.center)
+
+            Text(detail)
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+
+            if let progress {
+                ProgressView(value: progress)
+                    .tint(.teal)
+                    .frame(maxWidth: 220)
+            } else {
+                ProgressView()
+            }
+
+            if let cancelTitle, let onCancel {
+                Button(cancelTitle, action: onCancel)
+                    .buttonStyle(.bordered)
+            }
+        }
+        .frame(maxWidth: 300)
+        .padding(24)
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 28))
+        .shadow(radius: 24, y: 10)
+    }
+}
+
+struct MascotWaitingPopup: View {
+    let phase: String
+    let progress: Double
+    let onCancel: () -> Void
+
+    var body: some View {
+        ZStack {
+            Color.black.opacity(0.16)
+                .ignoresSafeArea()
+
+            MascotWaitingView(
+                title: "Pip is working…",
+                detail: phase,
+                progress: progress,
+                cancelTitle: "Cancel scan",
+                onCancel: onCancel
+            )
+        }
+    }
+}
+
 struct LoadingCompanion: View {
     let title: String
     var body: some View {
-        VStack(spacing: 12) {
-            PipMascot(working: true).frame(width: 100, height: 100)
-            ProgressView()
-            Text(title).font(.subheadline).foregroundStyle(.secondary)
-        }.frame(maxWidth: .infinity).padding()
+        MascotWaitingView(
+            title: title,
+            detail: "Pip is waiting for the photo to be ready.",
+            progress: nil
+        )
+        .padding()
     }
 }
 
