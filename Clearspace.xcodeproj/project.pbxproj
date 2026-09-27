@@ -33,6 +33,9 @@
 		5BEBA3153069892F00503B83 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 5BEBA3133069892F00503B83 /* PrivacyInfo.xcprivacy */; };
 		5BEBA3183069895A00503B83 /* CalendarPolicyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEBA3163069895A00503B83 /* CalendarPolicyTests.swift */; };
 		5BEBA3193069895A00503B83 /* CleanupHistoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEBA3173069895A00503B83 /* CleanupHistoryTests.swift */; };
+		5BEBA325306990B500503B83 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5BEBA324306990B500503B83 /* WidgetKit.framework */; };
+		5BEBA327306990B500503B83 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5BEBA326306990B500503B83 /* SwiftUI.framework */; };
+		5BEBA336306990B800503B83 /* ClearspaceWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 5BEBA322306990B500503B83 /* ClearspaceWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		A06181465B43A8B131D9B250 /* VideoPolicyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF7B4CD618248962A0D99DED /* VideoPolicyTests.swift */; };
 		BC0AF0A6A56C5FF93FE4E28C /* ContactsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 350150681614E04592871831 /* ContactsView.swift */; };
 		CD2F5ADA1599990235AE8462 /* ContactPolicyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C25181E5F542211F4B144A99 /* ContactPolicyTests.swift */; };
@@ -40,6 +43,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		5BEBA334306990B800503B83 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 98F54143AB4E86B28C3AFEE0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 5BEBA321306990B500503B83;
+			remoteInfo = ClearspaceWidgetExtension;
+		};
 		7E85D4A68785761E1DBB22D8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 98F54143AB4E86B28C3AFEE0 /* Project object */;
@@ -48,6 +58,20 @@
 			remoteInfo = Clearspace;
 		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		5BEBA33B306990B800503B83 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				5BEBA336306990B800503B83 /* ClearspaceWidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		350150681614E04592871831 /* ContactsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ContactsView.swift; path = Clearspace/Features/Contacts/ContactsView.swift; sourceTree = SOURCE_ROOT; };
@@ -77,9 +101,9 @@
 		5BEBA3133069892F00503B83 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		5BEBA3163069895A00503B83 /* CalendarPolicyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarPolicyTests.swift; sourceTree = "<group>"; };
 		5BEBA3173069895A00503B83 /* CleanupHistoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CleanupHistoryTests.swift; sourceTree = "<group>"; };
-		5BEBA31A3069896D00503B83 /* ClearspaceWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClearspaceWidget.swift; sourceTree = "<group>"; };
-		5BEBA31B3069896D00503B83 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		5BEBA31C3069896D00503B83 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		5BEBA322306990B500503B83 /* ClearspaceWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ClearspaceWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		5BEBA324306990B500503B83 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		5BEBA326306990B500503B83 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		6C7CCDEB3609F1FAA874E941 /* ClearspaceTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; path = ClearspaceTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		73F1AAA7D8C67CBA112B5DEA /* PhotoRequests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = PhotoRequests.swift; path = Clearspace/Core/Services/PhotoRequests.swift; sourceTree = SOURCE_ROOT; };
 		85A365BD3165443B28372D17 /* ContactModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ContactModels.swift; path = Clearspace/Core/Models/ContactModels.swift; sourceTree = SOURCE_ROOT; };
@@ -88,11 +112,31 @@
 		EF7B4CD618248962A0D99DED /* VideoPolicyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = VideoPolicyTests.swift; path = ClearspaceTests/VideoPolicyTests.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		5BEBA344306992AF00503B83 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 5BEBA321306990B500503B83 /* ClearspaceWidgetExtension */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		5BEBA309306988BF00503B83 /* Calendar */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Calendar; sourceTree = "<group>"; };
+		5BEBA328306990B500503B83 /* ClearspaceWidget */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (5BEBA344306992AF00503B83 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = ClearspaceWidget; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		5BEBA31F306990B500503B83 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5BEBA327306990B500503B83 /* SwiftUI.framework in Frameworks */,
+				5BEBA325306990B500503B83 /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		BD92572B49AC16A86614498D /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -165,9 +209,10 @@
 		42944EBC669F21BC22392EB5 = {
 			isa = PBXGroup;
 			children = (
-				5BEBA31D3069896D00503B83 /* ClearspaceWidget */,
 				DBCD85B84757BC69D7C42038 /* Clearspace */,
 				EE08D1CD2211176435580A40 /* ClearspaceTests */,
+				5BEBA328306990B500503B83 /* ClearspaceWidget */,
+				5BEBA323306990B500503B83 /* Frameworks */,
 				FBDC4F23F93125BBEEAE800C /* Products */,
 			);
 			sourceTree = "<group>";
@@ -196,14 +241,13 @@
 			path = Summary;
 			sourceTree = "<group>";
 		};
-		5BEBA31D3069896D00503B83 /* ClearspaceWidget */ = {
+		5BEBA323306990B500503B83 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				5BEBA31A3069896D00503B83 /* ClearspaceWidget.swift */,
-				5BEBA31B3069896D00503B83 /* Info.plist */,
-				5BEBA31C3069896D00503B83 /* PrivacyInfo.xcprivacy */,
+				5BEBA324306990B500503B83 /* WidgetKit.framework */,
+				5BEBA326306990B500503B83 /* SwiftUI.framework */,
 			);
-			path = ClearspaceWidget;
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		776862CA04A375B931E194B1 /* Contacts */ = {
@@ -293,6 +337,7 @@
 			children = (
 				4E783A9E10D2A8ABA38CD11C /* Clearspace.app */,
 				6C7CCDEB3609F1FAA874E941 /* ClearspaceTests.xctest */,
+				5BEBA322306990B500503B83 /* ClearspaceWidgetExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -300,6 +345,28 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		5BEBA321306990B500503B83 /* ClearspaceWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5BEBA338306990B800503B83 /* Build configuration list for PBXNativeTarget "ClearspaceWidgetExtension" */;
+			buildPhases = (
+				5BEBA31E306990B500503B83 /* Sources */,
+				5BEBA31F306990B500503B83 /* Frameworks */,
+				5BEBA320306990B500503B83 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				5BEBA328306990B500503B83 /* ClearspaceWidget */,
+			);
+			name = ClearspaceWidgetExtension;
+			packageProductDependencies = (
+			);
+			productName = ClearspaceWidgetExtension;
+			productReference = 5BEBA322306990B500503B83 /* ClearspaceWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		C062A5A4A7F4F37DD90F54CB /* ClearspaceTests */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 61AF5D6BEA2D148C6F2833BF /* Build configuration list for PBXNativeTarget "ClearspaceTests" */;
@@ -325,10 +392,12 @@
 				949D493B91791558E87BC5D7 /* Sources */,
 				BD92572B49AC16A86614498D /* Frameworks */,
 				8ECC8B5D05B79F879ACDF1A2 /* Resources */,
+				5BEBA33B306990B800503B83 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				5BEBA335306990B800503B83 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				5BEBA309306988BF00503B83 /* Calendar */,
@@ -345,8 +414,12 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
+				LastSwiftUpdateCheck = 2700;
 				LastUpgradeCheck = 2700;
 				TargetAttributes = {
+					5BEBA321306990B500503B83 = {
+						CreatedOnToolsVersion = 27.0;
+					};
 					C062A5A4A7F4F37DD90F54CB = {
 						CreatedOnToolsVersion = 16.0;
 						TestTargetID = F75109BEB4DD8800DA6B45F8;
@@ -371,11 +444,19 @@
 			targets = (
 				F75109BEB4DD8800DA6B45F8 /* Clearspace */,
 				C062A5A4A7F4F37DD90F54CB /* ClearspaceTests */,
+				5BEBA321306990B500503B83 /* ClearspaceWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		5BEBA320306990B500503B83 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		8ECC8B5D05B79F879ACDF1A2 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -395,6 +476,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		5BEBA31E306990B500503B83 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		77A03FEE20FE96AD9384861E /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -440,6 +528,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		5BEBA335306990B800503B83 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 5BEBA321306990B500503B83 /* ClearspaceWidgetExtension */;
+			targetProxy = 5BEBA334306990B800503B83 /* PBXContainerItemProxy */;
+		};
 		9F8F6AF81E0B8CD0E2C16D29 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = F75109BEB4DD8800DA6B45F8 /* Clearspace */;
@@ -537,6 +630,111 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		5BEBA339306990B800503B83 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = ClearspaceWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = ClearspaceWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.anshumannitnaware.Clearspace.ClearspaceWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		5BEBA33A306990B800503B83 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = ClearspaceWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = ClearspaceWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.anshumannitnaware.Clearspace.ClearspaceWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
@@ -657,6 +855,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		5BEBA338306990B800503B83 /* Build configuration list for PBXNativeTarget "ClearspaceWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5BEBA339306990B800503B83 /* Debug */,
+				5BEBA33A306990B800503B83 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		61AF5D6BEA2D148C6F2833BF /* Build configuration list for PBXNativeTarget "ClearspaceTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

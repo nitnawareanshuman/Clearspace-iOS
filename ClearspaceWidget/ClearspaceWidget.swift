@@ -55,7 +55,6 @@ struct StorageWidgetView: View {
     }
 }
 
-@main
 struct ClearspaceStorageWidget: Widget {
     let kind = "ClearspaceStorageWidget"
     var body: some WidgetConfiguration {
