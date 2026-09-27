@@ -1,4 +1,5 @@
 import XCTest
+import Contacts
 @testable import Clearspace
 
 final class ContactPolicyTests: XCTestCase {
@@ -33,5 +34,55 @@ final class ContactPolicyTests: XCTestCase {
         XCTAssertFalse(ContactPolicy.allows(["a", "b"], groups: groups))
         XCTAssertFalse(ContactPolicy.allows(["a", "unknown"], groups: groups))
         XCTAssertTrue(ContactPolicy.allows(["a", "c"], groups: groups))
+    }
+}
+
+
+final class ContactMergeTests: XCTestCase {
+    private func card(email: String? = nil) -> CNMutableContact {
+        let contact = CNMutableContact()
+        contact.givenName = "Clearspace"
+        contact.familyName = "Test"
+        contact.phoneNumbers = [CNLabeledValue(label: CNLabelPhoneNumberMobile, value: CNPhoneNumber(stringValue: "2025550101"))]
+        if let email { contact.emailAddresses = [CNLabeledValue(label: CNLabelHome, value: email as NSString)] }
+        return contact
+    }
+    func testMergeKeepsIdentifierAndCombinesDetailsWithoutMutatingOriginals() throws {
+        let a = card(), b = card(email: "test@example.com")
+        let merged = try ContactMerger.merged([ContactRecord(contact: a), ContactRecord(contact: b)], keeping: a.identifier)
+        XCTAssertEqual(merged.identifier, a.identifier)
+        XCTAssertEqual(merged.phoneNumbers.count, 1)
+        XCTAssertEqual(merged.emailAddresses.map { $0.value as String }, ["test@example.com"])
+        XCTAssertTrue(a.emailAddresses.isEmpty)
+        XCTAssertEqual(b.emailAddresses.count, 1)
+    }
+    func testCanKeepEitherOriginalCard() throws {
+        let a = card(), b = card(email: "test@example.com")
+        let merged = try ContactMerger.merged([ContactRecord(contact: a), ContactRecord(contact: b)], keeping: b.identifier)
+        XCTAssertEqual(merged.identifier, b.identifier)
+        XCTAssertEqual(merged.emailAddresses.count, 1)
+    }
+    func testConflictingSingleValueDetailsBlockMerge() {
+        let a = card(), b = card()
+        a.organizationName = "One"
+        b.organizationName = "Two"
+        XCTAssertThrowsError(try ContactMerger.merged([ContactRecord(contact: a), ContactRecord(contact: b)], keeping: a.identifier))
+        XCTAssertEqual(a.organizationName, "One")
+        XCTAssertEqual(b.organizationName, "Two")
+    }
+    func testPostalDetailsAndBirthdayArePreserved() throws {
+        let a = card(), b = card()
+        let address = CNMutablePostalAddress()
+        address.street = "123 Test Street"
+        b.postalAddresses = [CNLabeledValue(label: CNLabelHome, value: address)]
+        b.birthday = DateComponents(year: 2000, month: 1, day: 2)
+        let merged = try ContactMerger.merged([ContactRecord(contact: a), ContactRecord(contact: b)], keeping: a.identifier)
+        XCTAssertEqual(merged.postalAddresses.first?.value.street, address.street)
+        XCTAssertEqual(merged.birthday, b.birthday)
+    }
+    func testMissingKeeperOrRepeatedRecordCannotMerge() {
+        let a = card(), b = card()
+        XCTAssertThrowsError(try ContactMerger.merged([ContactRecord(contact: a), ContactRecord(contact: b)], keeping: "missing"))
+        XCTAssertThrowsError(try ContactMerger.merged([ContactRecord(contact: a), ContactRecord(contact: a)], keeping: a.identifier))
     }
 }
