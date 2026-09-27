@@ -73,6 +73,13 @@ struct DashboardView: View {
                 }.padding(20)
             }.background(Color(uiColor: .systemGroupedBackground))
                 .navigationBarTitleDisplayMode(.inline)
+                .overlay {
+                    if store.scanning {
+                        MascotWaitingPopup(phase: store.phase, progress: store.progress) {
+                            store.cancelScan()
+                        }
+                    }
+                }
                 .sheet(isPresented: $showLimitedPicker, onDismiss: { store.refreshLimitedSelection() }) {
                     NavigationStack {
                         LimitedLibraryPicker().navigationTitle("Photos access")
