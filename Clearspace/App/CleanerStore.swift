@@ -145,7 +145,7 @@ final class CleanerStore: NSObject, ObservableObject, PHPhotoLibraryChangeObserv
         guard Set(makeDraft(draft.items).kept.map(\.id)) == Set(draft.kept.map(\.id)) else {
             throw CleanerError.staleReview
         }
-        let knownIDs = Set((result.groups.flatMap(\.items) + result.screenshots + result.videos).map(\.id))
+        let knownIDs = Set((result.groups.flatMap(\.items) + result.screenshots + result.videos + result.blurryPhotos).map(\.id))
         guard ids.isSubset(of: knownIDs), SelectionPolicy.allows(ids, groups: result.groups) else {
             throw CleanerError.staleReview
         }
@@ -192,5 +192,6 @@ final class CleanerStore: NSObject, ObservableObject, PHPhotoLibraryChangeObserv
         }
     }
 }
+
 
 

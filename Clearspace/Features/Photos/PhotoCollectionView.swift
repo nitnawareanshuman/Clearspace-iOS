@@ -1,6 +1,6 @@
 import SwiftUI
 
-enum CollectionKind { case similar, screenshots }
+enum CollectionKind { case similar, screenshots, blurry }
 
 struct PhotoCollectionView: View {
     let kind: CollectionKind
@@ -11,10 +11,37 @@ struct PhotoCollectionView: View {
     @State private var selectionNote: String?
     @State private var swipeMode = false
     private let columns = [GridItem(.adaptive(minimum: 145), spacing: 14)]
-    private var title: String { kind == .similar ? "Similar photos" : "Screenshots" }
+    private var title: String {
+        switch kind {
+        case .similar: return "Similar photos"
+        case .screenshots: return "Screenshots"
+        case .blurry: return "Blurry photos"
+        }
+    }
+    private var emptyTitle: String {
+        switch kind {
+        case .similar: return "No similar groups found"
+        case .screenshots: return "No screenshots found"
+        case .blurry: return "No likely blurry photos found"
+        }
+    }
+    private var guidance: String {
+        switch kind {
+        case .similar:
+            return "These are suggestions, not guaranteed duplicates. Recommended keeps favor favorites, then resolution, then recency. Preview every group; keep at least one photo."
+        case .screenshots:
+            return "Tap screenshots to select them. Use the expand button to inspect details before you decide."
+        case .blurry:
+            return "These photos may be blurry. Intentional soft focus can appear here too. Preview each photo before deciding; nothing is selected automatically. Select suggestions skips favorites, read-only items and the last copy in a similar group."
+        }
+    }
     private var items: [PhotoItem] {
         guard let result = store.result else { return [] }
-        return SelectionPolicy.unique(kind == .similar ? result.groups.flatMap(\.items) : result.screenshots)
+        switch kind {
+        case .similar: return SelectionPolicy.unique(result.groups.flatMap(\.items))
+        case .screenshots: return SelectionPolicy.unique(result.screenshots)
+        case .blurry: return SelectionPolicy.unique(result.blurryPhotos)
+        }
     }
     private var selectedItems: [PhotoItem] { items.filter { selected.contains($0.id) } }
 
@@ -24,8 +51,10 @@ struct PhotoCollectionView: View {
                 if store.result == nil {
                     MascotEmptyState(title: "Ready for a fresh look?", detail: "Return to Clearspace and scan your current photo library.")
                 } else if items.isEmpty {
-                    ContentUnavailableView(kind == .similar ? "No similar groups found" : "No screenshots found",
-                        systemImage: "checkmark.seal", description: Text("Results cover the photos available to Clearspace on this device."))
+                    ContentUnavailableView(emptyTitle,
+                        systemImage: "checkmark.seal", description: Text(kind == .blurry
+                            ? "No blur suggestions among assessable photos. Screenshots, unavailable photos and images with too little detail are skipped."
+                            : "Results cover the photos available to Clearspace on this device."))
                 } else if swipeMode {
                     SwipeReviewView(
                         items: items,
@@ -43,11 +72,9 @@ struct PhotoCollectionView: View {
                         VStack(alignment: .leading, spacing: 12) {
                             VStack(alignment: .leading, spacing: 12) {
                                 VStack(alignment: .leading, spacing: 5) {
-                                    Text(kind == .similar ? "Keep the moments you love." : "Let the temporary things go.")
+                                    Text(kind == .blurry ? "Find the moments worth keeping." : (kind == .similar ? "Keep the moments you love." : "Let the temporary things go."))
                                         .font(.title3.bold())
-                                    Text(kind == .similar
-                                        ? "These are suggestions, not guaranteed duplicates. Recommended keeps favor favorites, then resolution, then recency. Preview every group; keep at least one photo."
-                                        : "Tap screenshots to select them. Use the expand button to inspect details before you decide.")
+                                    Text(guidance)
                                         .font(.subheadline).foregroundStyle(.secondary)
                                 }
                                 Button { swipeMode = true } label: {
@@ -55,8 +82,9 @@ struct PhotoCollectionView: View {
                                 }.buttonStyle(.bordered)
                             }
                             HStack {
-                                Button(kind == .similar ? "Select suggestions" : "Select all") {
+                                Button(kind == .screenshots ? "Select all" : "Select suggestions") {
                                     if kind == .similar { selected = Set(store.result?.suggestions.map(\.id) ?? []) }
+                                    else if kind == .blurry { selected = Set(store.result?.blurryCandidates.map(\.id) ?? []) }
                                     else { selected = Set(store.result?.screenshotCandidates.map(\.id) ?? []) }
                                 }
                                 Spacer()
@@ -328,3 +356,4 @@ private struct SwipeReviewView: View {
         withAnimation(reduceMotion ? nil : .spring(response: 0.25, dampingFraction: 0.85)) { offset = 0 }
     }
 }
+

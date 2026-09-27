@@ -42,6 +42,8 @@ struct ScanResult {
     var groups: [PhotoGroup] = []
     var screenshots: [PhotoItem] = []
     var videos: [PhotoItem] = []
+    var blurryPhotos: [PhotoItem] = []
+    var blurUnassessed = 0
     var scanned = 0
     var unavailable = 0
     var similarityUnavailable = 0
@@ -51,7 +53,7 @@ struct ScanResult {
     /// Reconcile only a confirmed deletion; all remaining byte estimates stay valid.
     func removing(_ ids: Set<String>) -> ScanResult {
         var updated = self
-        let removedItems = SelectionPolicy.unique(groups.flatMap(\.items) + screenshots + videos)
+        let removedItems = SelectionPolicy.unique(groups.flatMap(\.items) + screenshots + videos + blurryPhotos)
             .filter { ids.contains($0.id) }
         updated.groups = groups.compactMap { group in
             let remaining = group.items.filter { !ids.contains($0.id) }
@@ -63,6 +65,7 @@ struct ScanResult {
         }
         updated.screenshots.removeAll { ids.contains($0.id) }
         updated.videos.removeAll { ids.contains($0.id) }
+        updated.blurryPhotos.removeAll { ids.contains($0.id) }
         updated.scanned = max(0, scanned - removedItems.count)
         updated.unmeasured = max(0, unmeasured - removedItems.filter { $0.bytes == nil }.count)
         return updated
@@ -70,8 +73,11 @@ struct ScanResult {
     var suggestions: [PhotoItem] { groups.flatMap(\.suggested) }
     var screenshotCandidates: [PhotoItem] { SelectionPolicy.safeSelection(screenshots, groups: groups) }
     var videoCandidates: [PhotoItem] { videos.filter(\.canDelete) }
+    var blurryCandidates: [PhotoItem] {
+        SelectionPolicy.safeSelection(blurryPhotos.filter { !$0.favorite }, groups: groups)
+    }
     var cleanupCandidates: [PhotoItem] {
-        SelectionPolicy.safeSelection(suggestions + screenshotCandidates + videoCandidates, groups: groups)
+        SelectionPolicy.safeSelection(suggestions + screenshotCandidates + videoCandidates + blurryCandidates, groups: groups)
     }
 }
 
@@ -192,3 +198,4 @@ enum SwipePolicy {
         return next
     }
 }
+

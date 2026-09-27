@@ -46,6 +46,8 @@ actor LibraryScanner {
         var anchors: [Descriptor] = []
         var allIdentical: [Bool] = []
         var screenshotIDs: [String] = []
+        var blurryScores: [String: Double] = [:]
+        var blurUnassessed = 0
         var unavailable = 0
         var similarityUnavailable = 0
 
@@ -57,6 +59,12 @@ actor LibraryScanner {
             if item.screenshot { screenshotIDs.append(item.id) }
             do {
                 let image = try await PhotoRequests.image(for: asset)
+                if !item.screenshot {
+                    let assessment = autoreleasepool { image.cgImage.flatMap { BlurAnalyzer.assess($0) } }
+                    if let assessment {
+                        if assessment.isLikelyBlurry { blurryScores[item.id] = assessment.variance }
+                    } else { blurUnassessed += 1 }
+                }
                 let descriptor = try autoreleasepool { try Self.describe(image, item: item) }
                 if descriptor.print == nil { similarityUnavailable += 1 }
                 // Identical normalized previews can match anywhere in the library.
@@ -102,13 +110,13 @@ actor LibraryScanner {
             } catch is CancellationError { throw CancellationError() }
             catch { unavailable += 1 }
             if index % 5 == 0 || index == assets.count - 1 {
-                await progress("Scanning photos · \(index + 1) of \(assets.count)",
+                await progress("Checking photos & sharpness · \(index + 1) of \(assets.count)",
                     0.5 * Double(index + 1) / Double(max(1, assets.count)))
             }
         }
         try Task.checkCancellation()
         let groupIndices = buckets.indices.filter { buckets[$0].count > 1 }
-        let sizeIDs = Set(screenshotIDs + groupIndices.flatMap { buckets[$0] }).sorted()
+        let sizeIDs = Set(screenshotIDs + Array(blurryScores.keys) + groupIndices.flatMap { buckets[$0] }).sorted()
         var unmeasured = 0
         // Serial resource streaming bounds memory and I/O. Only cleanup candidates need sizes.
         for (index, id) in sizeIDs.enumerated() {
@@ -144,7 +152,11 @@ actor LibraryScanner {
         let accessible = Set(items.keys).union(videos.map(\.id))
         sizes = sizes.filter { accessible.contains($0.key) }
         return ScanResult(groups: groups.reversed(),
-            screenshots: screenshotIDs.reversed().compactMap { items[$0] }, videos: VideoPolicy.sorted(videos), scanned: assets.count + videoAssets.count,
+            screenshots: screenshotIDs.reversed().compactMap { items[$0] }, videos: VideoPolicy.sorted(videos),
+            blurryPhotos: blurryScores.keys.sorted {
+                let left = blurryScores[$0] ?? 0, right = blurryScores[$1] ?? 0
+                return left == right ? $0 < $1 : left < right
+            }.compactMap { items[$0] }, blurUnassessed: blurUnassessed, scanned: assets.count + videoAssets.count,
             unavailable: unavailable, similarityUnavailable: similarityUnavailable, unmeasured: unmeasured, seconds: Date().timeIntervalSince(start))
     }
 
@@ -214,4 +226,5 @@ extension PhotoItem {
             video: asset.mediaType == .video, duration: asset.duration, canDelete: asset.canPerform(.delete))
     }
 }
+
 

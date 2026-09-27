@@ -44,6 +44,12 @@ struct DashboardView: View {
                                 category("Screenshots", subtitle: "\(result.screenshots.count) screenshots to review",
                                     icon: "viewfinder", summary: savings(result.screenshotCandidates), color: .indigo)
                             }.buttonStyle(.plain)
+                            NavigationLink {
+                                PhotoCollectionView(kind: .blurry)
+                            } label: {
+                                category("Blurry photos", subtitle: "\(result.blurryPhotos.count) possible blurry shots to review",
+                                    icon: "camera.metering.center.weighted", summary: savings(result.blurryCandidates), color: .orange)
+                            }.buttonStyle(.plain)
                             NavigationLink { VideoCollectionView() } label: {
                                 category("Large videos", subtitle: "\(result.videos.count) videos · largest first",
                                     icon: "play.rectangle.fill", summary: savings(result.videoCandidates), color: .purple)
@@ -51,9 +57,12 @@ struct DashboardView: View {
                             Surface {
                                 VStack(alignment: .leading, spacing: 8) {
                                     Label("About these estimates", systemImage: "info.circle").font(.subheadline.bold())
-                                    Text("Sizes count available photo and video resources, not guaranteed free device space. Similar-photo estimates exclude recommended keeps and favorites. Screenshot estimates keep one copy of each matching group. Video estimates include all deletable videos. Read-only media is excluded. Categories can overlap, so do not add their totals.")
+                                    Text("Sizes count available photo and video resources, not guaranteed free device space. Similar-photo estimates exclude recommended keeps and favorites. Blurry-photo estimates skip favorites and keep one copy of matching groups. Screenshot estimates keep one copy of each matching group. Video estimates include all deletable videos. Read-only media is excluded. Categories can overlap, so do not add their totals.")
                                     if result.unavailable > 0 {
                                         Text("\(result.unavailable) photos could not be analyzed locally. Cloud-only items are not downloaded.")
+                                    }
+                                    if result.blurUnassessed > 0 {
+                                        Text("\(result.blurUnassessed) photos had too little detail or were too small for a reliable blur check. Screenshots are excluded from blur detection.")
                                     }
                                     if result.unmeasured > 0 {
                                         Text("\(result.unmeasured) media sizes are unavailable and excluded from byte totals.")
@@ -128,7 +137,7 @@ struct DashboardView: View {
             Surface {
                 VStack(alignment: .leading, spacing: 14) {
                     Label("Your photos, your choice", systemImage: "photo.badge.checkmark").font(.headline)
-                    Text("Allow Photos access to find similar shots, screenshots and large videos. Everything is analyzed on this iPhone. You review each selection before iOS asks you to confirm deletion.")
+                    Text("Allow Photos access to find similar shots, blurry photos, screenshots and large videos. Everything is analyzed on this iPhone. You review each selection before iOS asks you to confirm deletion.")
                         .font(.subheadline).foregroundStyle(.secondary)
                     if store.authorization == .notDetermined {
                         Button("Choose Photos access") { Task { await store.requestAccess() } }
@@ -203,5 +212,6 @@ struct DashboardView: View {
         }
     }
 }
+
 
 
