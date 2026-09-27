@@ -71,7 +71,8 @@ struct DashboardView: View {
                     Label("Private by design. Processed on your iPhone.", systemImage: "lock.shield")
                         .font(.caption).foregroundStyle(.secondary).frame(maxWidth: .infinity)
                 }.padding(20)
-            }.background(Color(uiColor: .systemGroupedBackground))
+            }.disabled(store.scanning)
+                .background(Color(uiColor: .systemGroupedBackground))
                 .navigationBarTitleDisplayMode(.inline)
                 .overlay {
                     if store.scanning {
@@ -158,7 +159,7 @@ struct DashboardView: View {
                     Text(store.scanning ? "Pip is finding room…" : "Let’s make some room").font(.title3.bold())
                     Spacer()
                     if store.scanning { PipMascot(working: true).frame(width: 60, height: 64) }
-                    else { Image(systemName: "sparkle.magnifyingglass").foregroundStyle(.teal) }
+                    else { PipMascot().frame(width: 60, height: 64) }
                 }
                 Text(store.phase).font(.subheadline).foregroundStyle(.secondary)
                 if store.scanning {

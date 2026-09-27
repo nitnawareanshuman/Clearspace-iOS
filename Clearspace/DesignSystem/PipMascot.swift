@@ -8,10 +8,12 @@ struct PipMascot: View {
 
     var body: some View {
         TimelineView(.animation(minimumInterval: 1.0 / 30.0,
-                                paused: !working || reduceMotion || scenePhase != .active)) { timeline in
+                                paused: reduceMotion || scenePhase != .active)) { timeline in
             // A bounded drawing transform cannot animate the surrounding layout or navigation.
-            let wave = working && !reduceMotion && scenePhase == .active
-                ? sin(timeline.date.timeIntervalSinceReferenceDate * .pi * 2 / 1.8) : 0
+            let active = !reduceMotion && scenePhase == .active
+            let time = timeline.date.timeIntervalSinceReferenceDate
+            let wave = active ? sin(time * .pi * 2 / (working ? 1.8 : 4.0)) : 0
+            let blinking = active && time.truncatingRemainder(dividingBy: 4.8) < 0.16
             GeometryReader { proxy in
             let side = min(proxy.size.width, proxy.size.height)
             ZStack {
@@ -33,7 +35,8 @@ struct PipMascot: View {
                     HStack(spacing: side * 0.15) {
                         Capsule().frame(width: side * 0.045, height: side * 0.085)
                         Capsule().frame(width: side * 0.045, height: side * 0.085)
-                    }.foregroundStyle(Color(red: 0.06, green: 0.24, blue: 0.23)).offset(y: -side * 0.01)
+                    }.scaleEffect(x: 1, y: blinking ? 0.15 : 1)
+                        .foregroundStyle(Color(red: 0.06, green: 0.24, blue: 0.23)).offset(y: -side * 0.01)
                     HStack(spacing: side * 0.26) {
                         Ellipse().frame(width: side * 0.09, height: side * 0.04)
                         Ellipse().frame(width: side * 0.09, height: side * 0.04)
@@ -43,7 +46,7 @@ struct PipMascot: View {
                     Ellipse().fill(Color(red: 0.78, green: 0.92, blue: 0.36))
                         .frame(width: side * 0.14, height: side * 0.25).rotationEffect(.degrees(35))
                         .offset(x: side * 0.06, y: -side * 0.38)
-                }.rotationEffect(.degrees(wave * 2))
+                }.rotationEffect(.degrees(wave * (working ? 2 : 0.5)))
                     .offset(y: -abs(wave) * side * 0.02)
                 Image(systemName: "sparkle").font(.system(size: side * 0.14, weight: .medium))
                     .foregroundStyle(.teal).offset(x: side * 0.40, y: -side * 0.30)
@@ -70,12 +73,13 @@ struct MascotWaitingView: View {
     var progress: Double?
     var cancelTitle: String?
     var onCancel: (() -> Void)?
+    var compact = false
 
     var body: some View {
         VStack(spacing: 14) {
             ZStack(alignment: .topTrailing) {
                 PipMascot(working: true)
-                    .frame(width: 118, height: 118)
+                    .frame(width: compact ? 76 : 118, height: compact ? 76 : 118)
 
                 Image(systemName: "clock.fill")
                     .font(.system(size: 24, weight: .semibold))
@@ -110,7 +114,7 @@ struct MascotWaitingView: View {
             }
         }
         .frame(maxWidth: 300)
-        .padding(24)
+        .padding(compact ? 14 : 24)
         .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 28))
         .shadow(radius: 24, y: 10)
     }
@@ -142,10 +146,40 @@ struct LoadingCompanion: View {
     var body: some View {
         MascotWaitingView(
             title: title,
-            detail: "Pip is waiting for the photo to be ready.",
-            progress: nil
+            detail: "Pip is getting things ready.",
+            progress: nil,
+            compact: true
         )
         .padding()
     }
 }
 
+
+struct MascotEmptyState: View {
+    let title: String
+    let detail: String
+    var body: some View {
+        VStack(spacing: 12) {
+            PipMascot().frame(width: 120, height: 120)
+            Text(title).font(.title3.bold())
+            Text(detail).font(.subheadline).foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+        }.multilineTextAlignment(.center).frame(maxWidth: .infinity).padding(.vertical, 24)
+    }
+}
+
+struct MascotMessageView: View {
+    let message: String
+    let onDone: () -> Void
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 16) {
+                PipMascot().frame(width: 132, height: 132)
+                Text("A little more breathing room").font(.title2.bold())
+                Text(message).font(.subheadline).foregroundStyle(.secondary)
+                Button("Done", action: onDone)
+                    .buttonStyle(.borderedProminent).controlSize(.large)
+            }.multilineTextAlignment(.center).padding(24).frame(maxWidth: .infinity)
+        }.presentationDetents([.medium, .large]).presentationDragIndicator(.visible)
+    }
+}

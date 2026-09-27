@@ -180,3 +180,43 @@ final class PhotoAnalysisRegressionTests: XCTestCase {
     }
 }
 
+
+final class SwipePolicyTests: XCTestCase {
+    private func photo(_ id: String, deletable: Bool = true) -> PhotoItem {
+        PhotoItem(id: id, created: nil, modified: nil, width: 100, height: 100,
+                  favorite: false, screenshot: true, bytes: 100, canDelete: deletable)
+    }
+
+    func testLastCopyCannotBeQueuedAcrossScreenshotAndSimilarCategories() {
+        let a = photo("a"), b = photo("b")
+        let groups = [PhotoGroup(id: "g", items: [a, b], keeperID: "a", visuallyIdentical: true)]
+        XCTAssertNil(SwipePolicy.blockReason(.delete, item: a, selected: [], groups: groups))
+        XCTAssertNotNil(SwipePolicy.blockReason(.delete, item: b, selected: ["a"], groups: groups))
+        XCTAssertNil(SwipePolicy.blockReason(.keep, item: b, selected: ["a"], groups: groups))
+    }
+
+    func testReadOnlyPhotoCanBeKeptButNotQueued() {
+        let item = photo("a", deletable: false)
+        XCTAssertNotNil(SwipePolicy.blockReason(.delete, item: item, selected: [], groups: []))
+        XCTAssertNil(SwipePolicy.blockReason(.keep, item: item, selected: [], groups: []))
+    }
+
+    func testKeepAndUndoRestoreExistingGridSelection() {
+        let original: Set<String> = ["a", "b"]
+        let afterKeep = SwipePolicy.applying(.keep, id: "a", to: original)
+        XCTAssertEqual(afterKeep, ["b"])
+        let entry = SwipeHistoryEntry(index: 0, id: "a", wasSelected: true)
+        XCTAssertEqual(SwipePolicy.restoring(entry, in: afterKeep), original)
+    }
+
+    func testDeleteAndUndoPreserveOtherChoices() {
+        let afterDelete = SwipePolicy.applying(.delete, id: "a", to: ["b"])
+        XCTAssertEqual(afterDelete, ["a", "b"])
+        let entry = SwipeHistoryEntry(index: 0, id: "a", wasSelected: false)
+        XCTAssertEqual(SwipePolicy.restoring(entry, in: afterDelete), ["b"])
+    }
+
+    func testQueueingAlreadySelectedPhotoDoesNotDuplicateIt() {
+        XCTAssertEqual(SwipePolicy.applying(.delete, id: "a", to: ["a"]), ["a"])
+    }
+}

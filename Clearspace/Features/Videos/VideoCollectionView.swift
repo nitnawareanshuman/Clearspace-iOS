@@ -26,7 +26,7 @@ struct VideoCollectionView: View {
                     }
                 }
                 if store.result == nil {
-                    ContentUnavailableView("Scan needed", systemImage: "arrow.clockwise", description: Text("Return home and scan your library again."))
+                    MascotEmptyState(title: "Ready for a fresh look?", detail: "Return home and scan your library again.")
                 } else if videos.isEmpty {
                     ContentUnavailableView("No videos found", systemImage: "video", description: Text("Results cover the library you allow Clearspace to access."))
                 }

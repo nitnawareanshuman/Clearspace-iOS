@@ -160,3 +160,35 @@ enum VideoPolicy {
 }
 
 
+/// Swiping edits a review selection, never the Photos library.
+enum SwipeDecision: Hashable { case keep, delete }
+
+struct SwipeHistoryEntry {
+    let index: Int
+    let id: String
+    let wasSelected: Bool
+}
+
+enum SwipePolicy {
+    static func blockReason(_ decision: SwipeDecision, item: PhotoItem,
+                            selected: Set<String>, groups: [PhotoGroup]) -> String? {
+        guard decision == .delete else { return nil }
+        guard item.canDelete else { return "This photo is read-only. Swipe right to keep it." }
+        guard SelectionPolicy.allows(selected.union([item.id]), groups: groups) else {
+            return "Keep at least one photo in each similar group. Tap Keep, or Undo to change your previous choice."
+        }
+        return nil
+    }
+
+    static func applying(_ decision: SwipeDecision, id: String, to selected: Set<String>) -> Set<String> {
+        var next = selected
+        if decision == .keep { next.remove(id) } else { next.insert(id) }
+        return next
+    }
+
+    static func restoring(_ entry: SwipeHistoryEntry, in selected: Set<String>) -> Set<String> {
+        var next = selected
+        if entry.wasSelected { next.insert(entry.id) } else { next.remove(entry.id) }
+        return next
+    }
+}

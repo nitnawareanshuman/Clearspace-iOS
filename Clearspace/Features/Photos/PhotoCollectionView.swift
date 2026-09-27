@@ -14,7 +14,7 @@ struct PhotoCollectionView: View {
     private var title: String { kind == .similar ? "Similar photos" : "Screenshots" }
     private var items: [PhotoItem] {
         guard let result = store.result else { return [] }
-        return kind == .similar ? result.groups.flatMap(\.items) : result.screenshots
+        return SelectionPolicy.unique(kind == .similar ? result.groups.flatMap(\.items) : result.screenshots)
     }
     private var selectedItems: [PhotoItem] { items.filter { selected.contains($0.id) } }
 
@@ -22,8 +22,7 @@ struct PhotoCollectionView: View {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 20) {
                 if store.result == nil {
-                    ContentUnavailableView("Scan needed", systemImage: "arrow.clockwise",
-                        description: Text("Return to Clearspace and scan your current photo library."))
+                    MascotEmptyState(title: "Ready for a fresh look?", detail: "Return to Clearspace and scan your current photo library.")
                 } else if items.isEmpty {
                     ContentUnavailableView(kind == .similar ? "No similar groups found" : "No screenshots found",
                         systemImage: "checkmark.seal", description: Text("Results cover the photos available to Clearspace on this device."))
@@ -38,10 +37,11 @@ struct PhotoCollectionView: View {
                             draft = store.makeDraft(selectedItems)
                         }
                     )
+                    .id(store.epoch)
                 } else {
                     Surface {
                         VStack(alignment: .leading, spacing: 12) {
-                            HStack(alignment: .center) {
+                            VStack(alignment: .leading, spacing: 12) {
                                 VStack(alignment: .leading, spacing: 5) {
                                     Text(kind == .similar ? "Keep the moments you love." : "Let the temporary things go.")
                                         .font(.title3.bold())
@@ -50,7 +50,6 @@ struct PhotoCollectionView: View {
                                         : "Tap screenshots to select them. Use the expand button to inspect details before you decide.")
                                         .font(.subheadline).foregroundStyle(.secondary)
                                 }
-                                Spacer(minLength: 12)
                                 Button { swipeMode = true } label: {
                                     Label("Swipe mode", systemImage: "hand.draw")
                                 }.buttonStyle(.bordered)
@@ -92,6 +91,7 @@ struct PhotoCollectionView: View {
         }
         .background(Color(uiColor: .systemGroupedBackground))
         .navigationTitle(title)
+        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 if !swipeMode && !items.isEmpty {
@@ -122,6 +122,7 @@ struct PhotoCollectionView: View {
 
     private func tile(_ item: PhotoItem, keeper: Bool = false) -> some View {
         PhotoTile(item: item, selected: selected.contains(item.id), keeper: keeper) {
+            guard item.canDelete else { return }
             if selected.contains(item.id) { selected.remove(item.id); return }
             let next = selected.union([item.id])
             if SelectionPolicy.allows(next, groups: store.result?.groups ?? []) {
@@ -142,223 +143,188 @@ private struct SwipeReviewView: View {
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var index = 0
-    @State private var dragOffset: CGSize = .zero
-    @State private var decisionNotice: String?
+    @State private var offset: CGFloat = 0
+    @State private var pending: SwipeDecision?
+    @State private var history: [SwipeHistoryEntry] = []
+    @State private var notice: String?
+    @State private var preview: PhotoItem?
 
-    private var current: PhotoItem? {
-        guard index < items.count else { return nil }
-        return items[index]
-    }
+    private var current: PhotoItem? { items.indices.contains(index) ? items[index] : nil }
+    private var queued: [PhotoItem] { items.filter { selected.contains($0.id) } }
+    private var transitioning: Bool { pending != nil }
 
     var body: some View {
-        VStack(spacing: 16) {
-            HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Swipe to decide").font(.title2.bold())
-                    Text("Right = keep · Left = queue for deletion")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+        VStack(spacing: 18) {
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 5) {
+                    Text("A little less clutter").font(.title2.bold())
+                    Text("Left to remove. Right to keep.")
+                        .font(.subheadline).foregroundStyle(.secondary)
                 }
-                Spacer()
-                Button("Exit") { onExit() }.buttonStyle(.bordered)
+                Spacer(minLength: 8)
+                Button("Grid", action: onExit).buttonStyle(.bordered)
+                    .disabled(transitioning)
             }
-
-            Text("\(max(0, items.count - index)) photos left")
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(.secondary)
+            VStack(spacing: 8) {
+                ProgressView(value: Double(index), total: Double(max(items.count, 1))).tint(.teal)
+                HStack {
+                    Text("\(index) of \(items.count) reviewed")
+                    Spacer()
+                    Text("\(queued.count) queued")
+                }.font(.caption.weight(.semibold)).foregroundStyle(.secondary)
+            }
 
             if let item = current {
-                ZStack {
-                    RoundedRectangle(cornerRadius: 28)
-                        .fill(Color(uiColor: .secondarySystemGroupedBackground))
-
-                    PhotoThumbnail(item: item, large: true)
-                        .clipShape(RoundedRectangle(cornerRadius: 28))
-
-                    if abs(dragOffset.width) > 25 {
-                        Text(dragOffset.width > 0 ? "KEEP" : "DELETE")
-                            .font(.system(size: 36, weight: .heavy, design: .rounded))
-                            .foregroundStyle(dragOffset.width > 0 ? .teal : .red)
-                            .padding(.horizontal, 18)
-                            .padding(.vertical, 8)
-                            .background(.ultraThinMaterial, in: Capsule())
-                            .rotationEffect(.degrees(dragOffset.width > 0 ? 7 : -7))
-                    }
-
-                    VStack {
-                        HStack {
-                            if item.favorite {
-                                Label("Favorite", systemImage: "heart.fill")
-                                    .font(.caption.weight(.semibold))
-                                    .foregroundStyle(.white)
-                                    .padding(8)
-                                    .background(.black.opacity(0.35), in: Capsule())
-                            }
-                            Spacer()
-                            Text(ByteSummary([item]).label)
-                                .font(.caption.weight(.semibold))
-                                .foregroundStyle(.white)
-                                .padding(8)
-                                .background(.black.opacity(0.35), in: Capsule())
-                        }
-
-                        Spacer()
-
-                        HStack {
-                            Label("Delete", systemImage: "arrow.left")
-                                .foregroundStyle(.white)
-                            Spacer()
-                            Label("Keep", systemImage: "arrow.right")
-                                .foregroundStyle(.white)
-                        }
-                        .font(.caption.weight(.semibold))
-                        .padding(12)
-                        .background(.black.opacity(0.32), in: RoundedRectangle(cornerRadius: 14))
-                    }
-                    .padding(14)
-                }
-                .frame(maxWidth: .infinity)
-                .frame(height: 430)
-                .offset(x: dragOffset.width)
-                .rotationEffect(.degrees(Double(dragOffset.width) / 24))
-                .gesture(
-                    DragGesture(minimumDistance: 12)
-                        .onChanged { value in dragOffset = value.translation }
-                        .onEnded { value in
-                            let threshold: CGFloat = 110
-                            if value.translation.width > threshold {
-                                decide(.keep)
-                            } else if value.translation.width < -threshold {
-                                decide(.delete)
-                            } else {
-                                resetCard()
-                            }
-                        }
-                )
-                .animation(
-                    reduceMotion ? nil : .spring(response: 0.32, dampingFraction: 0.82),
-                    value: dragOffset
-                )
-
-                HStack(spacing: 24) {
+                card(item)
+                HStack(spacing: 12) {
                     Button { decide(.delete) } label: {
-                        Image(systemName: "trash")
-                            .font(.title2)
-                            .frame(width: 58, height: 58)
-                            .background(.red.opacity(0.12), in: Circle())
-                    }
-                    .tint(.red)
-                    .disabled(!item.canDelete)
-                    .accessibilityLabel("Queue this photo for deletion")
-
+                        Label("Remove", systemImage: "trash")
+                            .frame(maxWidth: .infinity, minHeight: 44)
+                    }.buttonStyle(.bordered).tint(.red)
+                        .disabled(!item.canDelete || transitioning)
+                        .accessibilityLabel("Queue photo for deletion")
                     Button { decide(.keep) } label: {
-                        Image(systemName: "checkmark")
-                            .font(.title2)
-                            .frame(width: 58, height: 58)
-                            .background(.teal.opacity(0.12), in: Circle())
-                    }
-                    .tint(.teal)
-                    .accessibilityLabel("Keep this photo")
-
-                    Button("Review \(selected.count)") { onReview() }
-                        .buttonStyle(.borderedProminent)
-                        .disabled(selected.isEmpty)
+                        Label("Keep", systemImage: "heart")
+                            .frame(maxWidth: .infinity, minHeight: 44)
+                    }.buttonStyle(.borderedProminent).tint(.teal).disabled(transitioning)
                 }
             } else {
-                Surface {
-                    VStack(spacing: 10) {
-                        PipMascot().frame(width: 110, height: 110)
-                        Image(systemName: "checkmark.seal.fill")
-                            .font(.system(size: 38))
-                            .foregroundStyle(.teal)
-                        Text("You're all caught up").font(.title2.bold())
-                        Text("\(selected.count) photo(s) queued for review.")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                    }
-                    .frame(maxWidth: .infinity)
-                }
-
-                HStack {
-                    Button("Back to grid") { onExit() }.buttonStyle(.bordered)
-                    Spacer()
-                    Button("Review deletion") { onReview() }
-                        .buttonStyle(.borderedProminent)
-                        .disabled(selected.isEmpty)
-                }
+                MascotEmptyState(title: "All reviewed!", detail: queued.isEmpty
+                    ? "Every photo is staying. A little peace of mind."
+                    : "Your choices are ready. Take one last look before deleting anything.")
             }
 
-            if let decisionNotice {
-                Text(decisionNotice)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
+            if let notice {
+                Label(notice, systemImage: "info.circle")
+                    .font(.footnote).foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
             }
+            HStack {
+                Button { undo() } label: { Label("Undo", systemImage: "arrow.uturn.backward") }
+                    .disabled(history.isEmpty || transitioning)
+                Spacer()
+                if let item = current {
+                    Button { preview = item } label: {
+                        Label("Preview", systemImage: "arrow.up.left.and.arrow.down.right")
+                    }.disabled(transitioning)
+                }
+            }.buttonStyle(.bordered)
 
-            Text("Nothing is deleted while swiping. Your choices go to the normal review screen.")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
+            Button(action: onReview) {
+                VStack(spacing: 4) {
+                    Text("Review \(queued.count) photos").font(.headline)
+                    Text(ByteSummary(queued).label).font(.caption)
+                }.frame(maxWidth: .infinity).padding(.vertical, 8)
+            }.buttonStyle(.borderedProminent).disabled(queued.isEmpty || transitioning)
+            Text("Swiping only makes a selection. Nothing is deleted until you review and confirm.")
+                .font(.caption).foregroundStyle(.secondary).multilineTextAlignment(.center)
         }
-        .padding(.horizontal, 4)
+        .sheet(item: $preview) { PhotoPreview(item: $0) }
+        // Cancellation belongs to the view's lifetime. A departing card cannot advance a new session.
+        .task(id: pending) {
+            guard let decision = pending else { return }
+            if !reduceMotion {
+                withAnimation(.easeOut(duration: 0.2)) { offset = decision == .delete ? -600 : 600 }
+                do { try await Task.sleep(for: .milliseconds(220)) }
+                catch { return }
+            }
+            guard !Task.isCancelled, pending == decision else { return }
+            var transaction = Transaction()
+            transaction.disablesAnimations = true
+            withTransaction(transaction) {
+                index += 1
+                offset = 0
+                pending = nil
+            }
+        }
     }
 
-    private enum Decision {
-        case keep
-        case delete
+    private func card(_ item: PhotoItem) -> some View {
+        GeometryReader { proxy in
+            ZStack(alignment: .bottom) {
+                PhotoThumbnail(item: item, large: true)
+                    .id(item.id)
+                VStack {
+                    HStack {
+                        if item.favorite { badge("Favorite", icon: "heart.fill") }
+                        Spacer()
+                        if groups.contains(where: { $0.keeperID == item.id }) {
+                            badge("Suggested keep", icon: "checkmark.shield")
+                        }
+                    }
+                    Spacer()
+                    HStack {
+                        Text(item.created?.formatted(date: .abbreviated, time: .omitted) ?? "Photo")
+                        Spacer()
+                        Text(ByteSummary([item]).label)
+                    }.font(.caption.weight(.semibold))
+                        .padding(12).background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
+                    if !item.canDelete {
+                        badge("Read-only · keep or skip this photo", icon: "lock")
+                    } else if selected.contains(item.id) {
+                        badge("Already queued · keep to unselect", icon: "tray")
+                    }
+                }.padding(12)
+                if abs(offset) > 25 {
+                    Text(offset > 0 ? "KEEP" : "REMOVE")
+                        .font(.title.bold()).foregroundStyle(offset > 0 ? Color.teal : Color.red)
+                        .padding().background(.regularMaterial, in: Capsule())
+                        .frame(maxHeight: .infinity)
+                }
+            }
+            .frame(width: proxy.size.width, height: proxy.size.height)
+            .background(Color(uiColor: .secondarySystemGroupedBackground))
+            .clipShape(RoundedRectangle(cornerRadius: 24))
+            .contentShape(RoundedRectangle(cornerRadius: 24))
+            .offset(x: reduceMotion ? 0 : offset)
+            .rotationEffect(.degrees(reduceMotion ? 0 : Double(offset / 30)))
+            .gesture(DragGesture(minimumDistance: 24)
+                .onChanged { value in
+                    guard !transitioning, abs(value.translation.width) > abs(value.translation.height) else { return }
+                    offset = value.translation.width
+                }
+                .onEnded { value in
+                    guard !transitioning else { return }
+                    let horizontal = abs(value.translation.width) > abs(value.translation.height)
+                    let threshold = min(CGFloat(100), proxy.size.width * 0.28)
+                    if horizontal && abs(value.translation.width) >= threshold {
+                        decide(value.translation.width > 0 ? .keep : .delete)
+                    } else { resetCard() }
+                })
+            .accessibilityAction(named: Text("Keep photo")) { decide(.keep) }
+            .accessibilityAction(named: Text("Queue for deletion")) { decide(.delete) }
+        }
+        .frame(height: 340)
+        .clipped()
     }
 
-    private func decide(_ decision: Decision) {
-        guard let item = current else { return }
+    private func badge(_ text: String, icon: String) -> some View {
+        Label(text, systemImage: icon).font(.caption2.weight(.semibold))
+            .padding(8).background(.regularMaterial, in: Capsule())
+    }
 
-        if decision == .delete && !item.canDelete {
-            decisionNotice = "This item is read-only and cannot be queued for deletion."
-            goNext()
+    private func decide(_ decision: SwipeDecision) {
+        guard !transitioning, let item = current else { return }
+        if let reason = SwipePolicy.blockReason(decision, item: item, selected: selected, groups: groups) {
+            notice = reason
+            resetCard()
             return
         }
+        notice = nil
+        history.append(SwipeHistoryEntry(index: index, id: item.id, wasSelected: selected.contains(item.id)))
+        selected = SwipePolicy.applying(decision, id: item.id, to: selected)
+        pending = decision // Locks both gesture and buttons synchronously, before animation starts.
+    }
 
-        if decision == .delete {
-            let proposed = selected.union([item.id])
-            if !SelectionPolicy.allows(proposed, groups: groups) {
-                decisionNotice = "Keep at least one photo from each similar group. This photo must stay."
-                resetCard()
-                return
-            }
-        }
-
-        switch decision {
-        case .keep:
-            selected.remove(item.id)
-        case .delete:
-            selected.insert(item.id)
-        }
-
-        goNext()
+    private func undo() {
+        guard !transitioning, let entry = history.popLast() else { return }
+        selected = SwipePolicy.restoring(entry, in: selected)
+        index = entry.index
+        notice = nil
+        offset = 0
     }
 
     private func resetCard() {
-        withAnimation(.spring(response: 0.25, dampingFraction: 0.82)) {
-            dragOffset = .zero
-        }
-    }
-
-    private func goNext() {
-        decisionNotice = nil
-
-        if reduceMotion {
-            dragOffset = .zero
-            index += 1
-            return
-        }
-
-        let direction: CGFloat = dragOffset.width < 0 ? -1 : 1
-        withAnimation(.spring(response: 0.28, dampingFraction: 0.86)) {
-            dragOffset = .init(width: direction * 520, height: 0)
-        }
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.18) {
-            dragOffset = .zero
-            index += 1
-        }
+        withAnimation(reduceMotion ? nil : .spring(response: 0.25, dampingFraction: 0.85)) { offset = 0 }
     }
 }

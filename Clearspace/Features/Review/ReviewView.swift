@@ -7,6 +7,7 @@ struct ReviewView: View {
     @State private var confirm = false
     @State private var error: String?
     @State private var preview: PhotoItem?
+    @State private var completionMessage: String?
     private var stale: Bool { draft.epoch != store.epoch || !store.hasAccess }
     private var favorites: Int { draft.items.filter(\.favorite).count }
     var body: some View {
@@ -82,7 +83,11 @@ struct ReviewView: View {
                 .confirmationDialog("Delete \(draft.items.count) reviewed items?", isPresented: $confirm, titleVisibility: .visible) {
                     Button("Delete reviewed items", role: .destructive) {
                         Task {
-                            do { try await store.delete(draft); dismiss() }
+                            do {
+                                try await store.delete(draft)
+                                completionMessage = store.message ?? "Your reviewed items were removed."
+                                store.message = nil
+                            }
                             catch { self.error = error.localizedDescription }
                         }
                     }
@@ -92,6 +97,19 @@ struct ReviewView: View {
                     Button("OK", role: .cancel) { error = nil }
                 } message: { Text(error ?? "") }
                 .sheet(item: $preview) { PhotoPreview(item: $0) }
+                .sheet(isPresented: Binding(get: { completionMessage != nil }, set: { if !$0 { completionMessage = nil } }),
+                       onDismiss: { dismiss() }) {
+                    MascotMessageView(message: completionMessage ?? "") { completionMessage = nil }
+                }
+                .overlay {
+                    if store.deleting {
+                        ZStack {
+                            Color.black.opacity(0.18).ignoresSafeArea()
+                            MascotWaitingView(title: "Pip is tidying up…",
+                                detail: "Waiting for Photos to finish your approved deletion.")
+                        }
+                    }
+                }
                 .interactiveDismissDisabled(store.deleting)
         }
     }
