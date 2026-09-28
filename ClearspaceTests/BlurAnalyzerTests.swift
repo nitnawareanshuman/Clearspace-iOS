@@ -31,7 +31,10 @@ final class BlurAnalyzerTests: XCTestCase {
     }
 
     func testSharpSubjectAgainstSoftBackgroundIsProtected() throws {
-        var pixels = (0..<(256 * 256)).map { UInt8(40 + ($0 % 256) / 2) }
+        let pixelCount = 256 * 256
+        var pixels = (0..<pixelCount).map { index in
+            UInt8(40 + (index % 256) / 2)
+        }
         // A small, sharply focused subject: global variance alone would flag it.
         for y in 100..<116 {
             for x in 100..<116 { pixels[y * 256 + x] = (x / 4) % 2 == 0 ? 50 : 170 }
