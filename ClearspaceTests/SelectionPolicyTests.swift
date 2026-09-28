@@ -253,3 +253,22 @@ final class SwipePolicyTests: XCTestCase {
         XCTAssertEqual(SwipePolicy.applying(.delete, id: "a", to: ["a"]), ["a"])
     }
 }
+
+final class LibraryChangePolicyTests: XCTestCase {
+    private func item(_ id: String, favorite: Bool = false) -> PhotoItem {
+        PhotoItem(id: id, created: nil, modified: nil, width: 100, height: 100,
+                  favorite: favorite, screenshot: false)
+    }
+    func testNonincrementalOwnDeletionPreservesResults() {
+        XCTAssertTrue(LibraryChangePolicy.isExpectedDeletion(
+            before: [item("a"), item("b"), item("video")], after: [item("a"), item("video")], expectedIDs: ["b"]))
+    }
+    func testLateNoOpNotificationIsHarmless() {
+        XCTAssertTrue(LibraryChangePolicy.isExpectedDeletion(before: [item("a")], after: [item("a")], expectedIDs: ["b"]))
+    }
+    func testExternalRemovalInsertionAndEditAreNotIgnored() {
+        XCTAssertFalse(LibraryChangePolicy.isExpectedDeletion(before: [item("a"), item("b")], after: [], expectedIDs: ["b"]))
+        XCTAssertFalse(LibraryChangePolicy.isExpectedDeletion(before: [item("a")], after: [item("a"), item("new")], expectedIDs: ["b"]))
+        XCTAssertFalse(LibraryChangePolicy.isExpectedDeletion(before: [item("a")], after: [item("a", favorite: true)], expectedIDs: ["b"]))
+    }
+}

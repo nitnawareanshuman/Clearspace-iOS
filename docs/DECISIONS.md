@@ -10,7 +10,7 @@
 | Orientation-aware image analysis | The fingerprint should represent what the user sees. UIKit drawing applies rotation and mirroring before hashing and Vision analysis. |
 | Conservative blur suggestions | Global and regional edge variance help retain sharp subjects against soft backgrounds. Intentional blur may be suggested; low-detail scenes may be skipped. |
 | Stream resource sizes with public APIs | Avoids private file-size access and whole-video buffers. Initial scans can be slow; inaccessible or timed-out sizes remain unknown. |
-| Contact deletion without merging | The assignment permits either. Automatic merging can lose conflicting fields or inaccessible notes; users review whole-card deletion instead. |
+| Reviewed contact merging and deletion | Merge supported fields into a chosen keeper within one account. Conflicting values block merging; acknowledge unsupported notes, fields, and memberships before removing source cards. Whole-card deletion remains available. |
 | Narrow calendar eligibility | Excluding recurring, detached, invitation, recent, and read-only events reduces deletion ambiguity. |
 | Counts for contacts/calendar | iOS exposes no reliable per-item storage saving for these domains. |
 | Local receipt history | Stores dates, counts, and estimated bytes only. Restoring content outside the app does not reverse historical activity. |

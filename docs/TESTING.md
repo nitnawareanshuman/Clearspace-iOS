@@ -65,7 +65,7 @@ Simulator media can be dragged into its window. Use Contacts and Calendar to cre
 
 - [ ] Contacts start unselected; shared details form candidate groups, not guaranteed identities.
 - [ ] Selecting all cards in a contact group is blocked. Review shows whole-card deletion warnings and retained cards.
-- [ ] Cancelling contact confirmation makes no changes. Confirming deletes only disposable selected cards; there is no merge action.
+- [ ] Cancelling contact confirmation makes no changes. Confirming deletes only disposable selected cards; reviewed merges preserve supported fields in the chosen keeper.
 - [ ] Read-only accounts/provider failures show errors and require a rescan without a success receipt.
 - [ ] Calendar lists only writable, non-recurring, non-detached, non-invitation events from the past year that ended over 30 days ago.
 - [ ] Calendar review shows titles, calendar names, dates, and available notes/location. Cancel leaves events unchanged.
@@ -96,3 +96,29 @@ Do not clear Recently Deleted solely to demonstrate an immediate storage increas
 | Destructive and cancellation checks | Pending |
 | Widget gallery and refresh | Pending |
 | Remaining failures | Pending |
+
+
+
+## Contact merge and cleanup feedback regression
+
+- In a disposable same-account contact group, keep a card with only a phone and merge a duplicate with the same phone plus an email. Preview must show both phone and email; saving must retain the keeper ID and remove only the source card.
+- Choose the other keeper; verify the preview changes and the notes acknowledgement resets.
+- Cancel merge review or final confirmation: no contact writes. Change a contact/access externally during review: write blocked.
+- Different organizations, birthdays or contact photos: merge blocked without silently dropping conflicting values. Contacts from different accounts: service rejects the merge before saving.
+- Notes and account-specific fields/group membership are not copied. Copy required notes to the keeper in Contacts, then rescan and review before merging.
+- After photo/video deletion, a completion companion appears only on success. Continue returns to remaining items in the same category. The last group/video yields an animated scan-again state with an in-place button.
+- Cancel the Photos system prompt or force a write error: no success popup; results remain unless an actual library/access change invalidates them.
+- Repeat with nonincremental and delayed Photos notifications; expected removals must not discard remaining results. External inserts, edits and unrelated removals must still invalidate stale analysis.
+- Check large Dynamic Type, VoiceOver, Reduce Motion, background/foreground, and repeated presentation of cleanup/review sheets.
+
+Added XCTest coverage for merge field preservation, conflict rejection, keeper choice,
+invalid inputs and Photos change classification. Local syntax/project/static checks pass;
+Apple SDK compilation, XCTest execution and animation verification require Xcode/CI.
+
+
+## Merge and deletion regression checks
+
+- [ ] Merge disposable contacts within one account; verify copied fields and retained keeper. Cancel without changing cards.
+- [ ] Conflicting single-value details and cross-account merges are blocked; review requires acknowledgement of unsupported fields.
+- [ ] Own Photos deletion notifications preserve remaining results; external insertions, edits, and removals still invalidate review.
+- [ ] Verify both swipe review and contact merge after integrating main into bonus.

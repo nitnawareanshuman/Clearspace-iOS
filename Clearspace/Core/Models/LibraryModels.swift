@@ -159,6 +159,20 @@ enum SelectionPolicy {
 }
 
 /// Known sizes sort descending; cloud-only or unreadable sizes stay visible at the end.
+enum LibraryChangePolicy {
+    /// Accept only expected removals, never newly inserted or edited surviving items.
+    static func isExpectedDeletion(before: [PhotoItem], after: [PhotoItem], expectedIDs: Set<String>) -> Bool {
+        let previous = Dictionary(uniqueKeysWithValues: before.map { ($0.id, $0) })
+        let remaining = Set(after.map(\.id))
+        guard Set(previous.keys).subtracting(remaining).isSubset(of: expectedIDs) else { return false }
+        return after.allSatisfy { current in
+            guard let original = previous[current.id] else { return false }
+            return SelectionPolicy.unchanged(original, current: current)
+                && original.canDelete == current.canDelete
+        }
+    }
+}
+
 enum VideoPolicy {
     static func sorted(_ items: [PhotoItem]) -> [PhotoItem] {
         items.sorted {

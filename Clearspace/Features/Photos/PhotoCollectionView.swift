@@ -49,12 +49,12 @@ struct PhotoCollectionView: View {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 20) {
                 if store.result == nil {
-                    MascotEmptyState(title: "Ready for a fresh look?", detail: "Return to Clearspace and scan your current photo library.")
+                    ScanAgainCompanion(title: "Ready for a fresh scan?", detail: "Scan your current photo library to find things to review.")
                 } else if items.isEmpty {
-                    ContentUnavailableView(emptyTitle,
-                        systemImage: "checkmark.seal", description: Text(kind == .blurry
+                    ScanAgainCompanion(title: emptyTitle,
+                        detail: kind == .blurry
                             ? "No blur suggestions among assessable photos. Screenshots, unavailable photos and images with too little detail are skipped."
-                            : "Results cover the photos available to Clearspace on this device."))
+                            : "You’re all caught up here. Scan again whenever you add more photos.")
                 } else if swipeMode {
                     SwipeReviewView(
                         items: items,
@@ -356,4 +356,3 @@ private struct SwipeReviewView: View {
         withAnimation(reduceMotion ? nil : .spring(response: 0.25, dampingFraction: 0.85)) { offset = 0 }
     }
 }
-
