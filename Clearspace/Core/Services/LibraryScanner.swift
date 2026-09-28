@@ -163,7 +163,7 @@ actor LibraryScanner {
     // Vision is optional: a failed feature print must never discard a valid pixel fingerprint.
     static func describe(_ image: UIImage, item: PhotoItem,
                          featurePrint: (CGImage) throws -> VNFeaturePrintObservation = LibraryScanner.featurePrint) throws -> Descriptor {
-        guard let cg = image.cgImage else { throw CleanerError.unavailable }
+        let cg = try orientedPixels(image)
         let side = 128
         var pixels = [UInt8](repeating: 0, count: side * side * 4)
         let rendered = pixels.withUnsafeMutableBytes { bytes -> Bool in
@@ -202,6 +202,28 @@ actor LibraryScanner {
             aspect: Double(item.width) / Double(max(1, item.height)), screenshot: item.screenshot, digest: digest, hash: hash, print: observation)
     }
 
+    /// CGImage alone drops UIImage orientation metadata. Analyze the same pixels
+    /// the user sees, so rotated/mirrored images cannot become false exact matches.
+    static func orientedPixels(_ image: UIImage) throws -> CGImage {
+        guard let original = image.cgImage else { throw CleanerError.unavailable }
+        guard image.imageOrientation != .up else { return original }
+        let swapsAxes: Bool
+        switch image.imageOrientation {
+        case .left, .leftMirrored, .right, .rightMirrored: swapsAxes = true
+        default: swapsAxes = false
+        }
+        let size = CGSize(width: CGFloat(swapsAxes ? original.height : original.width),
+                          height: CGFloat(swapsAxes ? original.width : original.height))
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = 1
+        format.preferredRange = .standard
+        let normalized = UIGraphicsImageRenderer(size: size, format: format).image { _ in
+            image.draw(in: CGRect(origin: .zero, size: size))
+        }
+        guard let cg = normalized.cgImage else { throw CleanerError.unavailable }
+        return cg
+    }
+
     static func featurePrint(_ image: CGImage) throws -> VNFeaturePrintObservation {
         let request = VNGenerateImageFeaturePrintRequest()
         // Keep revision 2's calibrated distance scale on both simulator and device.
@@ -226,5 +248,3 @@ extension PhotoItem {
             video: asset.mediaType == .video, duration: asset.duration, canDelete: asset.canPerform(.delete))
     }
 }
-
-

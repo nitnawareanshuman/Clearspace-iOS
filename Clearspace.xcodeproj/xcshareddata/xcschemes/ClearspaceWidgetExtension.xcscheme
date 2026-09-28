@@ -77,7 +77,7 @@
       <EnvironmentVariables>
          <EnvironmentVariable
             key = "_XCWidgetKind"
-            value = ""
+            value = "ClearspaceStorageWidget"
             isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable

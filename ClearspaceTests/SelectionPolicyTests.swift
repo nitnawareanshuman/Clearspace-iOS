@@ -84,6 +84,7 @@ final class SelectionPolicyTests: XCTestCase {
     func testStorageUsageCannotBeNegative() {
         XCTAssertEqual(StorageSnapshot(total: 100, free: 120).used, 0)
         XCTAssertEqual(StorageSnapshot(total: 0, free: 0).fraction, 0)
+        XCTAssertEqual(StorageSnapshot(total: 100, free: -20).fraction, 1)
     }
     func testBulkSelectionKeepsOneCopyAndExcludesReadOnlyMedia() {
         var readOnly = item("read-only")
@@ -108,6 +109,16 @@ final class SelectionPolicyTests: XCTestCase {
         XCTAssertFalse(SelectionPolicy.unchanged(item("a"), current: item("a", width: 200)))
         XCTAssertFalse(SelectionPolicy.unchanged(item("a"), current: item("b")))
         XCTAssertTrue(SelectionPolicy.unchanged(item("a", bytes: nil), current: item("a", bytes: 100)))
+    }
+    func testChangedDeletionPermissionInvalidatesSnapshot() {
+        let before = item("a")
+        var after = before
+        after.canDelete = false
+        XCTAssertFalse(SelectionPolicy.unchanged(before, current: after))
+    }
+    func testChangedCreationDateInvalidatesSnapshot() {
+        XCTAssertFalse(SelectionPolicy.unchanged(item("a", date: .distantPast),
+                                               current: item("a", date: .distantFuture)))
     }
     func testReadOnlyDuplicatesNeverBecomeSuggestions() {
         var readOnly = item("b")
@@ -170,6 +181,26 @@ final class PhotoAnalysisRegressionTests: XCTestCase {
         let b = try LibraryScanner.describe(image(.blue), item: item("b")) { _ in throw CleanerError.unavailable }
         XCTAssertNotEqual(a.digest, b.digest)
     }
+    func testOrientationMetadataDoesNotProduceFalseExactMatch() throws {
+        let upright = image(.red)
+        let pixels = try XCTUnwrap(upright.cgImage)
+        for orientation: UIImage.Orientation in [.down, .upMirrored, .right, .left] {
+            let rotated = UIImage(cgImage: pixels, scale: 1, orientation: orientation)
+            let a = try LibraryScanner.describe(upright, item: item("a")) { _ in throw CleanerError.unavailable }
+            let b = try LibraryScanner.describe(rotated, item: item("b")) { _ in throw CleanerError.unavailable }
+            XCTAssertNotEqual(a.digest, b.digest)
+        }
+    }
+    func testQuarterTurnSwapsPixelDimensions() throws {
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = 1
+        let original = UIGraphicsImageRenderer(size: CGSize(width: 80, height: 120), format: format).image { _ in }
+        let pixels = try XCTUnwrap(original.cgImage)
+        let rotated = UIImage(cgImage: pixels, scale: 1, orientation: .right)
+        let normalized = try LibraryScanner.orientedPixels(rotated)
+        XCTAssertEqual(normalized.width, 120)
+        XCTAssertEqual(normalized.height, 80)
+    }
     func testUnreadableImageStillFailsInsteadOfGettingAnEmptyFingerprint() {
         XCTAssertThrowsError(try LibraryScanner.describe(UIImage(), item: item("a")))
     }
@@ -177,6 +208,8 @@ final class PhotoAnalysisRegressionTests: XCTestCase {
         XCTAssertFalse(ScanResult().analysisIncomplete)
         XCTAssertTrue(ScanResult(unavailable: 1).analysisIncomplete)
         XCTAssertTrue(ScanResult(similarityUnavailable: 1).analysisIncomplete)
+        XCTAssertTrue(ScanResult(unmeasured: 1).analysisIncomplete)
+        XCTAssertTrue(ScanResult(blurUnassessed: 1).analysisIncomplete)
     }
 }
 

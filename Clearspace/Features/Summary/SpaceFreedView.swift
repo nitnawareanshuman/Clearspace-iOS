@@ -8,7 +8,7 @@ struct SpaceFreedView: View {
     private var bytes: Int64 { entries.reduce(0) { $0 + $1.estimatedBytes } }
     var body: some View {
         ScrollView {
-            VStack(spacing: 20) {
+            LazyVStack(spacing: 20) {
                 PipMascot().frame(width: 145, height: 150)
                 Text(entries.isEmpty ? "Your next fresh start" : "A little more breathing room")
                     .font(.title2.bold()).multilineTextAlignment(.center)

@@ -51,6 +51,7 @@ final class ContactsStore: ObservableObject {
         invalidate()
         let generation = epoch
         scanning = true
+        message = nil
         task = Task {
             do {
                 let found = try await service.scan()
@@ -89,4 +90,3 @@ final class ContactsStore: ObservableObject {
         }
     }
 }
-
