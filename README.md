@@ -7,6 +7,14 @@
 A privacy-focused iPhone storage cleaner built with SwiftUI. Find clutter, review what to keep, and approve every deletion. Pip, the app's mascot, accompanies scanning and cleanup.
 
 Built by **Anshuman Nitnaware** for the AppFactory Storage Cleaner assignment. All features are free, with no login, subscriptions, or advertising.
+## Screenshots
+
+<p align="center">
+  <img src="docs/screenshots/dashboard.png" width="220" alt="Clearspace dashboard">
+  <img src="docs/screenshots/similar-photos.png" width="220" alt="Similar photo detection">
+  <img src="docs/screenshots/review.png" width="220" alt="Review before deletion">
+  <img src="docs/screenshots/summary.png" width="220" alt="Cleanup summary">
+</p>
 
 ## Features
 
