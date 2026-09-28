@@ -22,6 +22,8 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCalendarsFullAccessUsageDescription</key>
+	<string>Clearspace finds old calendar events on your iPhone. You select and review every event before removal.</string>
 	<key>NSContactsUsageDescription</key>
 	<string>Clearspace finds possible duplicate contacts on your iPhone. You choose what to keep and review every contact before deletion.</string>
 	<key>NSPhotoLibraryUsageDescription</key>

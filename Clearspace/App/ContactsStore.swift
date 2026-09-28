@@ -54,6 +54,7 @@ final class ContactsStore: ObservableObject {
         invalidate()
         let generation = epoch
         scanning = true
+        message = nil
         task = Task {
             do {
                 let found = try await service.scan()
@@ -101,6 +102,7 @@ final class ContactsStore: ObservableObject {
         deleting = true
         do {
             try await service.delete(draft)
+            CleanupHistory.shared.record(contacts: draft.records.count)
             deleting = false; invalidate(); startScan()
         } catch {
             deleting = false; invalidate()
@@ -109,4 +111,3 @@ final class ContactsStore: ObservableObject {
         }
     }
 }
-

@@ -1,3 +1,11 @@
+//
+//  ClearspaceApp.swift
+//  Clearspace
+//
+//  Created by Anshuman Nitnaware on 27/09/26.
+//
+
+
 import SwiftUI
 
 @main

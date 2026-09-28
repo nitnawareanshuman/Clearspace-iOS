@@ -1,5 +1,6 @@
 import SwiftUI
 import Photos
+import WidgetKit
 
 @MainActor
 final class CleanerStore: NSObject, ObservableObject, PHPhotoLibraryChangeObserver {
@@ -11,6 +12,7 @@ final class CleanerStore: NSObject, ObservableObject, PHPhotoLibraryChangeObserv
     @Published private(set) var progress = 0.0
     @Published private(set) var phase = "Ready to scan"
     @Published private(set) var epoch = 0
+    @Published private(set) var lastReceipt: CleanupReceipt?
     @Published var message: String?
     @Published var storageError: String?
     private let scanner = LibraryScanner()
@@ -45,6 +47,7 @@ final class CleanerStore: NSObject, ObservableObject, PHPhotoLibraryChangeObserv
     func refreshStorage() {
         do { storage = try StorageSnapshot.read(); storageError = nil }
         catch { storage = nil; storageError = error.localizedDescription }
+        WidgetCenter.shared.reloadTimelines(ofKind: "ClearspaceStorageWidget")
     }
     func refreshAccess() {
         let status = PHPhotoLibrary.authorizationStatus(for: .readWrite)
@@ -155,7 +158,7 @@ final class CleanerStore: NSObject, ObservableObject, PHPhotoLibraryChangeObserv
         guard Set(makeDraft(draft.items).kept.map(\.id)) == Set(draft.kept.map(\.id)) else {
             throw CleanerError.staleReview
         }
-        let knownIDs = Set((result.groups.flatMap(\.items) + result.screenshots + result.videos).map(\.id))
+        let knownIDs = Set((result.groups.flatMap(\.items) + result.screenshots + result.videos + result.blurryPhotos).map(\.id))
         guard ids.isSubset(of: knownIDs), SelectionPolicy.allows(ids, groups: result.groups) else {
             throw CleanerError.staleReview
         }
@@ -183,6 +186,11 @@ final class CleanerStore: NSObject, ObservableObject, PHPhotoLibraryChangeObserv
             try await PHPhotoLibrary.shared().performChanges {
                 PHAssetChangeRequest.deleteAssets(assets as NSArray)
             }
+            let sizes = ByteSummary(draft.items)
+            lastReceipt = CleanupHistory.shared.record(
+                photos: draft.items.filter { !$0.video }.count,
+                videos: draft.items.filter(\.video).count,
+                bytes: sizes.known, unknownSizes: sizes.unknown)
             if libraryChangedDuringDelete || !hasAccess || self.result == nil {
                 invalidate("Your photo library changed during deletion. Scan again for up-to-date results.")
             } else {
@@ -205,5 +213,3 @@ final class CleanerStore: NSObject, ObservableObject, PHPhotoLibraryChangeObserv
         }
     }
 }
-
-

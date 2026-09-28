@@ -106,4 +106,3 @@ struct VideoPreview: View {
         }
     }
 }
-

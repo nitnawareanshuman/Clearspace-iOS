@@ -29,7 +29,10 @@ struct PhotoThumbnail: View {
                         Image(systemName: "icloud.slash")
                         if large { Text("Preview unavailable on this device").font(.footnote) }
                     }.foregroundStyle(.secondary)
-                } else { ProgressView() }
+                } else {
+                    if large { LoadingCompanion(title: "Preparing your photo…") }
+                    else { ProgressView() }
+                }
             }
         }
         .task(id: item.id) {
@@ -38,7 +41,11 @@ struct PhotoThumbnail: View {
             guard let asset = PHAsset.fetchAssets(withLocalIdentifiers: [item.id], options: nil).firstObject else {
                 unavailable = true; return
             }
-            do { image = try await PhotoRequests.image(for: asset, side: large ? 1400 : 300) }
+            do {
+                let loaded = try await PhotoRequests.image(for: asset, side: large ? 1400 : 300)
+                try Task.checkCancellation()
+                image = loaded
+            }
             catch is CancellationError { }
             catch { unavailable = true }
         }

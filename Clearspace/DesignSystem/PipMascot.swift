@@ -76,17 +76,122 @@ private struct PipSmile: Shape {
     }
 }
 
-struct LoadingCompanion: View {
+struct MascotWaitingView: View {
     let title: String
+    let detail: String
+    var progress: Double?
+    var cancelTitle: String?
+    var onCancel: (() -> Void)?
+    var compact = false
+
     var body: some View {
-        VStack(spacing: 12) {
-            PipMascot(working: true).frame(width: 100, height: 100)
-            ProgressView()
-            Text(title).font(.subheadline).foregroundStyle(.secondary)
-        }.frame(maxWidth: .infinity).padding()
+        VStack(spacing: 14) {
+            ZStack(alignment: .topTrailing) {
+                PipMascot(working: true)
+                    .frame(width: compact ? 76 : 118, height: compact ? 76 : 118)
+
+                Image(systemName: "clock.fill")
+                    .font(.system(size: 24, weight: .semibold))
+                    .foregroundStyle(.orange)
+                    .padding(9)
+                    .background(.background, in: Circle())
+                    .shadow(radius: 4, y: 2)
+                    .offset(x: 4, y: -2)
+                    .accessibilityHidden(true)
+            }
+
+            Text(title)
+                .font(.headline)
+                .multilineTextAlignment(.center)
+
+            Text(detail)
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+
+            if let progress {
+                ProgressView(value: progress)
+                    .tint(.teal)
+                    .frame(maxWidth: 220)
+            } else {
+                ProgressView()
+            }
+
+            if let cancelTitle, let onCancel {
+                Button(cancelTitle, action: onCancel)
+                    .buttonStyle(.bordered)
+            }
+        }
+        .frame(maxWidth: 300)
+        .padding(compact ? 14 : 24)
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 28))
+        .shadow(radius: 24, y: 10)
     }
 }
 
+struct MascotWaitingPopup: View {
+    let phase: String
+    let progress: Double
+    let onCancel: () -> Void
+
+    var body: some View {
+        ZStack {
+            Color.black.opacity(0.16)
+                .ignoresSafeArea()
+
+            MascotWaitingView(
+                title: "Pip is working…",
+                detail: phase,
+                progress: progress,
+                cancelTitle: "Cancel scan",
+                onCancel: onCancel
+            )
+        }
+    }
+}
+
+struct LoadingCompanion: View {
+    let title: String
+    var body: some View {
+        MascotWaitingView(
+            title: title,
+            detail: "Pip is getting things ready.",
+            progress: nil,
+            compact: true
+        )
+        .padding()
+    }
+}
+
+
+struct MascotEmptyState: View {
+    let title: String
+    let detail: String
+    var body: some View {
+        VStack(spacing: 12) {
+            PipMascot().frame(width: 120, height: 120)
+            Text(title).font(.title3.bold())
+            Text(detail).font(.subheadline).foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+        }.multilineTextAlignment(.center).frame(maxWidth: .infinity).padding(.vertical, 24)
+    }
+}
+
+struct MascotMessageView: View {
+    let message: String
+    let onDone: () -> Void
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 16) {
+                PipMascot().frame(width: 132, height: 132)
+                Text("A little more breathing room").font(.title2.bold())
+                Text(message).font(.subheadline).foregroundStyle(.secondary)
+                Button("Done", action: onDone)
+                    .buttonStyle(.borderedProminent).controlSize(.large)
+            }.multilineTextAlignment(.center).padding(24).frame(maxWidth: .infinity)
+        }.presentationDetents([.medium, .large]).presentationDragIndicator(.visible)
+    }
+}
 
 
 /// Shared empty state keeps rescanning available within the current category.

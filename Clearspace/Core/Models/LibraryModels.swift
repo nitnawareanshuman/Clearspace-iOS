@@ -42,16 +42,20 @@ struct ScanResult {
     var groups: [PhotoGroup] = []
     var screenshots: [PhotoItem] = []
     var videos: [PhotoItem] = []
+    var blurryPhotos: [PhotoItem] = []
+    var blurUnassessed = 0
     var scanned = 0
     var unavailable = 0
     var similarityUnavailable = 0
     var unmeasured = 0
-    var analysisIncomplete: Bool { unavailable > 0 || similarityUnavailable > 0 }
+    var analysisIncomplete: Bool {
+        unavailable > 0 || similarityUnavailable > 0 || unmeasured > 0 || blurUnassessed > 0
+    }
     var seconds: Double = 0
     /// Reconcile only a confirmed deletion; all remaining byte estimates stay valid.
     func removing(_ ids: Set<String>) -> ScanResult {
         var updated = self
-        let removedItems = SelectionPolicy.unique(groups.flatMap(\.items) + screenshots + videos)
+        let removedItems = SelectionPolicy.unique(groups.flatMap(\.items) + screenshots + videos + blurryPhotos)
             .filter { ids.contains($0.id) }
         updated.groups = groups.compactMap { group in
             let remaining = group.items.filter { !ids.contains($0.id) }
@@ -63,6 +67,7 @@ struct ScanResult {
         }
         updated.screenshots.removeAll { ids.contains($0.id) }
         updated.videos.removeAll { ids.contains($0.id) }
+        updated.blurryPhotos.removeAll { ids.contains($0.id) }
         updated.scanned = max(0, scanned - removedItems.count)
         updated.unmeasured = max(0, unmeasured - removedItems.filter { $0.bytes == nil }.count)
         return updated
@@ -70,8 +75,11 @@ struct ScanResult {
     var suggestions: [PhotoItem] { groups.flatMap(\.suggested) }
     var screenshotCandidates: [PhotoItem] { SelectionPolicy.safeSelection(screenshots, groups: groups) }
     var videoCandidates: [PhotoItem] { videos.filter(\.canDelete) }
+    var blurryCandidates: [PhotoItem] {
+        SelectionPolicy.safeSelection(blurryPhotos.filter { !$0.favorite }, groups: groups)
+    }
     var cleanupCandidates: [PhotoItem] {
-        SelectionPolicy.safeSelection(suggestions + screenshotCandidates + videoCandidates, groups: groups)
+        SelectionPolicy.safeSelection(suggestions + screenshotCandidates + videoCandidates + blurryCandidates, groups: groups)
     }
 }
 
@@ -79,7 +87,7 @@ struct StorageSnapshot {
     let total: Int64
     let free: Int64
     var used: Int64 { max(0, total - free) }
-    var fraction: Double { total > 0 ? Double(used) / Double(total) : 0 }
+    var fraction: Double { total > 0 ? min(1, max(0, Double(used) / Double(total))) : 0 }
     static func read() throws -> StorageSnapshot {
         let values = try URL(fileURLWithPath: NSHomeDirectory()).resourceValues(
             forKeys: [.volumeTotalCapacityKey, .volumeAvailableCapacityKey])
@@ -127,6 +135,7 @@ enum SelectionPolicy {
             && snapshot.favorite == current.favorite && snapshot.width == current.width
             && snapshot.height == current.height && snapshot.video == current.video
             && snapshot.screenshot == current.screenshot && snapshot.duration == current.duration
+            && snapshot.created == current.created && snapshot.canDelete == current.canDelete
     }
 
     static func keeper(in items: [PhotoItem]) -> String {
@@ -174,3 +183,35 @@ enum VideoPolicy {
 }
 
 
+/// Swiping edits a review selection, never the Photos library.
+enum SwipeDecision: Hashable { case keep, delete }
+
+struct SwipeHistoryEntry {
+    let index: Int
+    let id: String
+    let wasSelected: Bool
+}
+
+enum SwipePolicy {
+    static func blockReason(_ decision: SwipeDecision, item: PhotoItem,
+                            selected: Set<String>, groups: [PhotoGroup]) -> String? {
+        guard decision == .delete else { return nil }
+        guard item.canDelete else { return "This photo is read-only. Swipe right to keep it." }
+        guard SelectionPolicy.allows(selected.union([item.id]), groups: groups) else {
+            return "Keep at least one photo in each similar group. Tap Keep, or Undo to change your previous choice."
+        }
+        return nil
+    }
+
+    static func applying(_ decision: SwipeDecision, id: String, to selected: Set<String>) -> Set<String> {
+        var next = selected
+        if decision == .keep { next.remove(id) } else { next.insert(id) }
+        return next
+    }
+
+    static func restoring(_ entry: SwipeHistoryEntry, in selected: Set<String>) -> Set<String> {
+        var next = selected
+        if entry.wasSelected { next.insert(entry.id) } else { next.remove(entry.id) }
+        return next
+    }
+}
