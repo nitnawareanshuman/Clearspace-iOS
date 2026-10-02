@@ -1,3 +1,11 @@
+//
+//  CleanerStore.swift
+//  Clearspace
+//
+//  Created by Anshuman Nitnaware on 02/10/26.
+//
+
+
 import SwiftUI
 import Photos
 import WidgetKit

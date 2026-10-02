@@ -19,7 +19,7 @@
 
 ## Remaining limits
 
-Hidden media is excluded. Downloads are disabled, so iCloud-only content can be unavailable. System account synchronization still applies to user-approved deletions even though Clearspace performs no uploads itself. Photos may retain deleted media in Recently Deleted; capacity can change for unrelated reasons.
+Hidden media is excluded. Downloads are disabled, so iCloud-only content can be unavailable. System account synchronization still applies to user-approved deletions even though PipSweep performs no uploads itself. Photos may retain deleted media in Recently Deleted; capacity can change for unrelated reasons.
 
 Preflight snapshot checks cannot lock the system libraries while another app or account changes them. Permission, provider, performance, and visual behavior require real-device acceptance. The widget must be installed with the host app and tested in the Home Screen gallery.
 
@@ -30,3 +30,9 @@ Preflight snapshot checks cannot lock the system libraries while another app or 
 - [Contacts](https://developer.apple.com/documentation/contacts)
 - [EventKit](https://developer.apple.com/documentation/eventkit)
 - [WidgetKit](https://developer.apple.com/documentation/widgetkit)
+
+## PipSweep product direction
+
+Short screenshot sessions provide a manageable starting point alongside full category review. They reuse the existing approval and keep-one rules. The broom is drawn in SwiftUI; the app icon is a matching raster asset. Reduce Motion disables mascot and swipe transforms.
+
+Blur checks now use smaller overlapping regions: the original 4x4 grid diluted a small sharp subject into the surrounding soft background. Global thresholds remain unchanged; concentrated local detail can protect the subject. False positives and missed blur still require device evaluation.

@@ -4,7 +4,7 @@ Use disposable content for destructive tests. An unchecked step is not a passed 
 
 ## Build and XCTest
 
-Open `Clearspace.xcodeproj`, select the **Clearspace** scheme, and run **Product → Test** on an available iPhone simulator. Both the app and embedded widget target iOS 17+. Xcode 16+ is required by the project's synchronized folders and limited-Contacts API usage.
+Open `Clearspace.xcodeproj`, select the **Clearspace** scheme, and run **Product → Test** on an available iPhone simulator. Both the app and embedded widget target iOS 17+. Use a stable Xcode release with an iOS 26 or newer SDK for submission. The deployment target remains iOS 17.
 
 For command-line testing on a Mac:
 
@@ -74,7 +74,7 @@ Simulator media can be dragged into its window. Use Contacts and Calendar to cre
 ### Widget, summary, and presentation
 
 - [ ] Build and install the **Clearspace** app with its extension on iOS 17 and a newer supported iOS version.
-- [ ] Launch once; find Clearspace in Add Widget; add small and medium widgets; tap to open the app.
+- [ ] Launch once; find PipSweep in Add Widget; add small and medium widgets; tap to open the app.
 - [ ] Only the storage widget is offered; no sample timer or placeholder Live Activity remains.
 - [ ] Capacity, unavailable state, timestamp, and dark appearance are readable. Refresh is system-scheduled, not guaranteed every 30 minutes.
 - [ ] Summary survives relaunch; cancelled/failed actions add no receipt; restoring Photos does not rewrite history.
@@ -122,3 +122,22 @@ Apple SDK compilation, XCTest execution and animation verification require Xcode
 - [ ] Conflicting single-value details and cross-account merges are blocked; review requires acknowledgement of unsupported fields.
 - [ ] Own Photos deletion notifications preserve remaining results; external insertions, edits, and removals still invalidate review.
 - [ ] Verify both swipe review and contact merge after integrating main into bonus.
+
+## PipSweep release additions
+
+- [ ] First launch shows the welcome; later launches open the dashboard.
+- [ ] App and widget display PipSweep and have matching version/build 1.0.0 (2).
+- [ ] Pip holds a broom without cropping in welcome, dashboard, waiting and cleanup states.
+- [ ] Reduce Motion stops decorative sweeping/blinking and uses accessible swipe buttons.
+- [ ] Ten-shot tidy uses up to ten non-favorite, writable screenshots, oldest first.
+- [ ] Keep, Remove, Undo and Preview work; kept or queued items remain unchanged until final approval.
+- [ ] Keeping a whole batch allows the next batch without repeating reviewed items during the visit.
+- [ ] Cancelling review or system deletion preserves the selection and records no success.
+- [ ] Successful removal prepares the next batch; external changes or revoked access invalidate it.
+- [ ] Last-copy protection still applies when a matching group spans a batch boundary.
+- [ ] A library with no eligible screenshots shows a useful pause/empty state.
+- [ ] Settings opens offline privacy and recovery guidance before any library access.
+- [ ] After configuring PipSweepSupportURL, Contact support opens the monitored public email or support page. No private-repository link is shown.
+- [ ] Clear-history confirmation persists across relaunch and does not modify library content.
+- [ ] Public privacy/support URLs load after hosting is configured.
+- [ ] Updated XCTest cases for sharp subjects, session eligibility and history clearing pass.

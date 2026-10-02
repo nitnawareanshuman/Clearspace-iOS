@@ -1,12 +1,12 @@
 # Architecture
 
-Clearspace is a native SwiftUI iPhone app with three independent cleanup domains and a WidgetKit extension. There is no backend or third-party runtime dependency.
+PipSweep uses MVVM-style SwiftUI views, observable stores in the ViewModel role, service actors and value models. It is a native iPhone app with three independent cleanup domains and a WidgetKit extension. There is no backend or third-party runtime dependency.
 
 ## Responsibilities
 
 | Layer | Files | Responsibility |
 | --- | --- | --- |
-| App state | `Clearspace/App/` | Main-actor observable stores own permission state, progress, results, and review revisions. |
+| Observable state / ViewModel role | `Clearspace/App/` | Main-actor observable stores own permission state, progress, results, and review revisions. |
 | Rules and models | `Clearspace/Core/Models/` | Immutable item snapshots, matching/selection rules, byte summaries, and cleanup receipts. |
 | System services | `Clearspace/Core/Services/` | Actors perform scanning and authorized mutations through Photos, Contacts, and EventKit. |
 | Screens | `Clearspace/Features/` | Dashboard, category selection, previews, reviews, and completion states. |
@@ -40,7 +40,7 @@ flowchart TD
 1. Fetch accessible, non-hidden photos in creation-date order.
 2. Request a local preview; normalize its orientation for matching.
 3. Hash normalized preview pixels. For near matches, compare aspect ratio, difference hash, and Vision revision 2 feature-print distance against up to 24 recent group anchors within 60 seconds. Screenshots use matching previews only.
-4. Assess non-screenshot previews with a luminance Laplacian and regional sharpness checks. Blank, low-detail, or tiny images can be unassessable.
+4. Assess non-screenshot previews with a luminance Laplacian and overlapping 8x8 and half-cell-offset regional sharpness checks. Blank, low-detail, or tiny images can be unassessable.
 5. Stream resource bytes serially for photo cleanup candidates and all videos. Do not retain resource payloads or enable downloads. Cache successful sizes in memory against item metadata.
 6. Publish groups, screenshots, blur candidates, videos, and limitation counts. Rank recommended keeps by favorite status, resolution, then recency; sort known video sizes descending, with unknown sizes last.
 
@@ -77,3 +77,9 @@ Calendar drafts carry a revision and event snapshots. Before staging removal, th
 The widget bundle registers only `ClearspaceStorageWidget`. Its minimum deployment target is iOS 17, matching the app. The provider requests a refresh after 30 minutes; the system controls the actual schedule. The app also requests widget reloads when it refreshes storage.
 
 The checked-in Xcode project is authoritative. Most app files use explicit groups and target membership; Calendar and widget folders use synchronized groups. Add files through Xcode and verify target membership. The app target embeds and depends on the widget extension.
+
+## Product sessions and privacy
+
+TidySessionPolicy selects at most ten oldest eligible screenshots, excluding favorites, videos, read-only items and IDs already reviewed in the current visit. TidySessionView reuses SwipeReviewView and the existing ReviewView. Only the existing CleanerStore mutation site can remove media; session choices never mutate Photos. Epoch changes discard selected IDs and rebuild the batch from current results.
+
+SettingsView contains an offline policy and cleanup help, opens the public support contact only when configured in Info.plist and chosen by the user, and can clear local cleanup history. The one-time welcome uses AppStorage. The old history key, module, bundle identifiers and widget kind are preserved for update compatibility; display names use PipSweep.

@@ -162,12 +162,14 @@ struct PhotoCollectionView: View {
     }
 }
 
-private struct SwipeReviewView: View {
+struct SwipeReviewView: View {
     let items: [PhotoItem]
     let groups: [PhotoGroup]
     @Binding var selected: Set<String>
     let onExit: () -> Void
     let onReview: () -> Void
+    var exitTitle = "Grid"
+    var onProgress: ((Int) -> Void)? = nil
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var index = 0
@@ -190,7 +192,7 @@ private struct SwipeReviewView: View {
                         .font(.subheadline).foregroundStyle(.secondary)
                 }
                 Spacer(minLength: 8)
-                Button("Grid", action: onExit).buttonStyle(.bordered)
+                Button(exitTitle, action: onExit).buttonStyle(.bordered)
                     .disabled(transitioning)
             }
             VStack(spacing: 8) {
@@ -248,6 +250,8 @@ private struct SwipeReviewView: View {
                 .font(.caption).foregroundStyle(.secondary).multilineTextAlignment(.center)
         }
         .sheet(item: $preview) { PhotoPreview(item: $0) }
+        .onAppear { onProgress?(index) }
+        .onChange(of: index) { _, value in onProgress?(value) }
         // Cancellation belongs to the view's lifetime. A departing card cannot advance a new session.
         .task(id: pending) {
             guard let decision = pending else { return }

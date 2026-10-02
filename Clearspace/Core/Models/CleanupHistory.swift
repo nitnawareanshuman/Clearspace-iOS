@@ -32,4 +32,10 @@ final class CleanupHistory: ObservableObject {
         if let data = try? JSONEncoder().encode(receipts) { defaults.set(data, forKey: key) }
         return receipt
     }
+
+    /// Activity receipts contain counts and estimates, never the original content.
+    func clear() {
+        receipts.removeAll()
+        defaults.removeObject(forKey: key)
+    }
 }

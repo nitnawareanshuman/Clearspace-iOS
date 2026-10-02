@@ -1,16 +1,17 @@
-# Screenshot guide
+# PipSweep screenshots
 
-Use the current build and disposable media/contacts. Hide personal names, addresses, notifications, and private photos. Capture the same iPhone size and appearance for a consistent README gallery.
+Capture these views after building this update, using disposable sample content.
 
-| Requested view | State to capture | Suggested filename |
-| --- | --- | --- |
-| Dashboard | Completed scan, storage card and populated categories | `dashboard.png` |
-| Similar photos | A group with a recommended keep and another selected photo | `similar-photos.png` |
-| Final deletion review | Selected items, estimated bytes, and a retained photo; before confirmation | `review.png` |
-| Cleanup summary | A successful sample cleanup and the estimate explanation | `summary.png` |
+| View | What it should show |
+| --- | --- |
+| Dashboard | PipSweep name, Pip with broom, storage and ten-shot tidy card. |
+| Ten-shot tidy | A screenshot preview, Keep/Remove controls, progress and Undo. |
+| Similar photos | A group with a recommended keep and clear selection states. |
+| Final review | Exactly what will be removed, kept items and an honest size estimate. |
+| Cleanup summary | Completed activity and estimate limitations. |
+| Settings/privacy | Accessible privacy policy and recovery guide. |
+| Widget | Small or medium PipSweep storage widget on the Home Screen. |
 
-Optional extras: swipe mode, duplicate contacts, and the storage widget on the Home Screen.
+Use the screenshot sizes accepted for the devices selected in App Store Connect. In Simulator, File → Save Screen or Command-S captures the current screen. Simulator images can be used for store artwork, but real-iPhone testing is still required.
 
-Save the images under `docs/screenshots/` when available, then embed the four primary images in the README using relative paths and equal display widths. Do not add links to missing files or substitute mockups for real screenshots.
-
-In Simulator, use **File → Save Screen** or **Command-S**. On an iPhone, use the device's screenshot buttons. A simulator screenshot is suitable for the README, but it does not replace the assignment's real-iPhone recording.
+Replace the old Clearspace screenshots before using them for PipSweep promotion. Keep personal photos, real phone numbers and calendar details out of store images.

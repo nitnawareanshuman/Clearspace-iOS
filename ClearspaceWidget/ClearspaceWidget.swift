@@ -30,7 +30,7 @@ struct StorageWidgetView: View {
     @Environment(\.widgetFamily) private var family
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Label("Clearspace", systemImage: "sparkles").font(.headline).foregroundStyle(.teal)
+            Label("PipSweep", systemImage: "sparkles").font(.headline).foregroundStyle(.teal)
             if let total = entry.total, let free = entry.free, total > 0 {
                 Text(ByteCountFormatter.string(fromByteCount: free, countStyle: .file))
                     .font(.system(size: 30, weight: .bold, design: .rounded)).minimumScaleFactor(0.6).lineLimit(1)
@@ -42,7 +42,7 @@ struct StorageWidgetView: View {
                 }
             } else {
                 Text("Storage unavailable").font(.headline)
-                Text("Open Clearspace to try again.").font(.caption)
+                Text("Open PipSweep to try again.").font(.caption)
             }
             HStack(spacing: 4) {
                 Text("Updated")
@@ -59,8 +59,8 @@ struct ClearspaceStorageWidget: Widget {
     let kind = "ClearspaceStorageWidget"
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: StorageProvider()) { StorageWidgetView(entry: $0) }
-            .configurationDisplayName("Clearspace Storage")
-            .description("See available device storage at a glance. Tap to open Clearspace.")
+            .configurationDisplayName("PipSweep Storage")
+            .description("See available device storage at a glance. Tap to open PipSweep.")
             .supportedFamilies([.systemSmall, .systemMedium])
     }
 }

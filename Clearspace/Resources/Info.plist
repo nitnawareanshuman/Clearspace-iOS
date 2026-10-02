@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Clearspace</string>
+	<string>PipSweep</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -23,13 +23,16 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCalendarsFullAccessUsageDescription</key>
-	<string>Clearspace finds old calendar events on your iPhone. You select and review every event before removal.</string>
+	<string>PipSweep finds old calendar events on your iPhone. You select and review every event before removal.</string>
 	<key>NSContactsUsageDescription</key>
-	<string>Clearspace finds possible duplicate contacts on your iPhone. You choose what to keep and review every contact before deletion.</string>
+	<string>PipSweep finds possible duplicate contacts on your iPhone. You choose what to keep and review every contact before deletion.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Clearspace scans photos and videos on your iPhone to find similar shots, screenshots and large videos. You review every selection before deletion.</string>
+	<string>PipSweep scans photos and videos on your iPhone to find similar shots, screenshots and large videos. You review every selection before deletion.</string>
 	<key>PHPhotoLibraryPreventAutomaticLimitedAccessAlert</key>
 	<true/>
+	<!-- Set a monitored mailto: address or public HTTPS support URL before submission. -->
+	<key>PipSweepSupportURL</key>
+	<string></string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

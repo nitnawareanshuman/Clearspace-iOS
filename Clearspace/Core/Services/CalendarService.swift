@@ -68,11 +68,11 @@ actor CalendarService {
         database.reset()
         guard let source = database.defaultCalendarForNewEvents?.source
             ?? database.sources.first(where: { $0.sourceType == .local }) else {
-            throw NSError(domain: "Clearspace.Calendar", code: 1, userInfo: [
+            throw NSError(domain: "PipSweep.Calendar", code: 1, userInfo: [
                 NSLocalizedDescriptionKey: "No writable calendar source is available. Add a Calendar account in Settings, then try again."])
         }
         let calendar = EKCalendar(for: .event, eventStore: database)
-        calendar.title = "Clearspace Test \(Date().formatted(date: .omitted, time: .standard))"
+        calendar.title = "PipSweep Test \(Date().formatted(date: .omitted, time: .standard))"
         calendar.source = source
         do {
             try database.saveCalendar(calendar, commit: false)
@@ -86,7 +86,7 @@ actor CalendarService {
                 event.title = title
                 event.startDate = Calendar.current.date(byAdding: .day, value: days, to: Date())!
                 event.endDate = event.startDate.addingTimeInterval(3600)
-                event.notes = "Disposable Clearspace test event."
+                event.notes = "Disposable PipSweep test event."
                 if repeats {
                     event.addRecurrenceRule(EKRecurrenceRule(recurrenceWith: .weekly, interval: 1,
                         end: EKRecurrenceEnd(occurrenceCount: 12)))

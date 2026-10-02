@@ -10,8 +10,8 @@ struct SplashView: View {
                     PipMascot().frame(width: proxy.size.height < 500 ? 130 : 210,
                                       height: proxy.size.height < 500 ? 130 : 210)
                     VStack(spacing: 12) {
-                        Text("Clearspace").font(.system(size: 42, weight: .bold, design: .rounded))
-                        Text("A little less clutter.\nA little more breathing room.")
+                        Text("PipSweep").font(.system(size: 42, weight: .bold, design: .rounded))
+                        Text("Meet Pip, your little tidy companion.\nMake room, one choice at a time.")
                             .font(.title3).foregroundStyle(.secondary).multilineTextAlignment(.center)
                     }
                     Spacer()

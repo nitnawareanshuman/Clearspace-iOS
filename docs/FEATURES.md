@@ -1,35 +1,28 @@
-# Assignment coverage
+# PipSweep product features
 
-This mapping describes source implementation, not completed device acceptance. The assignment requires an iPhone app on iOS 17+, on-device processing, reviewed deletion, and a real-iPhone walkthrough.
+PipSweep is now being prepared as a standalone product. Prior assignment restrictions are not the release specification.
 
-| Requirement | Current implementation | Important limit |
-| --- | --- | --- |
-| Storage dashboard | Used/free capacity, per-media-category estimates, deduplicated combined estimate | Resource bytes do not equal immediate recovered device space. |
-| Similar photos | Matching previews and conservative near-shot groups; recommended keep | Preview matching is not full-file equality; near matching has bounded time/anchor windows. |
-| Screenshots | Accessible, non-hidden screenshots with multi-selection and previews | Bulk selection keeps one member of matching groups and skips read-only media. |
-| Large videos | All accessible non-hidden videos, preview, descending known sizes | Unknown sizes remain visible last; cloud-only playback may be unavailable. |
-| Duplicate contacts | Candidate groups and reviewed deletion | Implements the brief's delete alternative; no merging. |
-| Review before delete | Exact selections, media estimates, survivor checks, explicit confirmation | Contacts/calendar have no additional system deletion prompt; no app undo. |
-| Permissions | Independent Photos, Contacts, and Calendar explanations and states | Limited Contacts requires iOS 18+; Calendar needs full event access. |
-
-## Bonuses
-
-| Bonus | Status |
+| Feature | Current behavior |
 | --- | --- |
-| Swipe-to-keep-or-delete | Implemented as selection with Undo and final review. |
-| Blurry photo detection | Implemented as a manual-review heuristic. |
-| Calendar cleanup | Implemented for eligible events from the past year ending over 30 days ago. |
-| Home Screen storage widget | Implemented for small and medium sizes; verify installation and gallery discovery on device. |
-| Space-freed summary | Implemented as completed cleanup counts and estimated media removed. |
-| Video compression | Not implemented. |
-| PIN / Face ID vault | Not implemented. |
-| TestFlight build | No distribution link supplied or verified in this review. |
+| Ten-shot tidy | Up to ten eligible screenshots per batch, oldest first; favorites and read-only items are skipped. Preview, Keep, Remove, Undo and final deletion review are available. |
+| Similar photos | Matching previews and near-identical shots are suggestions. Recommended keeps favor favorites, resolution and recency. |
+| Screenshots | Multi-selection and swipe review, with keep-one protection for matched groups. |
+| Large videos | Known sizes sort largest first; unavailable sizes are disclosed. Preview and reviewed deletion are available. |
+| Blurry photos | Conservative luminance/edge suggestions with overlapping regional checks for sharp subjects. |
+| Contacts | Reviewed same-account merges and deletion. Conflicting single-value details block merging. Unsupported fields are disclosed. |
+| Calendar | Eligible old, writable events; recurring events, invitations and read-only calendars are excluded. |
+| Storage widget | Small and medium Home Screen widgets showing device capacity. |
+| Activity | Local cleanup counts and estimated media bytes; history can be cleared in Settings. |
+| Privacy and help | Offline privacy policy, configurable public support contact, permission shortcut and recovery guidance. |
+| Mascot | Pip with a broom, gentle motion, blinking and Reduce Motion support. |
+| Welcome | Introductory screen appears once per installation unless app preferences are removed. |
 
-Payments, paywalls, email cleanup, clearing other apps' caches, login/cloud sync, and iPad/Watch/Mac versions are outside the assignment scope.
+## Product direction
 
-## Submission
+The first release centers on small, user-controlled reviews with an on-device workflow. Authentication, cloud sync, compression, a private vault and paid features are not implemented in this update. These are product decisions for a future release, not assignment prohibitions.
 
-- Repository containing the Xcode project.
-- A 2–3 minute walkthrough on a real iPhone using non-private sample content.
-- A note under 150 words covering tools used, working features, missing features, and the hardest problem solved. Describe actual testing honestly.
-- TestFlight link only if a build is available.
+iOS does not expose unrestricted access to other apps' caches or system junk, so PipSweep does not offer or advertise cleaning them.
+
+## What still needs release acceptance
+
+Xcode build and XCTest results for these changes, a signed archive, real-iPhone acceptance, TestFlight feedback, current screenshots, verified public privacy/support URLs, and App Store Connect configuration remain required.

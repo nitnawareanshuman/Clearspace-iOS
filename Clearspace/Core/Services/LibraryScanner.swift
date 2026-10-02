@@ -20,7 +20,7 @@ actor LibraryScanner {
         let snapshot: PhotoItem
         let bytes: Int64
     }
-    private static let logger = Logger(subsystem: "Clearspace", category: "PhotoAnalysis")
+    private static let logger = Logger(subsystem: "PipSweep", category: "PhotoAnalysis")
     private var sizes: [String: CachedSize] = [:]
 
     private func measure(_ asset: PHAsset) async throws -> Int64 {

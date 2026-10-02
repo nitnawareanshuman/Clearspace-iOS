@@ -22,11 +22,9 @@ struct PipMascot: View {
                 Ellipse().fill(.teal.opacity(0.14))
                     .frame(width: side * 0.62, height: side * 0.1).offset(y: side * 0.39)
                 ZStack {
-                    // Soft pebble body, tiny arms, and a sprout: Clearspace's own companion.
+                    // A soft pebble, sprout, and broom make PipSweep's own companion.
                     Capsule().fill(.teal).frame(width: side * 0.17, height: side * 0.32)
                         .rotationEffect(.degrees(-32)).offset(x: -side * 0.34, y: side * 0.06)
-                    Capsule().fill(.teal).frame(width: side * 0.17, height: side * 0.32)
-                        .rotationEffect(.degrees(working ? -35 : 32)).offset(x: side * 0.34, y: -side * 0.02)
                     RoundedRectangle(cornerRadius: side * 0.29)
                         .fill(LinearGradient(colors: [Color(red: 0.60, green: 0.94, blue: 0.83), .teal], startPoint: .topLeading, endPoint: .bottomTrailing))
                         .frame(width: side * 0.72, height: side * 0.7)
@@ -48,22 +46,88 @@ struct PipMascot: View {
                     Ellipse().fill(Color(red: 0.78, green: 0.92, blue: 0.36))
                         .frame(width: side * 0.14, height: side * 0.25).rotationEffect(.degrees(35))
                         .offset(x: side * 0.06, y: -side * 0.38)
+                    PipBroom()
+                        .frame(width: side * 0.21, height: side * 0.72)
+                        .rotationEffect(.degrees(8 + (cleaning ? wave * 9 : wave * 1.5)),
+                                        anchor: UnitPoint(x: 0.5, y: 0.35))
+                        .offset(x: side * 0.34, y: side * 0.04)
+                    Circle().fill(.teal)
+                        .frame(width: side * 0.15, height: side * 0.15)
+                        .offset(x: side * 0.34, y: side * 0.10)
                 }.rotationEffect(.degrees(wave * (working || cleaning ? 2 : 0.6)))
                     .offset(y: -wave * side * (working || cleaning ? 0.02 : 0.008))
                 if cleaning {
                     Image(systemName: "sparkles")
                         .font(.system(size: side * 0.20, weight: .semibold))
                         .foregroundStyle(.teal)
-                        .offset(x: side * (0.28 + wave * 0.045), y: side * 0.25)
+                        .offset(x: -side * (0.28 + wave * 0.045), y: side * 0.25)
                         .opacity(0.7 + wave * 0.3)
                 }
                 Image(systemName: "sparkle").font(.system(size: side * 0.14, weight: .medium))
-                    .foregroundStyle(.teal).offset(x: side * 0.40, y: -side * 0.30)
+                    .foregroundStyle(.teal).offset(x: -side * 0.40, y: -side * 0.30)
             }.frame(width: proxy.size.width, height: proxy.size.height)
             }
         }
         .clipped()
         .accessibilityHidden(true)
+    }
+}
+
+private struct PipBroom: View {
+    var body: some View {
+        GeometryReader { proxy in
+            let width = proxy.size.width
+            let height = proxy.size.height
+            ZStack {
+                Capsule()
+                    .fill(LinearGradient(colors: [Color(red: 0.86, green: 0.57, blue: 0.27),
+                                                 Color(red: 0.67, green: 0.36, blue: 0.14)],
+                                         startPoint: .leading, endPoint: .trailing))
+                    .frame(width: width * 0.19, height: height * 0.70)
+                    .offset(y: -height * 0.13)
+                PipBroomHead()
+                    .fill(LinearGradient(colors: [Color(red: 1, green: 0.83, blue: 0.38),
+                                                 Color(red: 0.95, green: 0.66, blue: 0.24)],
+                                         startPoint: .top, endPoint: .bottom))
+                    .frame(width: width, height: height * 0.25)
+                    .overlay {
+                        PipBroomStrands()
+                            .stroke(Color(red: 0.72, green: 0.42, blue: 0.13).opacity(0.55),
+                                    style: StrokeStyle(lineWidth: width * 0.025, lineCap: .round))
+                    }
+                    .offset(y: height * 0.32)
+                Capsule().fill(.teal)
+                    .frame(width: width * 0.58, height: height * 0.045)
+                    .offset(y: height * 0.225)
+            }.frame(width: width, height: height)
+        }
+    }
+}
+
+private struct PipBroomHead: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        path.move(to: CGPoint(x: rect.width * 0.32, y: 0))
+        path.addQuadCurve(to: CGPoint(x: rect.width * 0.68, y: 0),
+                          control: CGPoint(x: rect.midX, y: -rect.height * 0.12))
+        path.addLine(to: CGPoint(x: rect.width * 0.96, y: rect.height * 0.90))
+        path.addQuadCurve(to: CGPoint(x: rect.width * 0.04, y: rect.height * 0.90),
+                          control: CGPoint(x: rect.midX, y: rect.height * 1.12))
+        path.closeSubpath()
+        return path
+    }
+}
+
+private struct PipBroomStrands: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        for index in 0..<5 {
+            let fraction = CGFloat(index) / 4
+            path.move(to: CGPoint(x: rect.width * (0.36 + fraction * 0.28), y: rect.height * 0.16))
+            path.addQuadCurve(to: CGPoint(x: rect.width * (0.13 + fraction * 0.74), y: rect.height * 0.88),
+                              control: CGPoint(x: rect.width * (0.30 + fraction * 0.40), y: rect.height * 0.55))
+        }
+        return path
     }
 }
 

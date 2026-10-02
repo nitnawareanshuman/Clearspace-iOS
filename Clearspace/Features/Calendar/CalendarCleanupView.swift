@@ -46,7 +46,7 @@ struct CalendarCleanupView: View {
                             Button("Create five test events") { Task { await store.addTestEvents() } }
                             Button("Cancel", role: .cancel) { }
                         } message: {
-                            Text("Adds two old, one recent, one future and one repeating event to a new Clearspace Test calendar. It may sync through your calendar account. Tap Scan old events after creation. Available in Debug builds only.")
+                            Text("Adds two old, one recent, one future and one repeating event to a new PipSweep Test calendar. It may sync through your calendar account. Tap Scan old events after creation. Available in Debug builds only.")
                         }
                     #endif
                     if store.scanning { ProgressView("Checking your calendars…") }

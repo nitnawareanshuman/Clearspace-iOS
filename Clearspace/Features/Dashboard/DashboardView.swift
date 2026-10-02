@@ -12,7 +12,7 @@ struct DashboardView: View {
                 VStack(alignment: .leading, spacing: 20) {
                     HStack {
                         VStack(alignment: .leading, spacing: 6) {
-                            Text("Clearspace").font(.system(.largeTitle, design: .rounded, weight: .bold))
+                            Text("PipSweep").font(.system(.largeTitle, design: .rounded, weight: .bold))
                             Text("Room for what matters.").font(.subheadline).foregroundStyle(.secondary)
                         }
                         Spacer()
@@ -23,6 +23,22 @@ struct DashboardView: View {
                     if store.hasAccess {
                         scanCard
                         if let result = store.result {
+                            NavigationLink { TidySessionView() } label: {
+                                Surface {
+                                    HStack(spacing: 14) {
+                                        PipMascot().frame(width: 62, height: 68)
+                                        VStack(alignment: .leading, spacing: 6) {
+                                            Text("Pip's ten-shot tidy").font(.headline)
+                                            Text("A small session for your screenshots. You choose what stays.")
+                                                .font(.subheadline).foregroundStyle(.secondary)
+                                            Text("\(TidySessionPolicy.candidates(from: result).count) screenshots ready")
+                                                .font(.caption.weight(.semibold)).foregroundStyle(.teal)
+                                        }
+                                        Spacer(minLength: 0)
+                                        Image(systemName: "chevron.right").foregroundStyle(.secondary)
+                                    }
+                                }
+                            }.buttonStyle(.plain)
                             Surface {
                                 VStack(alignment: .leading, spacing: 8) {
                                     Label("Potential cleanup", systemImage: "sparkles").font(.headline)
@@ -88,7 +104,7 @@ struct DashboardView: View {
                     Surface {
                         VStack(alignment: .leading, spacing: 8) {
                             Label("Storage on your Home Screen", systemImage: "square.grid.2x2").font(.headline)
-                            Text("Touch and hold your Home Screen, choose Edit → Add Widget, then search for Clearspace. Choose the small or medium storage widget.")
+                            Text("Touch and hold your Home Screen, choose Edit → Add Widget, then search for PipSweep. Choose the small or medium storage widget.")
                                 .font(.footnote).foregroundStyle(.secondary)
                         }
                     }
@@ -98,6 +114,13 @@ struct DashboardView: View {
             }.disabled(store.scanning)
                 .background(Color(uiColor: .systemGroupedBackground))
                 .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        NavigationLink { SettingsView() } label: {
+                            Image(systemName: "gearshape").accessibilityLabel("Settings, privacy and help")
+                        }
+                    }
+                }
                 .overlay {
                     if store.scanning {
                         MascotWaitingPopup(phase: store.phase, progress: store.progress) {
@@ -113,7 +136,7 @@ struct DashboardView: View {
                             } }
                     }
                 }
-                .alert("Clearspace", isPresented: Binding(get: { store.message != nil }, set: { if !$0 { store.message = nil } })) {
+                .alert("PipSweep", isPresented: Binding(get: { store.message != nil }, set: { if !$0 { store.message = nil } })) {
                     Button("OK", role: .cancel) { store.message = nil }
                 } message: { Text(store.message ?? "") }
         }
@@ -206,7 +229,7 @@ struct DashboardView: View {
                         Label(store.result == nil ? "Scan photos & videos" : "Scan again", systemImage: "arrow.clockwise")
                             .frame(maxWidth: .infinity).padding(.vertical, 5)
                     }.buttonStyle(.borderedProminent).disabled(store.deleting)
-                    Text("Keep Clearspace open while scanning. Hidden photos are excluded.").font(.caption).foregroundStyle(.secondary)
+                    Text("Keep PipSweep open while scanning. Hidden photos are excluded.").font(.caption).foregroundStyle(.secondary)
                 }
             }
         }

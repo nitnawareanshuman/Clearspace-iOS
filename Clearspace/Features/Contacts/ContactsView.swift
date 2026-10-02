@@ -157,7 +157,7 @@ struct ContactReviewView: View {
                             Text("Review every contact").font(.title2.bold())
                             Text("Delete \(draft.records.count) contacts; keep \(draft.kept.count) contacts in the affected groups.")
                             Text("Deletion removes the entire card, including notes and fields not shown here. Details are not merged into the kept contacts. Check the Contacts app if you need to compare other fields.")
-                            Text("This cannot be undone in Clearspace. Changes may sync to your connected accounts. iOS does not show a second deletion prompt for contacts.")
+                            Text("This cannot be undone in PipSweep. Changes may sync to your connected accounts. iOS does not show a second deletion prompt for contacts.")
                                 .font(.footnote).foregroundStyle(.red)
                             Text("Storage savings are not reported: iOS does not expose a reliable per-contact size.").font(.caption).foregroundStyle(.secondary)
                         }
@@ -240,11 +240,11 @@ struct ContactMergeReviewView: View {
                                 }
                             }.pickerStyle(.menu)
                                 .onChange(of: keeperID) { _, _ in checkedNotes = false }
-                            Text("Clearspace cannot read or copy contact notes. Check the source cards in Contacts and copy any notes you need into the card you will keep before merging. Account-specific fields and group membership are not transferred.")
+                            Text("PipSweep cannot read or copy contact notes. Check the source cards in Contacts and copy any notes you need into the card you will keep before merging. Account-specific fields and group membership are not transferred.")
                                 .font(.footnote).foregroundStyle(.secondary)
                             Toggle("I checked notes and other details on these cards", isOn: $checkedNotes)
                                 .font(.subheadline)
-                            Text("Changes can sync to your connected accounts. Clearspace cannot undo a merge.")
+                            Text("Changes can sync to your connected accounts. PipSweep cannot undo a merge.")
                                 .font(.footnote).foregroundStyle(.secondary)
                         }
                     }

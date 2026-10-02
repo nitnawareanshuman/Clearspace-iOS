@@ -12,12 +12,12 @@ import SwiftUI
 struct ClearspaceApp: App {
     @StateObject private var store = CleanerStore()
     @StateObject private var contacts = ContactsStore()
-    @State private var showSplash = true
+    @AppStorage("pipsweep.hasSeenWelcome") private var hasSeenWelcome = false
     @Environment(\.scenePhase) private var scenePhase
     var body: some Scene {
         WindowGroup {
             Group {
-                if showSplash { SplashView { showSplash = false } }
+                if !hasSeenWelcome { SplashView { hasSeenWelcome = true } }
                 else { DashboardView() }
             }
                 .environmentObject(store)

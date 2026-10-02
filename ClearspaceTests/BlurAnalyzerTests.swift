@@ -45,6 +45,17 @@ final class BlurAnalyzerTests: XCTestCase {
         XCTAssertFalse(assessment.isLikelyBlurry)
     }
 
+    func testSmallSharpSubjectNearARegionalBoundaryIsProtected() throws {
+        var pixels = (0..<(256 * 256)).map { UInt8(40 + ($0 % 256) / 2) }
+        for y in 120..<136 {
+            for x in 120..<136 { pixels[y * 256 + x] = (x / 4) % 2 == 0 ? 50 : 170 }
+        }
+        let assessment = try XCTUnwrap(BlurAnalyzer.assess(pixels: pixels, width: 256, height: 256))
+        XCTAssertLessThan(assessment.variance, 350)
+        XCTAssertGreaterThanOrEqual(assessment.sharpestRegion, 800)
+        XCTAssertFalse(assessment.isLikelyBlurry)
+    }
+
     func testBlankLowContrastTinyAndMalformedImagesAreUnassessable() {
         XCTAssertNil(BlurAnalyzer.assess(pixels: [UInt8](repeating: 128, count: 65536), width: 256, height: 256))
         let lowContrast = (0..<65536).map { UInt8(126 + $0 % 4) }

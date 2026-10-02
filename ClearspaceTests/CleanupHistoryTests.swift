@@ -2,6 +2,19 @@ import XCTest
 @testable import Clearspace
 
 final class CleanupHistoryTests: XCTestCase {
+    @MainActor func testClearingHistoryPersistsAndCanStartAgain() {
+        let name = "PipSweepTests.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: name)!
+        defer { defaults.removePersistentDomain(forName: name) }
+        let history = CleanupHistory(defaults: defaults)
+        history.record(photos: 2, bytes: 4096)
+        history.clear()
+        XCTAssertTrue(history.receipts.isEmpty)
+        XCTAssertTrue(CleanupHistory(defaults: defaults).receipts.isEmpty)
+        history.record(contacts: 1)
+        XCTAssertEqual(CleanupHistory(defaults: defaults).receipts.count, 1)
+    }
+
     @MainActor func testConfirmedActivitySurvivesRelaunchWithoutInventedEventBytes() {
         let name = "ClearspaceTests.\(UUID().uuidString)"
         let defaults = UserDefaults(suiteName: name)!
