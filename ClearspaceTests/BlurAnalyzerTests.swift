@@ -46,7 +46,17 @@ final class BlurAnalyzerTests: XCTestCase {
     }
 
     func testSmallSharpSubjectNearARegionalBoundaryIsProtected() throws {
-        var pixels = (0..<(256 * 256)).map { UInt8(40 + ($0 % 256) / 2) }
+        let width: Int = 256
+        let height: Int = 256
+        let pixelCount: Int = width * height
+        var pixels: [UInt8] = []
+        pixels.reserveCapacity(pixelCount)
+
+        for index in 0..<pixelCount {
+            let column: Int = index % width
+            let gradient: Int = column / 2
+            pixels.append(UInt8(40 + gradient))
+        }
         for y in 120..<136 {
             for x in 120..<136 { pixels[y * 256 + x] = (x / 4) % 2 == 0 ? 50 : 170 }
         }
