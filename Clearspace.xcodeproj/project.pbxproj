@@ -24,7 +24,6 @@
 		5BC68E38306FB206006FCC6D /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BC68E37306FB206006FCC6D /* SplashView.swift */; };
 		5BC68E3B306FB262006FCC6D /* PhotoCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BC68E39306FB262006FCC6D /* PhotoCollectionView.swift */; };
 		5BC68E3C306FB262006FCC6D /* TidySessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BC68E3A306FB262006FCC6D /* TidySessionView.swift */; };
-		5BC68E3E306FB38A006FCC6D /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5BC68E3D306FB38A006FCC6D /* Info.plist */; };
 		5BC68E42306FB3C1006FCC6D /* BlurAnalyzerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BC68E3F306FB3C1006FCC6D /* BlurAnalyzerTests.swift */; };
 		5BC68E43306FB3C1006FCC6D /* CleanupHistoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BC68E40306FB3C1006FCC6D /* CleanupHistoryTests.swift */; };
 		5BC68E44306FB3C1006FCC6D /* TidySessionPolicyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BC68E41306FB3C1006FCC6D /* TidySessionPolicyTests.swift */; };
@@ -121,9 +120,19 @@
 		EF7B4CD618248962A0D99DED /* VideoPolicyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = VideoPolicyTests.swift; path = ClearspaceTests/VideoPolicyTests.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		A89302D941E24B85B01EA772 /* Exceptions for ClearspaceWidget folder in ClearspaceWidgetExtension target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 5BEBA321306990B500503B83 /* ClearspaceWidgetExtension */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		5BEBA309306988BF00503B83 /* Calendar */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Calendar; sourceTree = "<group>"; };
-		5BEBA328306990B500503B83 /* ClearspaceWidget */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = ClearspaceWidget; sourceTree = "<group>"; };
+		5BEBA328306990B500503B83 /* ClearspaceWidget */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (A89302D941E24B85B01EA772 /* Exceptions for ClearspaceWidget folder in ClearspaceWidgetExtension target */, ); explicitFileTypes = {}; explicitFolders = (); path = ClearspaceWidget; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -465,7 +474,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				25E9BEAB0FDBADE361797536 /* Assets.xcassets in Resources */,
-				5BC68E3E306FB38A006FCC6D /* Info.plist in Resources */,
 				5BEBA3153069892F00503B83 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
