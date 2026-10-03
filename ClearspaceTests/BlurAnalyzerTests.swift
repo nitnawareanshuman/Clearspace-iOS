@@ -46,7 +46,8 @@ final class BlurAnalyzerTests: XCTestCase {
     }
 
     func testBlankLowContrastTinyAndMalformedImagesAreUnassessable() {
-        XCTAssertNil(BlurAnalyzer.assess(pixels: [UInt8](repeating: 128, count: 65536), width: 256, height: 256))
+        let blank = [UInt8](repeating: 128, count: 65_536)
+        XCTAssertNil(BlurAnalyzer.assess(pixels: blank, width: 256, height: 256))
         let lowContrast = (0..<65536).map { UInt8(126 + $0 % 4) }
         XCTAssertNil(BlurAnalyzer.assess(pixels: lowContrast, width: 256, height: 256))
         XCTAssertNil(BlurAnalyzer.assess(pixels: [], width: 256, height: 256))
