@@ -52,7 +52,6 @@ The current binary processes content only on device, uses no developer analytics
 
 Meet Pip, your little tidy companion. PipSweep helps you review clutter on your iPhone and make room through small, deliberate choices.
 
-Start with Pip's ten-shot tidy: review up to ten screenshots at a time, oldest first. Keep useful memories, queue temporary clutter, preview details and undo a swipe before the final review.
 
 Explore similar-photo suggestions, screenshots, possible blurry shots and large videos with previews. Review duplicate contact cards and eligible old calendar events when you choose those features. Track completed cleanup activity and see device storage from a Home Screen widget.
 
@@ -66,13 +65,11 @@ photo,screenshot,duplicate,similar,blur,video,storage,tidy,contacts,calendar
 
 ## Notes for Review draft
 
-PipSweep is an iPhone organizer built around optional, bounded reviews. The ten-shot tidy offers up to ten accessible screenshots, oldest first, with per-item Keep/Remove, preview, Undo, and a separate deletion review. Favorites are excluded from this session. Matched groups must retain at least one item.
 
 No login or developer backend is required. Photos, Contacts and Calendar permission prompts are independent. Limited Photos and Contacts access are handled. Photos and video removal also requires the system Photos confirmation.
 
 Settings contains the offline privacy policy, recovery guidance and local-history controls. Configure its public support contact before submission. The storage widget is embedded with the app.
 
-To test the ten-shot tidy, add screenshots to the device, grant Photos access, scan, then open Pip's ten-shot tidy. Review Remove/Keep choices and approve or cancel the final review. Contact and Calendar features can be tested separately using disposable records. No demo credentials are needed.
 
 ## Release acceptance
 
@@ -86,7 +83,7 @@ To test the ten-shot tidy, add screenshots to the device, grant Photos access, s
 8. Configure the in-app support contact, publish and verify the support/privacy pages, and complete metadata, age-rating and privacy questions.
 9. Submit one complete app with clear, accurate review notes.
 
-A mascot/name change alone does not establish a meaningfully different product. Demonstrate the small-session workflow, deliberate approvals, transparency and tested quality without claiming these are exclusive features or guaranteeing approval under guideline 4.3.
+A mascot/name change alone does not establish a meaningfully different product. Demonstrate the review workflow, deliberate approvals, transparency and tested quality without claiming these are exclusive features or guaranteeing approval under guideline 4.3.
 
 Apple sources:
 - https://developer.apple.com/app-store/review/guidelines/

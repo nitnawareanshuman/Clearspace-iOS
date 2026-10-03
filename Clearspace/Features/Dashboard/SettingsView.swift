@@ -136,7 +136,7 @@ struct CleanupHelpView: View {
     var body: some View {
         List {
             Section("A small place to start") {
-                Text("After a scan, open Screenshots and choose Review 10 at a time. Review up to ten screenshots at a time, keep anything useful, and undo a swipe whenever you change your mind. Choosing Remove only queues a screenshot; the final review still controls deletion.")
+                Text("After a scan, choose Screenshots, Similar photos, Blurry photos or Large videos. Preview items and select what to remove. Swipe mode includes Keep, Remove and Undo. Your choices only queue items; final review and the system confirmation control deletion.")
             }
             Section("Similar and blurry suggestions") {
                 Text("Matching previews and similar shots are suggestions, not proof that files are identical. Blur detection can include intentional soft focus. Inspect each image and decide which version matters to you. At least one copy in each matched group must stay.")

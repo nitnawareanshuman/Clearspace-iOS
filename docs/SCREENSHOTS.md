@@ -4,8 +4,6 @@ Capture these views after building this update, using disposable sample content.
 
 | View | What it should show |
 | --- | --- |
-| Dashboard | PipSweep name, Pip with broom, storage and ten-shot tidy card. |
-| Ten-shot tidy | A screenshot preview, Keep/Remove controls, progress and Undo. |
 | Similar photos | A group with a recommended keep and clear selection states. |
 | Final review | Exactly what will be removed, kept items and an honest size estimate. |
 | Cleanup summary | Completed activity and estimate limitations. |

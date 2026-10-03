@@ -8,7 +8,6 @@ Prepared 2 October 2026 from main commit `3cedd7e2bacd4fbc0f2f5299fc7fde03bb7195
 | --- | --- |
 | Identity | PipSweep display names, permission explanations, widget labels and welcome; internal module, bundle IDs, widget kind and history key retained. |
 | Mascot | Pip holds a drawn broom; decorative motion respects Reduce Motion. Matching opaque App Store icon added. |
-| Product workflow | Up to ten eligible screenshots per batch, oldest first; favorites skipped. Reuses swipe review, previews, Undo, group protection and the existing final deletion review. |
 | Help and privacy | Settings, offline policy, permission shortcut, recovery guidance and clear-history control. Public support contact is configurable and must be filled before submission. |
 | Image analysis | Overlapping regional edge checks protect small sharp subjects at grid boundaries; global variance remains calculated once per pixel. |
 | Release configuration | App and widget version/build aligned to 1.0.0 (2). CI guards the submission SDK and adds an unsigned Release device build. |
@@ -44,7 +43,6 @@ The Gaussian approximation is not evidence that Core Image produces identical pi
 
 The prior main [GitHub Actions run](https://github.com/nitnawareanshuman/Clearspace-iOS/actions/runs/36455302621) built with Xcode 16.4 and reported **57 of 58 tests passing**. `testSharpSubjectAgainstSoftBackgroundIsProtected` failed; its classification is addressed by the regional change above. That earlier run does not validate this update.
 
-There are now **65 XCTest methods in source**, including new coverage for regional boundary subjects, session eligibility/order and history clearing. **They were not executed in this workspace.** Xcode, the Apple SDKs, a simulator and a real iPhone are unavailable here. Do not infer a compiled or passing app from grammar parsing or numerical checks.
 
 Run Xcode tests and a Release build, then complete [TESTING.md](TESTING.md) with disposable content. Verify new-screen layouts, broom clipping, VoiceOver, Dynamic Type, permissions, cancellation, last-copy protection, actual deletion and widget behavior. Capture [SCREENSHOTS.md](SCREENSHOTS.md), configure the public support contact, publish the policy/support pages, validate a signed archive and test through TestFlight before submission.
 

@@ -4,7 +4,6 @@ PipSweep is now being prepared as a standalone product. Prior assignment restric
 
 | Feature | Current behavior |
 | --- | --- |
-| Ten-shot tidy | Up to ten eligible screenshots per batch, oldest first; favorites and read-only items are skipped. Preview, Keep, Remove, Undo and final deletion review are available. |
 | Similar photos | Matching previews and near-identical shots are suggestions. Recommended keeps favor favorites, resolution and recency. |
 | Screenshots | Multi-selection and swipe review, with keep-one protection for matched groups. |
 | Large videos | Known sizes sort largest first; unavailable sizes are disclosed. Preview and reviewed deletion are available. |

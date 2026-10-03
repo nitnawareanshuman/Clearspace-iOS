@@ -6,7 +6,6 @@
 
 A native iPhone photo and storage organizer with Pip, a small teal companion with a broom. Make room through deliberate choices: scan accessible content, review suggestions, and approve each removal.
 
-**Pip's ten-shot tidy** offers a small starting point: review up to ten screenshots at a time, oldest first, with preview, Keep, Remove and Undo. Favorites are skipped in this session, and the final review still controls deletion.
 
 Built by **Anshuman Nitnaware**. The current release has no account requirement, advertising, subscriptions or backend.
 
@@ -14,7 +13,6 @@ Built by **Anshuman Nitnaware**. The current release has no account requirement,
 
 - Device storage dashboard with per-category media estimates.
 - Similar-photo suggestions, screenshots, blurry-photo suggestions and large-video previews.
-- Ten-shot screenshot sessions and swipe review.
 - Reviewed contact merges and deletion, with account and field-conflict checks.
 - Optional calendar cleanup for eligible old events.
 - Small and medium storage widgets.

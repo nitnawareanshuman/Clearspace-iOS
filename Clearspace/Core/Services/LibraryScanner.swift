@@ -23,10 +23,11 @@ actor LibraryScanner {
     private static let logger = Logger(subsystem: "PipSweep", category: "PhotoAnalysis")
     private var sizes: [String: CachedSize] = [:]
 
-    private func measure(_ asset: PHAsset) async throws -> Int64 {
+    private func measure(_ asset: PHAsset, deadline: TimeInterval) async throws -> Int64 {
         let snapshot = PhotoItem(asset: asset)
         if snapshot.modified != nil, let cached = sizes[snapshot.id],
            SelectionPolicy.unchanged(cached.snapshot, current: snapshot) { return cached.bytes }
+        guard ProcessInfo.processInfo.systemUptime < deadline else { throw CleanerError.timedOut }
         let bytes = try await PhotoRequests.bytes(for: asset)
         try Task.checkCancellation()
         sizes[snapshot.id] = CachedSize(snapshot: snapshot, bytes: bytes)
@@ -118,11 +119,12 @@ actor LibraryScanner {
         let groupIndices = buckets.indices.filter { buckets[$0].count > 1 }
         let sizeIDs = Set(screenshotIDs + Array(blurryScores.keys) + groupIndices.flatMap { buckets[$0] }).sorted()
         var unmeasured = 0
+        let sizeDeadline = ProcessInfo.processInfo.systemUptime + 60
         // Serial resource streaming bounds memory and I/O. Only cleanup candidates need sizes.
         for (index, id) in sizeIDs.enumerated() {
             try Task.checkCancellation()
             if let asset = PHAsset.fetchAssets(withLocalIdentifiers: [id], options: nil).firstObject {
-                do { items[id]?.bytes = try await measure(asset) }
+                do { items[id]?.bytes = try await measure(asset, deadline: sizeDeadline) }
                 catch is CancellationError { throw CancellationError() }
                 catch { unmeasured += 1 }
             } else { unmeasured += 1 }
@@ -141,7 +143,7 @@ actor LibraryScanner {
             try Task.checkCancellation()
             let asset = videoAssets.object(at: index)
             var item = PhotoItem(asset: asset)
-            do { item.bytes = try await measure(asset) }
+            do { item.bytes = try await measure(asset, deadline: sizeDeadline) }
             catch is CancellationError { throw CancellationError() }
             catch { unmeasured += 1 }
             videos.append(item)
@@ -226,6 +228,7 @@ actor LibraryScanner {
 
     static func featurePrint(_ image: CGImage) throws -> VNFeaturePrintObservation {
         let request = VNGenerateImageFeaturePrintRequest()
+        request.preferBackgroundProcessing = true
         // Keep revision 2's calibrated distance scale on both simulator and device.
         request.revision = VNGenerateImageFeaturePrintRequestRevision2
         #if targetEnvironment(simulator)

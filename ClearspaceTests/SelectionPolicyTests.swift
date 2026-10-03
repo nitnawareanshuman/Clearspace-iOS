@@ -3,6 +3,33 @@ import UIKit
 @testable import Clearspace
 
 final class SelectionPolicyTests: XCTestCase {
+    func testRequestGateKeepsFirstResultWhenCallbacksRepeat() async throws {
+        let gate = RequestGate<Int>()
+        let value: Int = try await withCheckedThrowingContinuation { continuation in
+            gate.attach(continuation)
+            gate.finish(.success(42))
+            gate.finish(.failure(CleanerError.unavailable))
+        }
+        XCTAssertEqual(value, 42)
+    }
+
+    func testRequestGateTimeoutResumesAndCancelsUnderlyingRequest() async {
+        let gate = RequestGate<Int>()
+        let cancelled = expectation(description: "Underlying request cancelled")
+        do {
+            let _: Int = try await withCheckedThrowingContinuation { continuation in
+                gate.attach(continuation)
+                gate.configure(timeout: 0.01) { cancelled.fulfill() }
+            }
+            XCTFail("Expected a timeout")
+        } catch {
+            guard case CleanerError.timedOut = error else {
+                return XCTFail("Unexpected error: \(error)")
+            }
+        }
+        await fulfillment(of: [cancelled], timeout: 1)
+    }
+
     private func item(_ id: String, favorite: Bool = false, width: Int = 100,
                       date: Date? = nil, bytes: Int64? = 20) -> PhotoItem {
         PhotoItem(id: id, created: date, modified: nil, width: width, height: 100,

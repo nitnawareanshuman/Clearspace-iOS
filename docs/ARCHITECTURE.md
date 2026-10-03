@@ -78,8 +78,7 @@ The widget bundle registers only `ClearspaceStorageWidget`. Its minimum deployme
 
 The checked-in Xcode project is authoritative. Most app files use explicit groups and target membership; Calendar and widget folders use synchronized groups. Add files through Xcode and verify target membership. The app target embeds and depends on the widget extension.
 
-## Product sessions and privacy
+## Privacy and settings
 
-TidySessionPolicy selects at most ten oldest eligible screenshots, excluding favorites, videos, read-only items and IDs already reviewed in the current visit. TidySessionView reuses SwipeReviewView and the existing ReviewView. Only the existing CleanerStore mutation site can remove media; session choices never mutate Photos. Epoch changes discard selected IDs and rebuild the batch from current results.
 
 SettingsView contains an offline policy and cleanup help, opens the public support contact only when configured in Info.plist and chosen by the user, and can clear local cleanup history. The one-time welcome uses AppStorage. The old history key, module, bundle identifiers and widget kind are preserved for update compatibility; display names use PipSweep.

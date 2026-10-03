@@ -16,7 +16,7 @@ struct DashboardView: View {
                             Text("Room for what matters.").font(.subheadline).foregroundStyle(.secondary)
                         }
                         Spacer()
-                        PipMascot().frame(width: 86, height: 92)
+                        PipMascot(animate: !store.scanning).frame(width: 86, height: 92)
                     }
                     storageCard
                     permissionCard
@@ -65,7 +65,7 @@ struct DashboardView: View {
                                         Text("\(result.blurUnassessed) photos had too little detail or were too small for a reliable blur check. Screenshots are excluded from blur detection.")
                                     }
                                     if result.unmeasured > 0 {
-                                        Text("\(result.unmeasured) media sizes are unavailable and excluded from byte totals.")
+                                        Text("\(result.unmeasured) media sizes could not be read locally within this scan. They are excluded from byte totals. Open cloud-only items in Photos to download them, then scan again.")
                                     }
                                 }.font(.footnote).foregroundStyle(.secondary)
                             }
@@ -92,7 +92,7 @@ struct DashboardView: View {
                                 .font(.footnote).foregroundStyle(.secondary)
                         }
                     }
-                    Label("Private by design. Processed on your iPhone.", systemImage: "lock.shield")
+                    Label("Private by design. Processed on your device.", systemImage: "lock.shield")
                         .font(.caption).foregroundStyle(.secondary).frame(maxWidth: .infinity)
                 }.padding(20)
             }.disabled(store.scanning)
@@ -136,7 +136,7 @@ struct DashboardView: View {
                 #if targetEnvironment(simulator)
                 Text("SIMULATOR · MAC STORAGE").font(.caption.weight(.semibold)).tracking(1.5).foregroundStyle(.teal)
                 #else
-                Text("YOUR IPHONE").font(.caption.weight(.semibold)).tracking(1.5).foregroundStyle(.teal)
+                Text("YOUR DEVICE").font(.caption.weight(.semibold)).tracking(1.5).foregroundStyle(.teal)
                 #endif
                 if let storage = store.storage {
                     Text(ByteCountFormatter.string(fromByteCount: storage.free, countStyle: .file))
@@ -189,8 +189,8 @@ struct DashboardView: View {
                 HStack {
                     Text(store.scanning ? "Pip is finding room…" : "Let’s make some room").font(.title3.bold())
                     Spacer()
-                    if store.scanning { PipMascot(working: true).frame(width: 60, height: 64) }
-                    else { PipMascot().frame(width: 60, height: 64) }
+                    if store.scanning { PipMascot(working: true, animate: false).frame(width: 60, height: 64) }
+                    else { PipMascot(animate: !store.scanning).frame(width: 60, height: 64) }
                 }
                 Text(store.phase).font(.subheadline).foregroundStyle(.secondary)
                 if store.scanning {

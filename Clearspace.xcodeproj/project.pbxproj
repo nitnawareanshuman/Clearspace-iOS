@@ -12,7 +12,6 @@
 		4B931E5DE50D65AF005BAEDC /* ContactModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85A365BD3165443B28372D17 /* ContactModels.swift */; };
 		5BC68E20306FB06A006FCC6D /* ClearspaceApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BC68E1F306FB06A006FCC6D /* ClearspaceApp.swift */; };
 		5BC68E22306FB0AA006FCC6D /* CleanerStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BC68E21306FB0AA006FCC6D /* CleanerStore.swift */; };
-		5BC68E25306FB0CB006FCC6D /* TidySessionPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BC68E24306FB0CB006FCC6D /* TidySessionPolicy.swift */; };
 		5BC68E26306FB0CB006FCC6D /* CleanupHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BC68E23306FB0CB006FCC6D /* CleanupHistory.swift */; };
 		5BC68E2A306FB11D006FCC6D /* LibraryScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BC68E29306FB11D006FCC6D /* LibraryScanner.swift */; };
 		5BC68E2B306FB11D006FCC6D /* CalendarService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BC68E28306FB11D006FCC6D /* CalendarService.swift */; };
@@ -23,10 +22,8 @@
 		5BC68E36306FB1BB006FCC6D /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BC68E33306FB1BB006FCC6D /* DashboardView.swift */; };
 		5BC68E38306FB206006FCC6D /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BC68E37306FB206006FCC6D /* SplashView.swift */; };
 		5BC68E3B306FB262006FCC6D /* PhotoCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BC68E39306FB262006FCC6D /* PhotoCollectionView.swift */; };
-		5BC68E3C306FB262006FCC6D /* TidySessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BC68E3A306FB262006FCC6D /* TidySessionView.swift */; };
 		5BC68E42306FB3C1006FCC6D /* BlurAnalyzerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BC68E3F306FB3C1006FCC6D /* BlurAnalyzerTests.swift */; };
 		5BC68E43306FB3C1006FCC6D /* CleanupHistoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BC68E40306FB3C1006FCC6D /* CleanupHistoryTests.swift */; };
-		5BC68E44306FB3C1006FCC6D /* TidySessionPolicyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BC68E41306FB3C1006FCC6D /* TidySessionPolicyTests.swift */; };
 		5BEBA2DA30693A1A00503B83 /* Components.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEBA2D830693A1A00503B83 /* Components.swift */; };
 		5BEBA2E330693A8D00503B83 /* VideoCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEBA2E230693A8D00503B83 /* VideoCollectionView.swift */; };
 		5BEBA2E530693AEA00503B83 /* SelectionPolicyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEBA2E430693AEA00503B83 /* SelectionPolicyTests.swift */; };
@@ -83,7 +80,6 @@
 		5BC68E1F306FB06A006FCC6D /* ClearspaceApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClearspaceApp.swift; sourceTree = "<group>"; };
 		5BC68E21306FB0AA006FCC6D /* CleanerStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CleanerStore.swift; sourceTree = "<group>"; };
 		5BC68E23306FB0CB006FCC6D /* CleanupHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CleanupHistory.swift; sourceTree = "<group>"; };
-		5BC68E24306FB0CB006FCC6D /* TidySessionPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TidySessionPolicy.swift; sourceTree = "<group>"; };
 		5BC68E27306FB11D006FCC6D /* BlurAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlurAnalyzer.swift; sourceTree = "<group>"; };
 		5BC68E28306FB11D006FCC6D /* CalendarService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarService.swift; sourceTree = "<group>"; };
 		5BC68E29306FB11D006FCC6D /* LibraryScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryScanner.swift; sourceTree = "<group>"; };
@@ -93,11 +89,9 @@
 		5BC68E34306FB1BB006FCC6D /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		5BC68E37306FB206006FCC6D /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
 		5BC68E39306FB262006FCC6D /* PhotoCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCollectionView.swift; sourceTree = "<group>"; };
-		5BC68E3A306FB262006FCC6D /* TidySessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TidySessionView.swift; sourceTree = "<group>"; };
 		5BC68E3D306FB38A006FCC6D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5BC68E3F306FB3C1006FCC6D /* BlurAnalyzerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlurAnalyzerTests.swift; sourceTree = "<group>"; };
 		5BC68E40306FB3C1006FCC6D /* CleanupHistoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CleanupHistoryTests.swift; sourceTree = "<group>"; };
-		5BC68E41306FB3C1006FCC6D /* TidySessionPolicyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TidySessionPolicyTests.swift; sourceTree = "<group>"; };
 		5BEBA2D830693A1A00503B83 /* Components.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components.swift; sourceTree = "<group>"; };
 		5BEBA2E230693A8D00503B83 /* VideoCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCollectionView.swift; sourceTree = "<group>"; };
 		5BEBA2E430693AEA00503B83 /* SelectionPolicyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionPolicyTests.swift; sourceTree = "<group>"; };
@@ -280,7 +274,6 @@
 			children = (
 				85A365BD3165443B28372D17 /* ContactModels.swift */,
 				5BC68E23306FB0CB006FCC6D /* CleanupHistory.swift */,
-				5BC68E24306FB0CB006FCC6D /* TidySessionPolicy.swift */,
 				5BEBA2FE3069886800503B83 /* CalendarModels.swift */,
 				5BEBA2EA3069415500503B83 /* LibraryModels.swift */,
 			);
@@ -301,7 +294,6 @@
 			isa = PBXGroup;
 			children = (
 				5BC68E39306FB262006FCC6D /* PhotoCollectionView.swift */,
-				5BC68E3A306FB262006FCC6D /* TidySessionView.swift */,
 			);
 			path = Photos;
 			sourceTree = "<group>";
@@ -336,7 +328,6 @@
 				5BEBA3163069895A00503B83 /* CalendarPolicyTests.swift */,
 				5BC68E3F306FB3C1006FCC6D /* BlurAnalyzerTests.swift */,
 				5BC68E40306FB3C1006FCC6D /* CleanupHistoryTests.swift */,
-				5BC68E41306FB3C1006FCC6D /* TidySessionPolicyTests.swift */,
 				C25181E5F542211F4B144A99 /* ContactPolicyTests.swift */,
 				5BEBA2E430693AEA00503B83 /* SelectionPolicyTests.swift */,
 				EF7B4CD618248962A0D99DED /* VideoPolicyTests.swift */,
@@ -501,7 +492,6 @@
 			files = (
 				5BC68E42306FB3C1006FCC6D /* BlurAnalyzerTests.swift in Sources */,
 				5BC68E43306FB3C1006FCC6D /* CleanupHistoryTests.swift in Sources */,
-				5BC68E44306FB3C1006FCC6D /* TidySessionPolicyTests.swift in Sources */,
 				CD2F5ADA1599990235AE8462 /* ContactPolicyTests.swift in Sources */,
 				5BEBA2E530693AEA00503B83 /* SelectionPolicyTests.swift in Sources */,
 				A06181465B43A8B131D9B250 /* VideoPolicyTests.swift in Sources */,
@@ -521,7 +511,6 @@
 				5BC68E36306FB1BB006FCC6D /* DashboardView.swift in Sources */,
 				5BEBA3013069886800503B83 /* CalendarModels.swift in Sources */,
 				5BC68E3B306FB262006FCC6D /* PhotoCollectionView.swift in Sources */,
-				5BC68E3C306FB262006FCC6D /* TidySessionView.swift in Sources */,
 				4B931E5DE50D65AF005BAEDC /* ContactModels.swift in Sources */,
 				5BC68E38306FB206006FCC6D /* SplashView.swift in Sources */,
 				D2D40B8B045D0BC68682A7BB /* ContactService.swift in Sources */,
@@ -535,7 +524,6 @@
 				5BEBA2EB3069415500503B83 /* LibraryModels.swift in Sources */,
 				5BEBA3113069890B00503B83 /* SpaceFreedView.swift in Sources */,
 				5BC68E22306FB0AA006FCC6D /* CleanerStore.swift in Sources */,
-				5BC68E25306FB0CB006FCC6D /* TidySessionPolicy.swift in Sources */,
 				5BC68E26306FB0CB006FCC6D /* CleanupHistory.swift in Sources */,
 				5BEBA2E330693A8D00503B83 /* VideoCollectionView.swift in Sources */,
 			);

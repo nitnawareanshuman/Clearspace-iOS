@@ -24,6 +24,7 @@ final class CleanerStore: NSObject, ObservableObject, PHPhotoLibraryChangeObserv
     @Published var message: String?
     @Published var storageError: String?
     private let scanner = LibraryScanner()
+    private var storageTask: Task<Void, Never>?
     private var scanTask: Task<Void, Never>?
     private var libraryChangedDuringDelete = false
     private var observedAssets: PHFetchResult<PHAsset>?
@@ -53,9 +54,19 @@ final class CleanerStore: NSObject, ObservableObject, PHPhotoLibraryChangeObserv
     }
 
     func refreshStorage() {
-        do { storage = try StorageSnapshot.read(); storageError = nil }
-        catch { storage = nil; storageError = error.localizedDescription }
-        WidgetCenter.shared.reloadTimelines(ofKind: "ClearspaceStorageWidget")
+        guard storageTask == nil else { return }
+        storageTask = Task { [weak self] in
+            let snapshot = await Task.detached(priority: .utility) {
+                Result { try StorageSnapshot.read() }
+            }.value
+            guard let self else { return }
+            switch snapshot {
+            case .success(let value): storage = value; storageError = nil
+            case .failure(let error): storage = nil; storageError = error.localizedDescription
+            }
+            storageTask = nil
+            WidgetCenter.shared.reloadTimelines(ofKind: "ClearspaceStorageWidget")
+        }
     }
     func refreshAccess() {
         let status = PHPhotoLibrary.authorizationStatus(for: .readWrite)

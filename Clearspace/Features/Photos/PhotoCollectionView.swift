@@ -77,19 +77,6 @@ struct PhotoCollectionView: View {
                                     Text(guidance)
                                         .font(.subheadline).foregroundStyle(.secondary)
                                 }
-                                if kind == .screenshots {
-                                    NavigationLink {
-                                        TidySessionView()
-                                    } label: {
-                                        Label("Review 10 at a time", systemImage: "rectangle.stack")
-                                    }
-                                    .buttonStyle(.borderedProminent)
-                                    .disabled(store.busy || store.result.map {
-                                        TidySessionPolicy.candidates(from: $0).isEmpty
-                                    } ?? true)
-                                    Text("Start with the oldest screenshots. Favorites are skipped.")
-                                        .font(.caption).foregroundStyle(.secondary)
-                                }
                                 Button { swipeMode = true } label: {
                                     Label("Swipe mode", systemImage: "hand.draw")
                                 }.buttonStyle(.bordered)

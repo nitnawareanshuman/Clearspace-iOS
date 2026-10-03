@@ -4,14 +4,15 @@ import SwiftUI
 struct PipMascot: View {
     var working = false
     var cleaning = false
+    var animate = true
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
-        TimelineView(.animation(minimumInterval: 1.0 / 30.0,
-                                paused: reduceMotion || scenePhase != .active)) { timeline in
+        TimelineView(.animation(minimumInterval: 1.0 / 15.0,
+                                paused: !animate || reduceMotion || scenePhase != .active)) { timeline in
             // A bounded drawing transform cannot animate the surrounding layout or navigation.
-            let animated = !reduceMotion && scenePhase == .active
+            let animated = animate && !reduceMotion && scenePhase == .active
             let time = timeline.date.timeIntervalSinceReferenceDate
             let wave = animated ? sin(time * .pi * 2 / (working || cleaning ? 1.8 : 3.6)) : 0
             let blinkPhase = time.truncatingRemainder(dividingBy: 5.2)

@@ -89,13 +89,46 @@ enum PhotoRequests {
         }, onCancel: { gate.finish(.failure(CancellationError())) })
     }
 
+    /// File metadata avoids streaming an entire ordinary local movie just to count bytes.
+    private static func localFileBytes(for asset: PHAsset) async throws -> Int64 {
+        let gate = RequestGate<Int64>()
+        return try await withTaskCancellationHandler(operation: {
+            try Task.checkCancellation()
+            return try await withCheckedThrowingContinuation { continuation in
+                gate.attach(continuation)
+                let options = PHContentEditingInputRequestOptions()
+                options.isNetworkAccessAllowed = false
+                let request = asset.requestContentEditingInput(with: options) { input, _ in
+                    let url = asset.mediaType == .video
+                        ? (input?.audiovisualAsset as? AVURLAsset)?.url : input?.fullSizeImageURL
+                    do {
+                        guard let url, url.isFileURL,
+                              let size = try url.resourceValues(forKeys: [.fileSizeKey]).fileSize,
+                              size > 0 else { throw CleanerError.unavailable }
+                        gate.finish(.success(Int64(size)))
+                    } catch { gate.finish(.failure(error)) }
+                }
+                gate.configure(timeout: 4) { asset.cancelContentEditingInputRequest(request) }
+            }
+        }, onCancel: { gate.finish(.failure(CancellationError())) })
+    }
+
     static func bytes(for asset: PHAsset) async throws -> Int64 {
         var total: Int64 = 0
         // Counts logical resource bytes, including Live Photo motion and edits, without retaining data.
         let resources = PHAssetResource.assetResources(for: asset)
         guard !resources.isEmpty else { throw CleanerError.unavailable }
+        if resources.count == 1,
+           resources[0].type == .photo || resources[0].type == .video {
+            do { return try await localFileBytes(for: asset) }
+            catch is CancellationError { throw CancellationError() }
+            catch { /* Fall back to the public resource stream. */ }
+        }
+        let deadline = ProcessInfo.processInfo.systemUptime + 8
         for resource in resources {
             try Task.checkCancellation()
+            let remaining = deadline - ProcessInfo.processInfo.systemUptime
+            guard remaining > 0 else { throw CleanerError.timedOut }
             let gate = RequestGate<Int64>()
             let counter = ByteCounter()
             let amount: Int64 = try await withTaskCancellationHandler(operation: {
@@ -110,7 +143,7 @@ enum PhotoRequests {
                             if let error { gate.finish(.failure(error)) }
                             else { gate.finish(.success(counter.total())) }
                         })
-                    gate.configure(timeout: 120) { manager.cancelDataRequest(request) }
+                    gate.configure(timeout: remaining) { manager.cancelDataRequest(request) }
                 }
             }, onCancel: { gate.finish(.failure(CancellationError())) })
             total += amount
