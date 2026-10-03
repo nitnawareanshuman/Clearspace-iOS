@@ -31,9 +31,9 @@ struct TidySessionView: View {
                 } else if batch.isEmpty {
                     MascotEmptyState(title: "A good place to pause",
                                      detail: reviewedIDs.isEmpty
-                                         ? "There are no eligible screenshots for a session. You can review other categories on the dashboard."
+                                         ? "There are no eligible screenshots for a session. Return to Screenshots to review your full collection."
                                          : "You've reviewed the available screenshots in this session. Everything you kept is staying.")
-                    Button("Back to dashboard") { dismiss() }.buttonStyle(.borderedProminent)
+                    Button("Back to Screenshots") { dismiss() }.buttonStyle(.borderedProminent)
                 } else {
                     SwipeReviewView(
                         items: batch,
@@ -57,7 +57,7 @@ struct TidySessionView: View {
             }.padding(20)
         }
         .background(Color(uiColor: .systemGroupedBackground))
-        .navigationTitle("Pip's ten-shot tidy")
+        .navigationTitle("Review 10 at a time")
         .navigationBarTitleDisplayMode(.inline)
         .sheet(item: $draft) { ReviewView(draft: $0) }
         .onAppear { loadBatch() }

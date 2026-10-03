@@ -23,22 +23,6 @@ struct DashboardView: View {
                     if store.hasAccess {
                         scanCard
                         if let result = store.result {
-                            NavigationLink { TidySessionView() } label: {
-                                Surface {
-                                    HStack(spacing: 14) {
-                                        PipMascot().frame(width: 62, height: 68)
-                                        VStack(alignment: .leading, spacing: 6) {
-                                            Text("Pip's ten-shot tidy").font(.headline)
-                                            Text("A small session for your screenshots. You choose what stays.")
-                                                .font(.subheadline).foregroundStyle(.secondary)
-                                            Text("\(TidySessionPolicy.candidates(from: result).count) screenshots ready")
-                                                .font(.caption.weight(.semibold)).foregroundStyle(.teal)
-                                        }
-                                        Spacer(minLength: 0)
-                                        Image(systemName: "chevron.right").foregroundStyle(.secondary)
-                                    }
-                                }
-                            }.buttonStyle(.plain)
                             Surface {
                                 VStack(alignment: .leading, spacing: 8) {
                                     Label("Potential cleanup", systemImage: "sparkles").font(.headline)
