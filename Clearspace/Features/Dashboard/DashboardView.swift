@@ -1,6 +1,5 @@
 import SwiftUI
 import Photos
-
 struct DashboardView: View {
     @EnvironmentObject private var store: CleanerStore
     @EnvironmentObject private var contacts: ContactsStore
@@ -27,7 +26,7 @@ struct DashboardView: View {
                                 VStack(alignment: .leading, spacing: 8) {
                                     Label("Potential cleanup", systemImage: "sparkles").font(.headline)
                                     Text(ByteSummary(result.cleanupCandidates).label).font(.title.bold())
-                                    Text("Estimated media savings after review. Overlapping categories are counted once; recommended keeps are excluded.")
+                                    Text("Space you may save after reviewing these items.")
                                         .font(.caption).foregroundStyle(.secondary)
                                 }
                             }
@@ -56,16 +55,25 @@ struct DashboardView: View {
                             }.buttonStyle(.plain)
                             Surface {
                                 VStack(alignment: .leading, spacing: 8) {
-                                    Label("About these estimates", systemImage: "info.circle").font(.subheadline.bold())
-                                    Text("Sizes count available photo and video resources, not guaranteed free device space. Similar-photo estimates exclude recommended keeps and favorites. Blurry-photo estimates skip favorites and keep one copy of matching groups. Screenshot estimates keep one copy of each matching group. Video estimates include all deletable videos. Read-only media is excluded. Categories can overlap, so do not add their totals.")
-                                    if result.unavailable > 0 {
-                                        Text("\(result.unavailable) photos could not be analyzed locally. Cloud-only items are not downloaded.")
-                                    }
-                                    if result.blurUnassessed > 0 {
-                                        Text("\(result.blurUnassessed) photos had too little detail or were too small for a reliable blur check. Screenshots are excluded from blur detection.")
-                                    }
-                                    if result.unmeasured > 0 {
-                                        Text("\(result.unmeasured) media sizes could not be read locally within this scan. They are excluded from byte totals. Open cloud-only items in Photos to download them, then scan again.")
+                                    Label("About storage savings", systemImage: "info.circle").font(.subheadline.bold())
+                                    Text("Savings are approximate. Items may appear in more than one category, but the total counts each item once. Space may not be freed until items leave Recently Deleted in Photos.")
+                                    if result.unavailable > 0 || result.blurUnassessed > 0 || result.unmeasured > 0 {
+                                        DisclosureGroup("Scan details") {
+                                            VStack(alignment: .leading, spacing: 8) {
+                                                if result.unavailable > 0 {
+                                                    Text("\(result.unavailable) photos couldn't be checked on this device.")
+                                                }
+                                                if result.blurUnassessed > 0 {
+                                                    Text("\(result.blurUnassessed) photos couldn't be checked for blur.")
+                                                }
+                                                if result.unmeasured > 0 {
+                                                    Text("\(result.unmeasured) items have unknown sizes and aren't included in the estimate.")
+                                                }
+                                            }
+                                            .frame(maxWidth: .infinity, alignment: .leading)
+                                            .padding(.top, 6)
+                                        }
+                                        .tint(.teal)
                                     }
                                 }.font(.footnote).foregroundStyle(.secondary)
                             }

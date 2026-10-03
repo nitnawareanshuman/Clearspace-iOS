@@ -10,6 +10,8 @@
 		25E9BEAB0FDBADE361797536 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AE691EFE359BB024898D45AC /* Assets.xcassets */; };
 		29038600B7A12A9B4F1E080E /* PhotoRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73F1AAA7D8C67CBA112B5DEA /* PhotoRequests.swift */; };
 		4B931E5DE50D65AF005BAEDC /* ContactModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85A365BD3165443B28372D17 /* ContactModels.swift */; };
+		5B1C98BD30712166000AED6B /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B1C98BB30712166000AED6B /* DashboardView.swift */; };
+		5B1C98BE30712166000AED6B /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B1C98BC30712166000AED6B /* SettingsView.swift */; };
 		5BC68E20306FB06A006FCC6D /* ClearspaceApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BC68E1F306FB06A006FCC6D /* ClearspaceApp.swift */; };
 		5BC68E22306FB0AA006FCC6D /* CleanerStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BC68E21306FB0AA006FCC6D /* CleanerStore.swift */; };
 		5BC68E26306FB0CB006FCC6D /* CleanupHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BC68E23306FB0CB006FCC6D /* CleanupHistory.swift */; };
@@ -18,8 +20,6 @@
 		5BC68E2C306FB11D006FCC6D /* BlurAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BC68E27306FB11D006FCC6D /* BlurAnalyzer.swift */; };
 		5BC68E2E306FB160006FCC6D /* PipMascot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BC68E2D306FB160006FCC6D /* PipMascot.swift */; };
 		5BC68E32306FB19B006FCC6D /* ContactsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BC68E31306FB19B006FCC6D /* ContactsView.swift */; };
-		5BC68E35306FB1BB006FCC6D /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BC68E34306FB1BB006FCC6D /* SettingsView.swift */; };
-		5BC68E36306FB1BB006FCC6D /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BC68E33306FB1BB006FCC6D /* DashboardView.swift */; };
 		5BC68E38306FB206006FCC6D /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BC68E37306FB206006FCC6D /* SplashView.swift */; };
 		5BC68E3B306FB262006FCC6D /* PhotoCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BC68E39306FB262006FCC6D /* PhotoCollectionView.swift */; };
 		5BC68E42306FB3C1006FCC6D /* BlurAnalyzerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BC68E3F306FB3C1006FCC6D /* BlurAnalyzerTests.swift */; };
@@ -77,6 +77,8 @@
 /* Begin PBXFileReference section */
 		470C0C4811DB0BFBBE9B724C /* ContactService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ContactService.swift; path = Clearspace/Core/Services/ContactService.swift; sourceTree = SOURCE_ROOT; };
 		4E783A9E10D2A8ABA38CD11C /* Clearspace.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; path = Clearspace.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		5B1C98BB30712166000AED6B /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
+		5B1C98BC30712166000AED6B /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		5BC68E1F306FB06A006FCC6D /* ClearspaceApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClearspaceApp.swift; sourceTree = "<group>"; };
 		5BC68E21306FB0AA006FCC6D /* CleanerStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CleanerStore.swift; sourceTree = "<group>"; };
 		5BC68E23306FB0CB006FCC6D /* CleanupHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CleanupHistory.swift; sourceTree = "<group>"; };
@@ -85,8 +87,6 @@
 		5BC68E29306FB11D006FCC6D /* LibraryScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryScanner.swift; sourceTree = "<group>"; };
 		5BC68E2D306FB160006FCC6D /* PipMascot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PipMascot.swift; sourceTree = "<group>"; };
 		5BC68E31306FB19B006FCC6D /* ContactsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsView.swift; sourceTree = "<group>"; };
-		5BC68E33306FB1BB006FCC6D /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
-		5BC68E34306FB1BB006FCC6D /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		5BC68E37306FB206006FCC6D /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
 		5BC68E39306FB262006FCC6D /* PhotoCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCollectionView.swift; sourceTree = "<group>"; };
 		5BC68E3D306FB38A006FCC6D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -222,8 +222,8 @@
 		498798892C27BFAB180DCB8F /* Dashboard */ = {
 			isa = PBXGroup;
 			children = (
-				5BC68E33306FB1BB006FCC6D /* DashboardView.swift */,
-				5BC68E34306FB1BB006FCC6D /* SettingsView.swift */,
+				5B1C98BB30712166000AED6B /* DashboardView.swift */,
+				5B1C98BC30712166000AED6B /* SettingsView.swift */,
 			);
 			path = Dashboard;
 			sourceTree = "<group>";
@@ -507,8 +507,6 @@
 				5BEBA30E306988F600503B83 /* ReviewView.swift in Sources */,
 				5BEBA2FA306987CE00503B83 /* CalendarStore.swift in Sources */,
 				5BC68E20306FB06A006FCC6D /* ClearspaceApp.swift in Sources */,
-				5BC68E35306FB1BB006FCC6D /* SettingsView.swift in Sources */,
-				5BC68E36306FB1BB006FCC6D /* DashboardView.swift in Sources */,
 				5BEBA3013069886800503B83 /* CalendarModels.swift in Sources */,
 				5BC68E3B306FB262006FCC6D /* PhotoCollectionView.swift in Sources */,
 				4B931E5DE50D65AF005BAEDC /* ContactModels.swift in Sources */,
@@ -520,6 +518,8 @@
 				5BC68E2A306FB11D006FCC6D /* LibraryScanner.swift in Sources */,
 				5BC68E2B306FB11D006FCC6D /* CalendarService.swift in Sources */,
 				5BC68E2C306FB11D006FCC6D /* BlurAnalyzer.swift in Sources */,
+				5B1C98BD30712166000AED6B /* DashboardView.swift in Sources */,
+				5B1C98BE30712166000AED6B /* SettingsView.swift in Sources */,
 				5BEBA2DA30693A1A00503B83 /* Components.swift in Sources */,
 				5BEBA2EB3069415500503B83 /* LibraryModels.swift in Sources */,
 				5BEBA3113069890B00503B83 /* SpaceFreedView.swift in Sources */,

@@ -10,63 +10,91 @@ struct SettingsView: View {
         List {
             Section {
                 HStack(spacing: 16) {
-                    PipMascot().frame(width: 72, height: 78)
-                    VStack(alignment: .leading, spacing: 5) {
-                        Text("PipSweep").font(.title2.bold())
-                        Text("Small choices. More breathing room.")
-                            .font(.subheadline).foregroundStyle(.secondary)
-                        Text(AppInformation.version).font(.caption).foregroundStyle(.secondary)
+                    PipMascot()
+                        .frame(width: 60, height: 66)
+                        .accessibilityHidden(true)
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("PipSweep")
+                            .font(.system(.title2, design: .rounded, weight: .bold))
+                        Text(AppInformation.version)
+                            .font(.caption).foregroundStyle(.secondary)
                     }
-                }.padding(.vertical, 6)
+                }
+                .padding(.vertical, 4)
+                .listRowBackground(Color.clear)
+                .listRowSeparator(.hidden)
             }
-            Section {
-                NavigationLink { PrivacyPolicyView() } label: {
-                    Label("Privacy policy", systemImage: "hand.raised")
-                }
-                NavigationLink { CleanupHelpView() } label: {
-                    Label("Cleanup and recovery guide", systemImage: "questionmark.circle")
-                }
+
+            Section("Privacy & help") {
                 Button {
                     if let url = URL(string: UIApplication.openSettingsURLString) { openURL(url) }
                 } label: {
-                    Label("Manage app permissions", systemImage: "lock.shield")
+                    HStack {
+                        settingsLabel("App permissions", icon: "lock.shield", color: .teal)
+                        Spacer(minLength: 8)
+                        Image(systemName: "arrow.up.right")
+                            .font(.caption.weight(.semibold)).foregroundStyle(.secondary)
+                    }
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                NavigationLink { PrivacyPolicyView() } label: {
+                    settingsLabel("Privacy policy", icon: "hand.raised", color: .teal)
+                }
+                NavigationLink { CleanupHelpView() } label: {
+                    settingsLabel("Cleanup guide", icon: "questionmark.circle", color: .indigo)
                 }
                 if let supportURL = AppInformation.supportURL {
                     Link(destination: supportURL) {
-                        Label("Contact support", systemImage: "bubble.left.and.bubble.right")
+                        HStack {
+                            settingsLabel("Contact support", icon: "bubble.left.and.bubble.right", color: .indigo)
+                            Spacer(minLength: 8)
+                            Image(systemName: "arrow.up.right")
+                                .font(.caption.weight(.semibold)).foregroundStyle(.secondary)
+                        }
                     }
                 }
-            } header: {
-                Text("Privacy and help")
-            } footer: {
-                Text("Privacy and cleanup guidance are available here without an internet connection. If you contact support, describe the problem without sharing private photos or contact details.")
             }
+
             Section {
                 NavigationLink { SpaceFreedView() } label: {
-                    Label("Cleanup history", systemImage: "clock.arrow.circlepath")
+                    settingsLabel("Cleanup history", icon: "clock.arrow.circlepath", color: .teal)
                 }
-                Button("Clear cleanup history", role: .destructive) { confirmClear = true }
-                    .disabled(history.receipts.isEmpty)
+                Button(role: .destructive) { confirmClear = true } label: {
+                    settingsLabel("Clear history", icon: "trash", color: history.receipts.isEmpty ? .secondary : .red)
+                        .foregroundStyle(history.receipts.isEmpty ? Color.secondary : Color.red)
+                }
+                .disabled(history.receipts.isEmpty)
             } header: {
-                Text("Your activity")
+                Text("Activity")
             } footer: {
-                Text("History contains cleanup dates, item counts and estimated sizes. Clearing it does not change your Photos, Contacts or Calendar.")
-            }
-            Section("About PipSweep") {
-                Label("Works without an account", systemImage: "person.crop.circle.badge.checkmark")
-                Label("Analysis runs on your iPhone", systemImage: "iphone")
-                Label("Every removal needs your approval", systemImage: "checkmark.shield")
-                Text("Built by Anshuman Nitnaware").foregroundStyle(.secondary)
+                Text("Clearing history only removes saved cleanup records.")
             }
         }
+        .listStyle(.insetGrouped)
+        .tint(.teal)
         .navigationTitle("Settings")
         .navigationBarTitleDisplayMode(.inline)
-        .confirmationDialog("Clear your cleanup history?", isPresented: $confirmClear, titleVisibility: .visible) {
+        .confirmationDialog("Clear cleanup history?", isPresented: $confirmClear, titleVisibility: .visible) {
             Button("Clear history", role: .destructive) { history.clear() }
             Button("Cancel", role: .cancel) { }
         } message: {
-            Text("This removes PipSweep's saved activity counts and estimates. It cannot restore items you previously removed.")
+            Text("Your photos, contacts and calendar won't change. This cannot be undone.")
         }
+    }
+
+    private func settingsLabel(_ title: String, icon: String, color: Color) -> some View {
+        HStack(spacing: 12) {
+            Image(systemName: icon)
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundStyle(color)
+                .frame(width: 32, height: 32)
+                .background(color.opacity(0.12), in: RoundedRectangle(cornerRadius: 9))
+                .accessibilityHidden(true)
+            Text(title).foregroundStyle(.primary)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .frame(minHeight: 44)
     }
 }
 
@@ -86,13 +114,11 @@ enum AppInformation {
         let buildNumber = (Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String) ?? "2"
         return "Version \(versionNumber) (\(buildNumber))"
     }
-
     struct PolicySection: Identifiable {
         let title: String
         let detail: String
         var id: String { title }
     }
-
     static let privacySections = [
         PolicySection(title: "Your content stays with you",
                       detail: "PipSweep analyzes accessible photos, videos, contacts and calendar events on your iPhone. The app does not upload their contents to a developer server, use advertising SDKs, or send app analytics to us. You can use PipSweep without an account."),
@@ -110,7 +136,6 @@ enum AppInformation {
                       detail: "This policy describes the current app. Any future feature that sends data off your device will require updated disclosures and, where applicable, permission before that feature is used.")
     ]
 }
-
 struct PrivacyPolicyView: View {
     var body: some View {
         List {
@@ -131,7 +156,6 @@ struct PrivacyPolicyView: View {
         .navigationBarTitleDisplayMode(.inline)
     }
 }
-
 struct CleanupHelpView: View {
     var body: some View {
         List {
