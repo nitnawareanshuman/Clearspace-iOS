@@ -30,9 +30,9 @@
 	<string>PipSweep scans photos and videos on your iPhone to find similar shots, screenshots and large videos. You review every selection before deletion.</string>
 	<key>PHPhotoLibraryPreventAutomaticLimitedAccessAlert</key>
 	<true/>
-	<!-- Set a monitored mailto: address or public HTTPS support URL before submission. -->
+	<!-- Public support contact. -->
 	<key>PipSweepSupportURL</key>
-	<string></string>
+	<string>mailto:anshumannitnaware7@gmail.com?subject=PipSweep%20Support</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
