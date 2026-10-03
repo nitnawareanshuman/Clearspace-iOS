@@ -121,7 +121,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		A89302D941E24B85B01EA772 /* Exceptions for ClearspaceWidget folder in ClearspaceWidgetExtension target */ = {
+		A89302D941E24B85B01EA772 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -132,7 +132,7 @@
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		5BEBA309306988BF00503B83 /* Calendar */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Calendar; sourceTree = "<group>"; };
-		5BEBA328306990B500503B83 /* ClearspaceWidget */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (A89302D941E24B85B01EA772 /* Exceptions for ClearspaceWidget folder in ClearspaceWidgetExtension target */, ); explicitFileTypes = {}; explicitFolders = (); path = ClearspaceWidget; sourceTree = "<group>"; };
+		5BEBA328306990B500503B83 /* ClearspaceWidget */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (A89302D941E24B85B01EA772 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = ClearspaceWidget; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -631,6 +631,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Clearspace/Resources/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -848,6 +849,7 @@
 				ENABLE_TESTABILITY = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Clearspace/Resources/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
